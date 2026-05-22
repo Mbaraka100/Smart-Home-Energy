@@ -1,0 +1,690 @@
+
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Rekodi ya LUKU — Smart Energy Project</title>
+<style>
+  :root {
+    --blue: #1a73e8;
+    --blue-dark: #1557b0;
+    --blue-light: #e8f0fe;
+    --green: #34a853;
+    --yellow: #fbbc04;
+    --red: #ea4335;
+    --gray: #f8f9fa;
+    --border: #dadce0;
+    --text: #202124;
+    --text-light: #5f6368;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f4ff;
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white;
+    padding: 20px 16px;
+    text-align: center;
+  }
+  .header h1 { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+  .header p { font-size: 0.85rem; opacity: 0.85; }
+
+  .stats-bar {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .stat-box {
+    flex: 1;
+    min-width: 80px;
+    background: var(--blue-light);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-box .num { font-size: 1.3rem; font-weight: 700; color: var(--blue); }
+  .stat-box .lbl { font-size: 0.65rem; color: var(--text-light); margin-top: 2px; }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    margin: 12px 12px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--blue-dark);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 5px;
+    margin-top: 12px;
+  }
+  input[type="text"], input[type="number"], input[type="date"], select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 1rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    background: var(--gray);
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--blue);
+    background: white;
+  }
+
+  /* Wakati buttons */
+  .wakati-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .wakati-btn {
+    padding: 14px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--gray);
+    transition: all 0.2s;
+  }
+  .wakati-btn.active {
+    border-color: var(--blue);
+    background: var(--blue-light);
+    color: var(--blue-dark);
+    font-weight: 700;
+  }
+  .wakati-btn .icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+  .wakati-btn .txt { font-size: 0.85rem; font-weight: 600; }
+  .wakati-btn .sub { font-size: 0.7rem; color: var(--text-light); }
+
+  /* Hewa buttons */
+  .hewa-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .hewa-btn {
+    padding: 10px 4px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--gray);
+    font-size: 0.75rem;
+    transition: all 0.2s;
+  }
+  .hewa-btn .icon { font-size: 1.4rem; display: block; margin-bottom: 3px; }
+  .hewa-btn.active { border-color: var(--blue); background: var(--blue-light); font-weight: 700; }
+
+  /* Matumizi display */
+  .matumizi-box {
+    background: linear-gradient(135deg, #e8f0fe, #d2e3fc);
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 10px;
+    display: none;
+  }
+  .matumizi-box.show { display: block; }
+  .matumizi-box .m-title { font-size: 0.75rem; color: var(--text-light); margin-bottom: 6px; }
+  .matumizi-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .matumizi-row .m-label { font-size: 0.85rem; color: var(--text-light); }
+  .matumizi-row .m-value { font-size: 1rem; font-weight: 700; color: var(--blue-dark); }
+
+  /* Alert */
+  .alert {
+    display: none;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .alert.yellow { background: #fff8e1; border: 2px solid #fbbc04; color: #795000; display: block; }
+  .alert.red { background: #fce8e6; border: 2px solid #ea4335; color: #c5221f; display: block; }
+
+  /* Maelezo checkboxes */
+  .maelezo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .maelezo-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    background: var(--gray);
+    font-size: 0.78rem;
+    transition: all 0.2s;
+  }
+  .maelezo-item input { display: none; }
+  .maelezo-item.checked { border-color: var(--blue); background: var(--blue-light); }
+
+  /* Units zilizopakiwa */
+  .units-section {
+    display: none;
+    margin-top: 10px;
+  }
+  .units-section.show { display: block; }
+
+  /* Submit button */
+  .btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.2s;
+  }
+  .btn-submit:hover { opacity: 0.9; }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Rekodi zilizotumwa */
+  .rekodi-list { margin-top: 4px; }
+  .rekodi-item {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: var(--gray);
+    font-size: 0.82rem;
+  }
+  .rekodi-item .r-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .rekodi-item .r-date { font-weight: 700; color: var(--blue-dark); }
+  .rekodi-item .r-wakati { color: var(--text-light); font-size: 0.75rem; }
+  .rekodi-item .r-salio { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .rekodi-item .r-matumizi { color: var(--red); font-weight: 600; }
+  .rekodi-item .r-hewa { color: var(--text-light); }
+
+  .empty-state {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-light);
+    font-size: 0.85rem;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #202124;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: transform 0.3s;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .progress-wrap {
+    background: var(--border);
+    border-radius: 99px;
+    height: 6px;
+    margin: 8px 16px 0;
+  }
+  .progress-bar {
+    background: var(--blue);
+    height: 6px;
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.5s;
+  }
+  .progress-label {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--text-light);
+    margin: 4px 0 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚡ Rekodi ya Mita ya LUKU</h1>
+  <p>Smart Home Energy Project — Nyumba ya Vyumba 16</p>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-box">
+    <div class="num" id="stat-salio">—</div>
+    <div class="lbl">Salio (Units)</div>
+  </div>
+  <div class="stat-box">
+    <div class="num" id="stat-rekodi">0</div>
+    <div class="lbl">Rekodi Zote</div>
+  </div>
+  <div class="stat-box">
+    <div class="num" id="stat-wastani">—</div>
+    <div class="lbl">Wastani/Siku</div>
+  </div>
+  <div class="stat-box">
+    <div class="num" id="stat-siku">0/60</div>
+    <div class="lbl">Siku / Lengo</div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+<div class="progress-label" id="progressLabel">Siku 0 kati ya 60</div>
+
+<!-- KADI 1: WAKATI -->
+<div class="card">
+  <div class="card-title">🕐 Wakati wa Kusoma Mita</div>
+
+  <div class="wakati-grid">
+    <div class="wakati-btn active" id="btn-asubuhi" onclick="chaguaWakati('Asubuhi')">
+      <span class="icon">🌅</span>
+      <span class="txt">Asubuhi</span>
+      <span class="sub">Saa 12 asubuhi</span>
+    </div>
+    <div class="wakati-btn" id="btn-jioni" onclick="chaguaWakati('Jioni')">
+      <span class="icon">🌆</span>
+      <span class="txt">Jioni</span>
+      <span class="sub">Saa 12 jioni</span>
+    </div>
+  </div>
+
+  <label>📅 Tarehe</label>
+  <input type="date" id="tarehe">
+</div>
+
+<!-- KADI 2: MITA -->
+<div class="card">
+  <div class="card-title">📟 Salio la Mita</div>
+
+  <label>Salio Jipya (Units) — Soma kutoka mita yako</label>
+  <input type="number" id="salio-jipya" placeholder="Mfano: 245.6" step="0.1"
+    oninput="hesabuMatumizi()">
+
+  <div class="matumizi-box" id="matumizi-box">
+    <div class="m-title">📊 Matumizi ya Kipindi Hiki:</div>
+    <div class="matumizi-row">
+      <span class="m-label">Salio la Awali:</span>
+      <span class="m-value" id="m-awali">—</span>
+    </div>
+    <div class="matumizi-row">
+      <span class="m-label">Salio Jipya:</span>
+      <span class="m-value" id="m-jipya">—</span>
+    </div>
+    <div class="matumizi-row">
+      <span class="m-label">⚡ Matumizi:</span>
+      <span class="m-value" id="m-matumizi" style="color:#ea4335">—</span>
+    </div>
+    <div class="matumizi-row">
+      <span class="m-label">💰 Gharama (TZS):</span>
+      <span class="m-value" id="m-gharama" style="color:#34a853">—</span>
+    </div>
+  </div>
+
+  <div class="alert" id="alert-yellow">
+    ⚠️ Tahadhari! Salio chini ya Units 30. Pakia LUKU hivi karibuni!
+  </div>
+  <div class="alert" id="alert-red">
+    🚨 DHARURA! Salio chini ya Units 10. Pakia LUKU SASA HIVI!
+  </div>
+</div>
+
+<!-- KADI 3: HALI YA HEWA -->
+<div class="card">
+  <div class="card-title">☁️ Hali ya Hewa</div>
+  <div class="hewa-grid">
+    <div class="hewa-btn active" id="hewa-jua" onclick="chaguaHewa('☀️ Jua', 'hewa-jua')">
+      <span class="icon">☀️</span>Jua
+    </div>
+    <div class="hewa-btn" id="hewa-mawingu" onclick="chaguaHewa('🌤 Mawingu', 'hewa-mawingu')">
+      <span class="icon">🌤</span>Mawingu
+    </div>
+    <div class="hewa-btn" id="hewa-mvua" onclick="chaguaHewa('🌧 Mvua', 'hewa-mvua')">
+      <span class="icon">🌧</span>Mvua
+    </div>
+    <div class="hewa-btn" id="hewa-dhoruba" onclick="chaguaHewa('🌩 Dhoruba', 'hewa-dhoruba')">
+      <span class="icon">🌩</span>Dhoruba
+    </div>
+  </div>
+</div>
+
+<!-- KADI 4: MAELEZO -->
+<div class="card">
+  <div class="card-title">📝 Maelezo Maalum <span style="font-weight:400;font-size:0.8rem;color:var(--text-light)">(hiari)</span></div>
+
+  <div class="maelezo-grid">
+    <label class="maelezo-item" id="m-luku" onclick="chaguaMaelezo('m-luku','💳 LUKU ilipakiwa'); toggleUnits(this)">
+      <input type="checkbox"> <span>💳 LUKU ilipakiwa</span>
+    </label>
+    <label class="maelezo-item" id="m-iliisha" onclick="chaguaMaelezo('m-iliisha','⚠️ LUKU iliisha')">
+      <input type="checkbox"> <span>⚠️ LUKU iliisha</span>
+    </label>
+    <label class="maelezo-item" id="m-kukatika" onclick="chaguaMaelezo('m-kukatika','⚡ Umeme ulikatika')">
+      <input type="checkbox"> <span>⚡ Umeme ulikatika</span>
+    </label>
+    <label class="maelezo-item" id="m-wageni" onclick="chaguaMaelezo('m-wageni','👥 Wageni walikuwepo')">
+      <input type="checkbox"> <span>👥 Wageni walikuwepo</span>
+    </label>
+    <label class="maelezo-item" id="m-likizo" onclick="chaguaMaelezo('m-likizo','🎉 Siku ya likizo')">
+      <input type="checkbox"> <span>🎉 Siku ya likizo</span>
+    </label>
+    <label class="maelezo-item" id="m-chumba" onclick="chaguaMaelezo('m-chumba','🚪 Chumba hakikutumia')">
+      <input type="checkbox"> <span>🚪 Chumba hakikutumia</span>
+    </label>
+  </div>
+
+  <div class="units-section" id="units-section">
+    <label>💳 Units Zilizopakiwa (kiasi ulichonunua)</label>
+    <input type="number" id="units-pakiwa" placeholder="Mfano: 40" min="0">
+  </div>
+
+  <label style="margin-top:14px">Maelezo ya ziada (hiari)</label>
+  <textarea id="maelezo-zaidi" rows="2" placeholder="Andika chochote cha ziada hapa..."
+    style="resize:none"></textarea>
+</div>
+
+<!-- SUBMIT -->
+<div style="margin: 0 12px 24px">
+  <button class="btn-submit" id="btn-submit" onclick="wasilisha()">
+    ✓ Hifadhi Rekodi
+  </button>
+</div>
+
+<!-- REKODI ZILIZOTUMWA -->
+<div class="card" style="margin-bottom: 24px">
+  <div class="card-title">📋 Rekodi za Leo</div>
+  <div class="rekodi-list" id="rekodi-list">
+    <div class="empty-state">Bado hakuna rekodi — jaza na utume hapo juu!</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────
+const SHEETS_URL = "https://script.google.com/macros/s/AKfycbybehySqJblESITq_6Al7dDGVFlb1wMy9pkZDc6xRmOcDHMlXAfi2AwAR_GCpNBANNayA/exec";
+const BEI_KWH   = 292; // TZS kwa kWh (TANESCO)
+
+// ─── STATE ────────────────────────────────────────
+let wakati     = "Asubuhi";
+let hewa       = "☀️ Jua";
+let maelezo    = [];
+let rekodi     = JSON.parse(localStorage.getItem("luku_rekodi") || "[]");
+let salioAwali = null;
+
+// ─── INIT ─────────────────────────────────────────
+window.onload = () => {
+  // Weka tarehe ya leo
+  const leo = new Date();
+  document.getElementById("tarehe").value = leo.toISOString().slice(0,10);
+
+  // Chagua wakati kiotomatiki
+  const saa = leo.getHours();
+  if (saa >= 12) chaguaWakati("Jioni");
+  else           chaguaWakati("Asubuhi");
+
+  sasishaStats();
+  onyeshaRekodi();
+  pataSalioAwali();
+};
+
+function pataSalioAwali() {
+  if (rekodi.length > 0) {
+    salioAwali = parseFloat(rekodi[rekodi.length - 1].salio_jipya) || null;
+  }
+}
+
+// ─── WAKATI ───────────────────────────────────────
+function chaguaWakati(w) {
+  wakati = w;
+  document.getElementById("btn-asubuhi").classList.toggle("active", w === "Asubuhi");
+  document.getElementById("btn-jioni").classList.toggle("active",   w === "Jioni");
+}
+
+// ─── HEWA ─────────────────────────────────────────
+function chaguaHewa(h, id) {
+  hewa = h;
+  ["hewa-jua","hewa-mawingu","hewa-mvua","hewa-dhoruba"].forEach(x => {
+    document.getElementById(x).classList.remove("active");
+  });
+  document.getElementById(id).classList.add("active");
+}
+
+// ─── MAELEZO ──────────────────────────────────────
+function chaguaMaelezo(id, thamani) {
+  const el = document.getElementById(id);
+  el.classList.toggle("checked");
+  if (el.classList.contains("checked")) {
+    if (!maelezo.includes(thamani)) maelezo.push(thamani);
+  } else {
+    maelezo = maelezo.filter(m => m !== thamani);
+  }
+}
+
+function toggleUnits(el) {
+  setTimeout(() => {
+    const show = document.getElementById("m-luku").classList.contains("checked");
+    document.getElementById("units-section").classList.toggle("show", show);
+  }, 50);
+}
+
+// ─── HESABU MATUMIZI ──────────────────────────────
+function hesabuMatumizi() {
+  const jipya = parseFloat(document.getElementById("salio-jipya").value);
+  const box   = document.getElementById("matumizi-box");
+  const alertY = document.getElementById("alert-yellow");
+  const alertR = document.getElementById("alert-red");
+
+  alertY.style.display = "none";
+  alertR.style.display = "none";
+
+  if (isNaN(jipya)) { box.classList.remove("show"); return; }
+
+  // Tahadhari
+  if (jipya < 10)       alertR.style.display = "block";
+  else if (jipya < 30)  alertY.style.display = "block";
+
+  // Onyesha matumizi kama kuna salio la awali
+  if (salioAwali !== null && jipya < salioAwali) {
+    const matumizi = (salioAwali - jipya).toFixed(1);
+    const gharama  = (matumizi * BEI_KWH).toLocaleString("sw-TZ");
+    box.classList.add("show");
+    document.getElementById("m-awali").textContent    = salioAwali + " Units";
+    document.getElementById("m-jipya").textContent    = jipya + " Units";
+    document.getElementById("m-matumizi").textContent = matumizi + " Units";
+    document.getElementById("m-gharama").textContent  = "TZS " + gharama;
+  } else {
+    box.classList.remove("show");
+  }
+}
+
+// ─── WASILISHA ────────────────────────────────────
+async function wasilisha() {
+  const tarehe    = document.getElementById("tarehe").value;
+  const salioJipya = document.getElementById("salio-jipya").value;
+  const unitsPakiwa = document.getElementById("units-pakiwa").value || "0";
+  const maelezoZaidi = document.getElementById("maelezo-zaidi").value;
+
+  if (!tarehe || !salioJipya) {
+    onyeshaToast("⚠️ Jaza tarehe na salio la mita!");
+    return;
+  }
+
+  const jipya = parseFloat(salioJipya);
+  let matumizi = "—";
+  let gharama  = "—";
+
+  if (salioAwali !== null && jipya < salioAwali) {
+    const m = salioAwali - jipya;
+    matumizi = m.toFixed(1);
+    gharama  = (m * BEI_KWH).toFixed(0);
+  }
+
+  const data = {
+    timestamp:      new Date().toISOString(),
+    tarehe:         tarehe,
+    wakati:         wakati,
+    salio_awali:    salioAwali ?? "—",
+    salio_jipya:    jipya,
+    matumizi_units: matumizi,
+    gharama_tzs:    gharama,
+    hali_hewa:      hewa,
+    maelezo_maalum: maelezo.join(", ") || "—",
+    units_pakiwa:   unitsPakiwa,
+    maelezo_zaidi:  maelezoZaidi || "—",
+    rekodi_nambari: rekodi.length + 1,
+    aina: "LUKU_REKODI"
+  };
+
+  const btn = document.getElementById("btn-submit");
+  btn.disabled = true;
+  btn.innerHTML = "⏳ Inatuma...";
+
+  try {
+    await fetch(SHEETS_URL, {
+      method:  "POST",
+      mode:    "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(data)
+    });
+
+    // Hifadhi locally
+    rekodi.push(data);
+    localStorage.setItem("luku_rekodi", JSON.stringify(rekodi));
+    salioAwali = jipya;
+
+    sasishaStats();
+    onyeshaRekodi();
+    safishaForm();
+    onyeshaToast("✅ Rekodi imehifadhiwa kwenye Google Sheets!");
+
+  } catch(e) {
+    onyeshaToast("❌ Hitilafu ya mtandao — jaribu tena");
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = "✓ Hifadhi Rekodi";
+}
+
+// ─── SASISHA STATS ────────────────────────────────
+function sasishaStats() {
+  document.getElementById("stat-rekodi").textContent = rekodi.length;
+
+  if (rekodi.length > 0) {
+    const last = rekodi[rekodi.length - 1];
+    document.getElementById("stat-salio").textContent = parseFloat(last.salio_jipya).toFixed(0);
+  }
+
+  // Wastani wa matumizi kwa siku
+  const naMat = rekodi.filter(r => r.matumizi_units !== "—");
+  if (naMat.length >= 2) {
+    const jumla = naMat.reduce((s, r) => s + parseFloat(r.matumizi_units || 0), 0);
+    const wastani = (jumla / (naMat.length / 2)).toFixed(1);
+    document.getElementById("stat-wastani").textContent = wastani;
+  }
+
+  // Siku za data
+  const siku = new Set(rekodi.map(r => r.tarehe)).size;
+  document.getElementById("stat-siku").textContent = siku + "/60";
+
+  const pct = Math.min((siku / 60) * 100, 100);
+  document.getElementById("progressBar").style.width = pct + "%";
+  document.getElementById("progressLabel").textContent =
+    "Siku " + siku + " kati ya 60 — " + pct.toFixed(0) + "%";
+}
+
+// ─── ONYESHA REKODI ───────────────────────────────
+function onyeshaRekodi() {
+  const el  = document.getElementById("rekodi-list");
+  const leo = new Date().toISOString().slice(0,10);
+  const za_leo = rekodi.filter(r => r.tarehe === leo).reverse();
+
+  if (za_leo.length === 0) {
+    el.innerHTML = '<div class="empty-state">Bado hakuna rekodi leo — jaza na utume hapo juu!</div>';
+    return;
+  }
+
+  el.innerHTML = za_leo.map(r => `
+    <div class="rekodi-item">
+      <div class="r-top">
+        <span class="r-date">${r.tarehe} · ${r.wakati}</span>
+        <span class="r-hewa">${r.hali_hewa}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <span class="r-salio">📟 ${parseFloat(r.salio_jipya).toFixed(1)} Units</span>
+        ${r.matumizi_units !== "—" ? `<span class="r-matumizi">-${r.matumizi_units} Units · TZS ${parseInt(r.gharama_tzs).toLocaleString()}</span>` : ""}
+      </div>
+      ${r.maelezo_maalum !== "—" ? `<div style="margin-top:4px;color:var(--text-light);font-size:0.75rem">${r.maelezo_maalum}</div>` : ""}
+    </div>
+  `).join("");
+}
+
+// ─── SAFISHA FORM ─────────────────────────────────
+function safishaForm() {
+  document.getElementById("salio-jipya").value = "";
+  document.getElementById("maelezo-zaidi").value = "";
+  document.getElementById("units-pakiwa").value = "";
+  document.getElementById("matumizi-box").classList.remove("show");
+  document.getElementById("alert-yellow").style.display = "none";
+  document.getElementById("alert-red").style.display = "none";
+  document.getElementById("units-section").classList.remove("show");
+  maelezo = [];
+  document.querySelectorAll(".maelezo-item").forEach(el => el.classList.remove("checked"));
+
+  // Badilisha wakati kiotomatiki
+  const saa = new Date().getHours();
+  chaguaWakati(saa >= 12 ? "Jioni" : "Asubuhi");
+}
+
+// ─── TOAST ────────────────────────────────────────
+function onyeshaToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+</script>
+</body>
+</html>
