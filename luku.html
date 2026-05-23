@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="sw">
 <head>
@@ -19,35 +20,44 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4ff;color:#202124}
 label{display:block;font-size:0.8rem;font-weight:600;color:#5f6368;margin:12px 0 5px}
 input,select,textarea{width:100%;padding:12px;border:2px solid #dadce0;border-radius:10px;font-size:1rem;background:#f8f9fa;outline:none}
 input:focus,select:focus,textarea:focus{border-color:#1a73e8;background:white}
+
 .wakati-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .wbtn{padding:14px;border:2px solid #dadce0;border-radius:12px;text-align:center;cursor:pointer;background:#f8f9fa;transition:all 0.2s;user-select:none}
 .wbtn.active{border-color:#1a73e8;background:#e8f0fe;color:#1557b0;font-weight:700}
 .wbtn .icon{font-size:1.5rem;display:block;margin-bottom:4px}
 .wbtn .txt{font-size:0.85rem;font-weight:600}
 .wbtn .sub{font-size:0.7rem;color:#5f6368}
+
 .hewa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .hbtn{padding:10px 4px;border:2px solid #dadce0;border-radius:10px;text-align:center;cursor:pointer;background:#f8f9fa;font-size:0.75rem;transition:all 0.2s;user-select:none}
 .hbtn .icon{font-size:1.4rem;display:block;margin-bottom:3px}
 .hbtn.active{border-color:#1a73e8;background:#e8f0fe;font-weight:700}
+
 .mbox{background:#e8f0fe;border-radius:12px;padding:14px;margin-top:10px;display:none}
 .mbox.show{display:block}
 .mrow{display:flex;justify-content:space-between;margin-bottom:4px;font-size:0.85rem}
 .mrow .lbl{color:#5f6368}
 .mrow .val{font-weight:700;color:#1557b0}
+
 .alert{display:none;padding:12px;border-radius:10px;margin-top:10px;font-size:0.85rem;font-weight:600}
 .ay{background:#fff8e1;border:2px solid #fbbc04;color:#795000}
 .ar{background:#fce8e6;border:2px solid #ea4335;color:#c5221f}
+
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .mitem{padding:10px;border:2px solid #dadce0;border-radius:10px;cursor:pointer;background:#f8f9fa;font-size:0.78rem;display:flex;align-items:center;gap:6px;transition:all 0.2s;user-select:none}
 .mitem.checked{border-color:#1a73e8;background:#e8f0fe}
+
 .usection{display:none;margin-top:10px}
 .usection.show{display:block}
+
 .btn-sub{width:100%;padding:16px;background:linear-gradient(135deg,#1a73e8,#0d47a1);color:white;border:none;border-radius:14px;font-size:1.05rem;font-weight:700;cursor:pointer;margin-top:8px}
 .btn-sub:disabled{opacity:0.5}
+
 .ritem{border:1px solid #dadce0;border-radius:10px;padding:12px;margin-bottom:8px;background:#f8f9fa;font-size:0.82rem}
 .rtop{display:flex;justify-content:space-between;margin-bottom:4px}
 .rdate{font-weight:700;color:#1557b0}
 .empty{text-align:center;padding:24px;color:#5f6368;font-size:0.85rem}
+
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#202124;color:white;padding:12px 24px;border-radius:24px;font-size:0.9rem;font-weight:600;transition:transform 0.3s;z-index:9999;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
 </style>
@@ -66,6 +76,7 @@ input:focus,select:focus,textarea:focus{border-color:#1a73e8;background:white}
   <div class="stat"><div class="n" id="sSiku">0/60</div><div class="l">Siku/Lengo</div></div>
 </div>
 
+<!-- WAKATI -->
 <div class="card">
   <div class="card-title">🕐 Wakati wa Kusoma Mita</div>
   <div class="wakati-grid">
@@ -84,6 +95,204 @@ input:focus,select:focus,textarea:focus{border-color:#1a73e8;background:white}
   <input type="date" id="tarehe">
 </div>
 
+<!-- MITA -->
 <div class="card">
   <div class="card-title">📟 Salio la Mita</div>
-  <label>Salio Jipya (Units) —
+  <label>Salio Jipya (Units) — Soma kutoka mita yako</label>
+  <input type="number" id="salioJipya" placeholder="Mfano: 245.6" step="0.1" oninput="hesabu()">
+  <div class="mbox" id="mbox">
+    <div class="mrow"><span class="lbl">Salio la Awali:</span><span class="val" id="mAwali">—</span></div>
+    <div class="mrow"><span class="lbl">Salio Jipya:</span><span class="val" id="mJipya">—</span></div>
+    <div class="mrow"><span class="lbl">⚡ Matumizi:</span><span class="val" id="mMat" style="color:#ea4335">—</span></div>
+    <div class="mrow"><span class="lbl">💰 Gharama:</span><span class="val" id="mGhar" style="color:#34a853">—</span></div>
+  </div>
+  <div class="alert ay" id="alertY" style="display:none">⚠️ Salio chini ya Units 30. Pakia LUKU hivi karibuni!</div>
+  <div class="alert ar" id="alertR" style="display:none">🚨 DHARURA! Salio chini ya Units 10. Pakia LUKU SASA!</div>
+</div>
+
+<!-- HEWA -->
+<div class="card">
+  <div class="card-title">☁️ Hali ya Hewa</div>
+  <div class="hewa-grid">
+    <div class="hbtn active" id="hJua" onclick="setHewa('☀️ Jua','hJua')"><span class="icon">☀️</span>Jua</div>
+    <div class="hbtn" id="hMawingu" onclick="setHewa('🌤 Mawingu','hMawingu')"><span class="icon">🌤</span>Mawingu</div>
+    <div class="hbtn" id="hMvua" onclick="setHewa('🌧 Mvua','hMvua')"><span class="icon">🌧</span>Mvua</div>
+    <div class="hbtn" id="hDhoruba" onclick="setHewa('🌩 Dhoruba','hDhoruba')"><span class="icon">🌩</span>Dhoruba</div>
+  </div>
+</div>
+
+<!-- MAELEZO -->
+<div class="card">
+  <div class="card-title">📝 Maelezo Maalum <span style="font-weight:400;font-size:0.8rem;color:#5f6368">(hiari)</span></div>
+  <div class="mgrid">
+    <div class="mitem" id="mLuku" onclick="toggleM(this,'💳 LUKU ilipakiwa'); toggleU()">💳 LUKU ilipakiwa</div>
+    <div class="mitem" id="mIliisha" onclick="toggleM(this,'⚠️ LUKU iliisha')">⚠️ LUKU iliisha</div>
+    <div class="mitem" id="mKukatika" onclick="toggleM(this,'⚡ Umeme ulikatika')">⚡ Umeme ulikatika</div>
+    <div class="mitem" id="mWageni" onclick="toggleM(this,'👥 Wageni walikuwepo')">👥 Wageni walikuwepo</div>
+    <div class="mitem" id="mLikizo" onclick="toggleM(this,'🎉 Siku ya likizo')">🎉 Siku ya likizo</div>
+    <div class="mitem" id="mChumba" onclick="toggleM(this,'🚪 Chumba hakikutumia')">🚪 Chumba hakikutumia</div>
+  </div>
+  <div class="usection" id="uSection">
+    <label>💳 Units Zilizopakiwa</label>
+    <input type="number" id="unitsPakiwa" placeholder="Mfano: 40" min="0">
+  </div>
+  <label>Maelezo ya ziada (hiari)</label>
+  <textarea id="maelezoZaidi" rows="2" placeholder="Andika hapa..." style="resize:none"></textarea>
+</div>
+
+<div style="margin:0 12px 24px">
+  <button class="btn-sub" id="btnSub" onclick="wasilisha()">✓ Hifadhi Rekodi</button>
+</div>
+
+<!-- REKODI ZA LEO -->
+<div class="card" style="margin-bottom:24px">
+  <div class="card-title">📋 Rekodi za Leo</div>
+  <div id="rekodiList"><div class="empty">Bado hakuna rekodi — jaza hapo juu!</div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SHEETS_URL = "https://script.google.com/macros/s/AKfycbzHyYtK5vO5zRxuvsRa_AVtEE0zKFOJIpS4_aS_G3up3XR9TkxOrhSJL6u8whJwFfLd/exec";
+const BEI = 292;
+
+let wakati = "Asubuhi";
+let hewa = "☀️ Jua";
+let maelezo = [];
+let rekodi = [];
+let salioAwali = null;
+
+try { rekodi = JSON.parse(localStorage.getItem("luku_v2") || "[]"); } catch(e){}
+
+window.onload = function(){
+  const leo = new Date();
+  document.getElementById("tarehe").value = leo.toISOString().slice(0,10);
+  setWakati(leo.getHours() >= 12 ? "Jioni" : "Asubuhi");
+  if(rekodi.length > 0) salioAwali = parseFloat(rekodi[rekodi.length-1].salio_jipya) || null;
+  sasishaStats();
+  onyeshaRekodi();
+};
+
+function setWakati(w){
+  wakati = w;
+  document.getElementById("bAsubuhi").classList.toggle("active", w==="Asubuhi");
+  document.getElementById("bJioni").classList.toggle("active", w==="Jioni");
+}
+
+function setHewa(h, id){
+  hewa = h;
+  ["hJua","hMawingu","hMvua","hDhoruba"].forEach(x => document.getElementById(x).classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function toggleM(el, val){
+  el.classList.toggle("checked");
+  if(el.classList.contains("checked")){ if(!maelezo.includes(val)) maelezo.push(val); }
+  else { maelezo = maelezo.filter(m => m !== val); }
+}
+
+function toggleU(){
+  const show = document.getElementById("mLuku").classList.contains("checked");
+  document.getElementById("uSection").classList.toggle("show", show);
+}
+
+function hesabu(){
+  const j = parseFloat(document.getElementById("salioJipya").value);
+  document.getElementById("alertY").style.display = "none";
+  document.getElementById("alertR").style.display = "none";
+  if(isNaN(j)){ document.getElementById("mbox").classList.remove("show"); return; }
+  if(j < 10) document.getElementById("alertR").style.display = "block";
+  else if(j < 30) document.getElementById("alertY").style.display = "block";
+  if(salioAwali !== null && j < salioAwali){
+    const m = (salioAwali - j).toFixed(1);
+    const g = (m * BEI).toLocaleString();
+    document.getElementById("mbox").classList.add("show");
+    document.getElementById("mAwali").textContent = salioAwali + " Units";
+    document.getElementById("mJipya").textContent = j + " Units";
+    document.getElementById("mMat").textContent = m + " Units";
+    document.getElementById("mGhar").textContent = "TZS " + g;
+  } else { document.getElementById("mbox").classList.remove("show"); }
+}
+
+async function wasilisha(){
+  const tarehe = document.getElementById("tarehe").value;
+  const sj = document.getElementById("salioJipya").value;
+  if(!tarehe || !sj){ toast("⚠️ Jaza tarehe na salio la mita!"); return; }
+  const j = parseFloat(sj);
+  let mat = "—", ghar = "—";
+  if(salioAwali !== null && j < salioAwali){
+    const m = salioAwali - j;
+    mat = m.toFixed(1);
+    ghar = (m * BEI).toFixed(0);
+  }
+  const data = {
+    timestamp: new Date().toISOString(), tarehe, wakati,
+    salio_awali: salioAwali ?? "—", salio_jipya: j,
+    matumizi_units: mat, gharama_tzs: ghar, hali_hewa: hewa,
+    maelezo_maalum: maelezo.join(", ") || "—",
+    units_pakiwa: document.getElementById("unitsPakiwa").value || "0",
+    maelezo_zaidi: document.getElementById("maelezoZaidi").value || "—",
+    rekodi_nambari: rekodi.length + 1, aina: "LUKU_REKODI"
+  };
+  const btn = document.getElementById("btnSub");
+  btn.disabled = true; btn.textContent = "⏳ Inatuma...";
+  try {
+    await fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+    rekodi.push(data);
+    try{ localStorage.setItem("luku_v2", JSON.stringify(rekodi)); }catch(e){}
+    salioAwali = j;
+    sasishaStats(); onyeshaRekodi(); safisha();
+    toast("✅ Rekodi imehifadhiwa kwenye Google Sheets!");
+  } catch(e){ toast("❌ Hitilafu — jaribu tena"); }
+  btn.disabled = false; btn.textContent = "✓ Hifadhi Rekodi";
+}
+
+function sasishaStats(){
+  document.getElementById("sRekodi").textContent = rekodi.length;
+  if(rekodi.length > 0) document.getElementById("sSalio").textContent = parseFloat(rekodi[rekodi.length-1].salio_jipya).toFixed(0);
+  const nm = rekodi.filter(r => r.matumizi_units !== "—");
+  if(nm.length >= 2){
+    const j = nm.reduce((s,r) => s + parseFloat(r.matumizi_units||0), 0);
+    document.getElementById("sWastani").textContent = (j/(nm.length/2)).toFixed(1);
+  }
+  const siku = new Set(rekodi.map(r => r.tarehe)).size;
+  document.getElementById("sSiku").textContent = siku + "/60";
+}
+
+function onyeshaRekodi(){
+  const el = document.getElementById("rekodiList");
+  const leo = new Date().toISOString().slice(0,10);
+  const za = rekodi.filter(r => r.tarehe === leo).reverse();
+  if(za.length === 0){ el.innerHTML='<div class="empty">Bado hakuna rekodi leo!</div>'; return; }
+  el.innerHTML = za.map(r=>`
+    <div class="ritem">
+      <div class="rtop"><span class="rdate">${r.tarehe} · ${r.wakati}</span><span>${r.hali_hewa}</span></div>
+      <div style="display:flex;justify-content:space-between">
+        <span style="font-weight:700">📟 ${parseFloat(r.salio_jipya).toFixed(1)} Units</span>
+        ${r.matumizi_units!=="—"?`<span style="color:#ea4335;font-weight:600">-${r.matumizi_units} Units</span>`:""}
+      </div>
+      ${r.maelezo_maalum!=="—"?`<div style="margin-top:4px;color:#5f6368;font-size:0.75rem">${r.maelezo_maalum}</div>`:""}
+    </div>`).join("");
+}
+
+function safisha(){
+  document.getElementById("salioJipya").value="";
+  document.getElementById("maelezoZaidi").value="";
+  document.getElementById("unitsPakiwa").value="";
+  document.getElementById("mbox").classList.remove("show");
+  document.getElementById("alertY").style.display="none";
+  document.getElementById("alertR").style.display="none";
+  document.getElementById("uSection").classList.remove("show");
+  maelezo=[];
+  document.querySelectorAll(".mitem").forEach(e=>e.classList.remove("checked"));
+  setWakati(new Date().getHours()>=12?"Jioni":"Asubuhi");
+}
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 3000);
+}
+</script>
+</body>
+</html>
