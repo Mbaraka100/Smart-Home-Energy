@@ -125,18 +125,9 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
 </div>
 
 <div class="steps">
-  <div class="step active" id="step1">
-    <div class="step-dot">1</div>
-    <div class="step-label">Taarifa</div>
-  </div>
-  <div class="step" id="step2">
-    <div class="step-dot">2</div>
-    <div class="step-label">Vifaa</div>
-  </div>
-  <div class="step" id="step3">
-    <div class="step-dot">3</div>
-    <div class="step-label">Ziada</div>
-  </div>
+  <div class="step active" id="step1"><div class="step-dot">1</div><div class="step-label">Taarifa</div></div>
+  <div class="step" id="step2"><div class="step-dot">2</div><div class="step-label">Vifaa</div></div>
+  <div class="step" id="step3"><div class="step-dot">3</div><div class="step-label">Ziada</div></div>
 </div>
 
 <div class="page active" id="page1">
@@ -318,16 +309,63 @@ const VIFAA_LIST = [
 ];
 
 const GROUPS=[...new Set(VIFAA_LIST.map(v=>v.g))];
-function buildOpts(){return GROUPS.map(g=>`<optgroup label="${g}">`+VIFAA_LIST.filter(v=>v.g===g).map(v=>`<option value="${v.n}" data-w="${v.w}">${v.n} — ${v.w}W</option>`).join('')+`</optgroup>`).join('');}
+function buildOpts(){
+  return GROUPS.map(g=>`<optgroup label="${g}">`+
+    VIFAA_LIST.filter(v=>v.g===g).map(v=>`<option value="${v.n}" data-w="${v.w}">${v.n} — ${v.w}W</option>`).join('')+
+  `</optgroup>`).join('');
+}
 const OPTS=buildOpts();
 
 let LANG='sw';
-function setLang(l){LANG=l;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent.includes(l==='sw'?'Kiswahili':'English')));}
+let entries=[];
+let selectedRoom='';
+let kifaaCount=0;
 
-let entries=[],selectedRoom='',kifaaCount=0;
+function setLang(l){
+  LANG=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active',b.textContent.includes(l==='sw'?'Kiswahili':'English'));
+  });
+}
+
+function safeText(x){
+  return String(x || '').replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+
+async function loadTakenRooms(){
+  showToast('Inapakia vyumba vilivyojazwa...');
+  try{
+    const res = await fetch(SHEET_URL + '?action=list&t=' + Date.now());
+    const data = await res.json();
+
+    entries = Array.isArray(data) ? data.map(r => ({
+      jina: r.jina || r.Jina || '',
+      chumba: r.chumba || r.Chumba || '',
+      simu: r.simu || r.Simu || '',
+      tarehe: r.tarehe || r.Tarehe || '',
+      hali: r.hali || r.Hali || '',
+      watu: r.watu || r.Watu || '',
+      saa: r.saa || '',
+      vingine: r.vingine || '',
+      maelezo: r.maelezo || '',
+      wakati: r.wakati || '',
+      vifaa: Array.isArray(r.vifaa) ? r.vifaa : []
+    })).filter(e => e.chumba) : [];
+
+    buildRoomGrid();
+    renderEntries();
+  }catch(err){
+    console.log(err);
+    buildRoomGrid();
+    showToast('Haikuweza kupakia rooms, lakini unaweza kujaza.');
+  }
+}
 
 function buildRoomGrid(){
-  const g=document.getElementById('chumba-grid');g.innerHTML='';
+  const g=document.getElementById('chumba-grid');
+  g.innerHTML='';
   for(let i=1;i<=16;i++){
     const code='C'+String(i).padStart(2,'0');
     const taken=entries.some(e=>e.chumba===code);
@@ -340,16 +378,19 @@ function buildRoomGrid(){
 }
 
 function selectRoom(code,el,taken){
-  if(taken&&!confirm(LANG==='sw'?'Chumba hiki kimeshasajiliwa. Badilisha?':'Room already registered. Replace?'))return;
-  selectedRoom=code;document.getElementById('f-chumba').value=code;
+  if(taken && !confirm(LANG==='sw'?'Chumba hiki kimeshasajiliwa. Unataka kubadilisha taarifa zake?':'Room already registered. Replace?')) return;
+  selectedRoom=code;
+  document.getElementById('f-chumba').value=code;
   document.querySelectorAll('.c-pill').forEach(p=>p.classList.remove('selected'));
   el.classList.add('selected');
 }
 
 function addKifaa(){
-  kifaaCount++;const id=kifaaCount;
+  kifaaCount++;
+  const id=kifaaCount;
   const div=document.createElement('div');
-  div.className='kifaa-card';div.id='kc-'+id;
+  div.className='kifaa-card';
+  div.id='kc-'+id;
   div.innerHTML=`
     <div class="kifaa-num">#${id}</div>
     <button class="del-btn" onclick="delKifaa(${id})">✕</button>
@@ -396,15 +437,22 @@ function addKifaa(){
   div.scrollIntoView({behavior:'smooth',block:'center'});
 }
 
-function autoW(id){const sel=document.getElementById('kn-'+id);const w=sel.options[sel.selectedIndex]?.getAttribute('data-w');if(w&&w!=='0')document.getElementById('kw-'+id).value=w;}
-function delKifaa(id){document.getElementById('kc-'+id)?.remove();}
+function autoW(id){
+  const sel=document.getElementById('kn-'+id);
+  const w=sel.options[sel.selectedIndex]?.getAttribute('data-w');
+  if(w && w!=='0') document.getElementById('kw-'+id).value=w;
+}
+
+function delKifaa(id){
+  document.getElementById('kc-'+id)?.remove();
+}
 
 function collectVifaa(){
   const v=[];
   for(let i=1;i<=kifaaCount;i++){
-    if(!document.getElementById('kc-'+i))continue;
+    if(!document.getElementById('kc-'+i)) continue;
     const n=document.getElementById('kn-'+i)?.value?.trim();
-    if(!n)continue;
+    if(!n) continue;
     const saa=parseFloat(document.getElementById('kh-'+i)?.value)||0;
     const dak=parseFloat(document.getElementById('km-'+i)?.value)||0;
     v.push({
@@ -424,11 +472,18 @@ function goPage(n){
     const chumba=document.getElementById('f-chumba').value;
     if(!jina){showToast('Tafadhali weka jina lako / Please enter your name');return;}
     if(!chumba){showToast('Tafadhali chagua chumba / Please select a room');return;}
-    if(!document.getElementById('vifaa-wrap').children.length)addKifaa();
+    if(!document.getElementById('vifaa-wrap').children.length) addKifaa();
   }
-  if(n===3){const v=collectVifaa();if(!v.length){showToast('Ongeza angalau kifaa kimoja / Add at least one appliance');return;}}
+  if(n===3){
+    const v=collectVifaa();
+    if(!v.length){showToast('Ongeza angalau kifaa kimoja / Add at least one appliance');return;}
+  }
   document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i===n-1));
-  ['step1','step2','step3'].forEach((s,i)=>{const el=document.getElementById(s);el.classList.toggle('active',i===n-1);el.classList.toggle('done',i<n-1);});
+  ['step1','step2','step3'].forEach((s,i)=>{
+    const el=document.getElementById(s);
+    el.classList.toggle('active',i===n-1);
+    el.classList.toggle('done',i<n-1);
+  });
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -437,19 +492,55 @@ async function submitForm(){
   const chumba=document.getElementById('f-chumba').value;
   if(!jina){showToast('Tafadhali weka jina lako');return;}
   if(!chumba){showToast('Tafadhali chagua chumba');return;}
+
   const vifaa=collectVifaa();
   if(!vifaa.length){showToast('Ongeza angalau kifaa kimoja');return;}
-  const entry={jina,chumba,simu:document.getElementById('f-simu').value,tarehe:document.getElementById('f-tarehe').value,hali:document.getElementById('f-hali').value,watu:document.getElementById('f-watu').value,saa:document.getElementById('f-saa').value,vingine:document.getElementById('f-vingine').value,maelezo:document.getElementById('f-maelezo').value,vifaa,wakati:new Date().toISOString(),aina:"SENSA"};
+
+  const entry={
+    jina,
+    chumba,
+    simu:document.getElementById('f-simu').value,
+    tarehe:document.getElementById('f-tarehe').value,
+    hali:document.getElementById('f-hali').value,
+    watu:document.getElementById('f-watu').value,
+    saa:document.getElementById('f-saa').value,
+    vingine:document.getElementById('f-vingine').value,
+    maelezo:document.getElementById('f-maelezo').value,
+    vifaa,
+    wakati:new Date().toISOString(),
+    aina:"SENSA"
+  };
+
   const btn=document.querySelector('#page3 .btn-primary');
-  const origText=btn.innerHTML;btn.innerHTML='⏳ Inatuma...';btn.disabled=true;
+  const origText=btn.innerHTML;
+  btn.innerHTML='⏳ Inatuma...';
+  btn.disabled=true;
+
   try{
-    await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
+    await fetch(SHEET_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(entry)
+    });
+
     const idx=entries.findIndex(e=>e.chumba===chumba);
-    if(idx>=0)entries[idx]=entry;else entries.push(entry);
-    renderEntries();clearForm();goPage(1);
+    if(idx>=0) entries[idx]=entry;
+    else entries.push(entry);
+
+    renderEntries();
+    clearForm();
+    goPage(1);
     showToast(`✅ ${chumba} — ${jina} imetumwa Google Sheets!`,true);
-  }catch(err){showToast('❌ Tatizo la mtandao. Hakikisha una internet.');}
-  finally{btn.innerHTML=origText;btn.disabled=false;}
+
+    setTimeout(loadTakenRooms,1000);
+  }catch(err){
+    console.log(err);
+    showToast('❌ Tatizo la mtandao. Hakikisha una internet.');
+  }finally{
+    btn.innerHTML=origText;
+    btn.disabled=false;
+  }
 }
 
 function clearForm(){
@@ -459,37 +550,78 @@ function clearForm(){
   document.getElementById('f-watu').value='0';
   document.getElementById('f-saa').value='8';
   document.getElementById('f-chumba').value='';
-  selectedRoom='';document.getElementById('vifaa-wrap').innerHTML='';kifaaCount=0;buildRoomGrid();
+  selectedRoom='';
+  document.getElementById('vifaa-wrap').innerHTML='';
+  kifaaCount=0;
+  buildRoomGrid();
 }
 
 function renderEntries(){
   const sec=document.getElementById('entries-section');
-  if(!entries.length){sec.style.display='none';return;}
-  sec.style.display='block';
-  const pct=Math.round(entries.length/16*100);
+  const uniqueRooms=[...new Set(entries.map(e=>e.chumba).filter(Boolean))];
+  const count=uniqueRooms.length;
+  const pct=Math.round(count/16*100);
+
   document.getElementById('prog-bar').style.width=pct+'%';
-  document.getElementById('prog-txt').textContent=`${entries.length} / 16`;
-  document.getElementById('e-count').textContent=entries.length;
+  document.getElementById('prog-txt').textContent=`${count} / 16`;
+  document.getElementById('e-count').textContent=count;
+
+  if(!entries.length){
+    sec.style.display='none';
+    return;
+  }
+
+  sec.style.display='block';
   document.getElementById('entries-list').innerHTML=entries.map(e=>{
-    const kwh=e.vifaa.reduce((s,v)=>s+(v.watts*v.idadi*v.hrs*v.siku/1000),0);
-    return `<div class="entry-card"><div class="entry-top"><div><div class="entry-name">${e.jina}</div><div class="entry-room">${e.chumba} · ${e.hali}</div></div><div class="entry-kwh">${kwh.toFixed(1)}<span>kWh/mwezi</span></div></div><div class="tags">${e.vifaa.map(v=>`<span class="tag">${v.jina.split('/')[0].trim()} ×${v.idadi}</span>`).join('')}</div></div>`;
+    const vifaa=Array.isArray(e.vifaa) ? e.vifaa : [];
+    const kwh=vifaa.reduce((s,v)=>s+((Number(v.watts)||0)*(Number(v.idadi)||1)*(Number(v.hrs)||0)*(Number(v.siku)||30)/1000),0);
+    const tags=vifaa.length
+      ? vifaa.map(v=>`<span class="tag">${safeText(String(v.jina || '').split('/')[0].trim())} ×${safeText(v.idadi || 1)}</span>`).join('')
+      : `<span class="tag">Imejazwa Google Sheet</span>`;
+
+    return `<div class="entry-card">
+      <div class="entry-top">
+        <div>
+          <div class="entry-name">${safeText(e.jina || 'Bila jina')}</div>
+          <div class="entry-room">${safeText(e.chumba)} · ${safeText(e.hali || '')}</div>
+        </div>
+        <div class="entry-kwh">${kwh.toFixed(1)}<span>kWh/mwezi</span></div>
+      </div>
+      <div class="tags">${tags}</div>
+    </div>`;
   }).join('');
 }
 
 function downloadCSV(){
   if(!entries.length){showToast('Hakuna data bado');return;}
   const rows=[['Chumba','Jina','Simu','Tarehe','Hali','Watu','Saa/Siku','Kifaa','Idadi','Watts','Masaa/Siku','Siku/Mwezi','kWh/Mwezi','Vingine','Maelezo','Wakati']];
-  entries.forEach(e=>{e.vifaa.forEach(v=>{const kwh=(v.watts*v.idadi*v.hrs*v.siku/1000).toFixed(3);rows.push([e.chumba,e.jina,e.simu,e.tarehe,e.hali,e.watu,e.saa,v.jina,v.idadi,v.watts,v.hrs.toFixed(2),v.siku,kwh,e.vingine,e.maelezo,e.wakati]);});});
+  entries.forEach(e=>{
+    const vifaa=Array.isArray(e.vifaa) ? e.vifaa : [];
+    if(!vifaa.length){
+      rows.push([e.chumba,e.jina,e.simu,e.tarehe,e.hali,e.watu,e.saa,'','','','','','',e.vingine,e.maelezo,e.wakati]);
+      return;
+    }
+    vifaa.forEach(v=>{
+      const kwh=((Number(v.watts)||0)*(Number(v.idadi)||1)*(Number(v.hrs)||0)*(Number(v.siku)||30)/1000).toFixed(3);
+      rows.push([e.chumba,e.jina,e.simu,e.tarehe,e.hali,e.watu,e.saa,v.jina,v.idadi,v.watts,Number(v.hrs||0).toFixed(2),v.siku,kwh,e.vingine,e.maelezo,e.wakati]);
+    });
+  });
   const csv=rows.map(r=>r.map(x=>`"${String(x||'').replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='sensa_ya_vifaa_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='sensa_ya_vifaa_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
 }
 
 function showToast(msg,green=false){
-  const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(green?' green':'');
-  setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>t.classList.remove('show'),3000);
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast'+(green?' green':'');
+  setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-buildRoomGrid();
+loadTakenRooms();
 </script>
 </body>
 </html>
