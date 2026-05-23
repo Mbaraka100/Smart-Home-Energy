@@ -124,6 +124,11 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
 .step-label{font-size:10px;font-weight:600;color:var(--text-3)}
 .step.active .step-label,.step.done .step-label{color:var(--green-dark)}
 .page{display:none}.page.active{display:block}
+.sync-status{font-size:11px;color:var(--text-3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--text-3);display:inline-block}
+.sync-dot.online{background:var(--green)}
+.sync-dot.loading{background:var(--warning);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 </style>
 </head>
 <body>
@@ -188,7 +193,10 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
       </div>
       <div class="field">
         <label>Chagua Chumba Chako <span class="req">*</span></label>
-        <p style="font-size:12px;color:var(--text-3);margin-bottom:10px">Vyumba vya kijani vimeshasajiliwa ✅</p>
+        <div class="sync-status" id="sync-status">
+          <span class="sync-dot loading" id="sync-dot"></span>
+          <span id="sync-txt">Inapakia taarifa za vyumba...</span>
+        </div>
         <div class="chumba-grid" id="chumba-grid"></div>
         <input type="hidden" id="f-chumba">
       </div>
@@ -221,6 +229,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
   </div>
   <div class="btns">
     <button class="btn-primary" onclick="goPage(2)">Endelea — Vifaa →</button>
+    <button class="btn-secondary" onclick="refreshRooms()">🔄 Sasisha Vyumba</button>
   </div>
 </div>
 
@@ -368,22 +377,45 @@ function setLang(l){
 }
 
 let entries=[],selectedRoom='',kifaaCount=0;
+let filledRoomsCache=[];
 
-function getFilledRooms(){
-  try{return JSON.parse(localStorage.getItem('filled_rooms')||'[]');}catch(e){return [];}
+const SHEET_URL="https://script.google.com/macros/s/AKfycbzF0lyhtDdvMCrV_zDgH_wzzO-sa98H1Wm7ZWjzDiOhy7kKpYNskt4m3cEnnide_AwY/exec";
+
+async function fetchFilledRooms(){
+  const dot=document.getElementById('sync-dot');
+  const txt=document.getElementById('sync-txt');
+  dot.className='sync-dot loading';
+  txt.textContent='Inapakia taarifa za vyumba...';
+  try{
+    const res=await fetch(SHEET_URL+'?action=rooms');
+    const rooms=await res.json();
+    filledRoomsCache=Array.isArray(rooms)?rooms:[];
+    dot.className='sync-dot online';
+    txt.textContent='Imeunganika — vyumba vinaonyeshwa kutoka Sheet';
+    return filledRoomsCache;
+  }catch(e){
+    dot.className='sync-dot';
+    txt.textContent='Hakuna mtandao — inaonyesha hali ya mwisho';
+    return filledRoomsCache;
+  }
 }
-function markRoomFilled(chumba){
-  const filled=getFilledRooms();
-  if(!filled.includes(chumba)){filled.push(chumba);localStorage.setItem('filled_rooms',JSON.stringify(filled));}
+
+async function refreshRooms(){
+  await fetchFilledRooms();
+  buildRoomGrid();
+  showToast('🔄 Vyumba vimesasishwa!',true);
 }
 
 function buildRoomGrid(){
   const g=document.getElementById('chumba-grid');
   g.innerHTML='';
-  const filled=getFilledRooms();
+  const filled=filledRoomsCache;
+  const total=filled.length;
+  document.getElementById('prog-bar').style.width=(total/16*100)+'%';
+  document.getElementById('prog-txt').textContent=total+' / 16';
   for(let i=1;i<=16;i++){
     const code='C'+String(i).padStart(2,'0');
-    const taken=filled.includes(code)||entries.some(e=>e.chumba===code);
+    const taken=filled.includes(code);
     const div=document.createElement('div');
     div.className='c-pill'+(taken?' taken':'')+(selectedRoom===code?' selected':'');
     div.innerHTML=taken?`${code}<br><span style="font-size:9px">✅</span>`:code;
@@ -393,7 +425,7 @@ function buildRoomGrid(){
 }
 
 function selectRoom(code,el,taken){
-  if(taken&&!confirm('Chumba hiki kimeshasajiliwa. Unataka kubadilisha taarifa zake?')) return;
+  if(taken&&!confirm('Chumba hiki kimeshasajiliwa kwenye Sheet. Unataka kubadilisha taarifa zake?')) return;
   selectedRoom=code;
   document.getElementById('f-chumba').value=code;
   document.querySelectorAll('.c-pill').forEach(p=>p.classList.remove('selected'));
@@ -488,8 +520,6 @@ function goPage(n){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-const SHEET_URL="https://script.google.com/macros/s/AKfycbzF0lyhtDdvMCrV_zDgH_wzzO-sa98H1Wm7ZWjzDiOhy7kKpYNskt4m3cEnnide_AwY/exec";
-
 async function submitForm(){
   const jina=document.getElementById('f-jina').value.trim();
   const chumba=document.getElementById('f-chumba').value;
@@ -544,7 +574,7 @@ async function submitForm(){
       });
     }
 
-    markRoomFilled(chumba);
+    if(!filledRoomsCache.includes(chumba)) filledRoomsCache.push(chumba);
     const idx=entries.findIndex(e=>e.chumba===chumba);
     const entry={...taarifa,vifaa};
     if(idx>=0) entries[idx]=entry; else entries.push(entry);
@@ -553,6 +583,7 @@ async function submitForm(){
     clearForm();
     goPage(1);
     showToast(`✅ ${chumba} — ${jina} imetumwa! (Vifaa ${vifaa.length})`,true);
+    setTimeout(()=>fetchFilledRooms().then(()=>buildRoomGrid()),3000);
 
   }catch(err){
     showToast('❌ Tatizo la mtandao. Jaribu tena.');
@@ -578,12 +609,7 @@ function renderEntries(){
   const sec=document.getElementById('entries-section');
   if(!entries.length){sec.style.display='none';return;}
   sec.style.display='block';
-  const filled=getFilledRooms();
-  const total=Math.max(entries.length,filled.length);
-  const pct=Math.round(total/16*100);
-  document.getElementById('prog-bar').style.width=pct+'%';
-  document.getElementById('prog-txt').textContent=`${total} / 16`;
-  document.getElementById('e-count').textContent=total;
+  document.getElementById('e-count').textContent=filledRoomsCache.length;
   document.getElementById('entries-list').innerHTML=entries.map(e=>{
     const kwh=e.vifaa.reduce((s,v)=>s+(v.watts*v.idadi*v.hrs*v.siku/1000),0);
     return `<div class="entry-card">
@@ -604,7 +630,7 @@ function showToast(msg,green=false){
   setTimeout(()=>t.classList.remove('show'),3500);
 }
 
-buildRoomGrid();
+fetchFilledRooms().then(()=>buildRoomGrid());
 </script>
 </body>
 </html>
