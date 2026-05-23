@@ -219,7 +219,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
       <div class="card-icon">📋</div>
       <div class="card-head-text">
         <h2>Maswali ya Ziada</h2>
-        <p>Hatua 3 kati ya 3 (ya mwisho!)</p>F
+        <p>Hatua 3 kati ya 3 (ya mwisho!)</p>
       </div>
     </div>
     <div class="card-body">
@@ -385,7 +385,11 @@ function buildRoomGrid(){
 }
 
 function selectRoom(code,el,taken){
-  if(taken && !confirm(LANG==='sw'?'Chumba hiki kimeshasajiliwa. Unataka kubadilisha taarifa zake?':'Room already registered. Replace?')) return;
+  if(taken){
+    showToast(LANG==='sw'?'Chumba hiki tayari kimejazwa. Tafadhali chagua chumba kingine.':'This room has already been filled. Please choose another room.');
+    return;
+  }
+
   selectedRoom=code;
   document.getElementById('f-chumba').value=code;
   document.querySelectorAll('.c-pill').forEach(p=>p.classList.remove('selected'));
