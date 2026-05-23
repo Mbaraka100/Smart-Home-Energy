@@ -53,45 +53,23 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
 .sel-wrap::after{content:'▾';position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:16px;pointer-events:none}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .chumba-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.c-pill{
-  padding:13px 4px;border:2px solid var(--border);border-radius:var(--radius-sm);
-  text-align:center;font-size:13px;font-weight:700;color:var(--text-2);
-  cursor:pointer;transition:all 0.18s;user-select:none;background:#fff;
-}
+.c-pill{padding:13px 4px;border:2px solid var(--border);border-radius:var(--radius-sm);text-align:center;font-size:13px;font-weight:700;color:var(--text-2);cursor:pointer;transition:all 0.18s;user-select:none;background:#fff;}
 .c-pill:active{transform:scale(0.95)}
-.c-pill.taken{background:#e6f9ee;border-color:#00b84c;color:#008f3a}
+.c-pill.taken{background:#fff3f3;border-color:#fca5a5;color:#b91c1c}
 .c-pill.selected{background:var(--green);border-color:var(--green-dark);color:#fff;box-shadow:0 4px 12px rgba(0,184,76,0.3)}
 .kifaa-card{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;position:relative}
 .kifaa-num{position:absolute;top:-10px;left:14px;background:var(--green);color:#fff;font-size:11px;font-weight:700;padding:2px 10px;border-radius:50px}
 .kifaa-body{margin-top:8px}
 .del-btn{position:absolute;top:10px;right:12px;background:none;border:none;font-size:20px;color:var(--text-3);cursor:pointer;padding:4px;line-height:1}
 .del-btn:active{color:var(--danger)}
-.add-btn{
-  width:100%;padding:14px;background:none;
-  border:2px dashed var(--border);border-radius:var(--radius-sm);
-  font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;
-  color:var(--green);cursor:pointer;display:flex;align-items:center;justify-content:center;
-  gap:8px;margin-top:4px;transition:all 0.2s;
-}
+.add-btn{width:100%;padding:14px;background:none;border:2px dashed var(--border);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;color:var(--green);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;transition:all 0.2s;}
 .add-btn:active{background:var(--green-light)}
 .hint{background:var(--green-light);border-left:4px solid var(--green);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px}
 .hint p{font-size:12px;color:var(--green-dark);line-height:1.6}
 .hint strong{font-weight:700}
-.btn-primary{
-  width:100%;padding:16px;background:var(--green);
-  border:none;border-radius:var(--radius-sm);
-  font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;
-  color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  gap:10px;transition:all 0.2s;box-shadow:0 4px 16px rgba(0,184,76,0.35);
-}
+.btn-primary{width:100%;padding:16px;background:var(--green);border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;box-shadow:0 4px 16px rgba(0,184,76,0.35);}
 .btn-primary:active{transform:scale(0.98);background:var(--green-dark)}
-.btn-secondary{
-  width:100%;padding:15px;background:#fff;
-  border:2px solid var(--border);border-radius:var(--radius-sm);
-  font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;
-  color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;
-  gap:10px;transition:all 0.2s;margin-top:10px;
-}
+.btn-secondary{width:100%;padding:15px;background:#fff;border:2px solid var(--border);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;margin-top:10px;}
 .btn-secondary:active{background:var(--bg)}
 .btns{margin:14px 14px 0}
 .entries-wrap{margin:14px 14px 0}
@@ -104,12 +82,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
 .entry-kwh span{display:block;font-size:11px;font-weight:500;color:var(--text-3)}
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .tag{background:var(--green-light);color:var(--green-dark);font-size:11px;font-weight:600;padding:4px 10px;border-radius:50px}
-.toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
-  background:#1a2332;color:#fff;padding:14px 24px;border-radius:50px;
-  font-size:14px;font-weight:600;z-index:999;transition:transform 0.3s cubic-bezier(.4,0,.2,1);
-  white-space:nowrap;max-width:90vw;text-align:center;
-}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:#1a2332;color:#fff;padding:14px 24px;border-radius:50px;font-size:14px;font-weight:600;z-index:999;transition:transform 0.3s cubic-bezier(.4,0,.2,1);white-space:nowrap;max-width:90vw;text-align:center;}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.green{background:var(--green)}
 .steps{display:flex;align-items:center;justify-content:center;gap:0;margin:16px 14px 0;background:#fff;border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow-sm)}
@@ -124,11 +97,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
 .step-label{font-size:10px;font-weight:600;color:var(--text-3)}
 .step.active .step-label,.step.done .step-label{color:var(--green-dark)}
 .page{display:none}.page.active{display:block}
-.sync-status{font-size:11px;color:var(--text-3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--text-3);display:inline-block}
-.sync-dot.online{background:var(--green)}
-.sync-dot.loading{background:var(--warning);animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.time-lbl{font-size:10px;color:var(--text-3);margin-top:3px;display:block;text-align:center}
 </style>
 </head>
 <body>
@@ -147,7 +116,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
     <p>Jaza fomu hii kwa uaminifu. Taarifa zako zitatusaidia kuhesabu bili ya umeme kwa haki kwa kila chumba.</p>
     <div class="progress-wrap">
       <div class="progress-labels">
-        <span>Maendeleo / Progress</span>
+        <span>Maendeleo</span>
         <span id="prog-txt">0 / 16</span>
       </div>
       <div class="progress-outer"><div class="progress-inner" id="prog-bar"></div></div>
@@ -176,52 +145,49 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
       <div class="card-icon">👤</div>
       <div class="card-head-text">
         <h2>Taarifa za Mpangaji</h2>
-        <p>Hatua 1 kati ya 3</p>
+        <p>Hatua 1 kati ya 3 • Step 1 of 3</p>
       </div>
     </div>
     <div class="card-body">
       <div class="hint">
-        <p><strong>Habari!</strong> Fomu hii inachukua dakika 3–5 tu. Majibu yako ni ya siri.</p>
+        <p><strong>Habari!</strong> Fomu hii inachukua dakika 3–5 tu. Majibu yako ni ya siri na yatatumika kwa mradi wa utafiti wa nishati.</p>
       </div>
       <div class="field">
-        <label>Jina Kamili <span class="req">*</span></label>
-        <input type="text" id="f-jina" placeholder="Mfano: Amina Juma">
+        <label>Jina Kamili / Full Name <span class="req">*</span></label>
+        <input type="text" id="f-jina" placeholder="Mfano / e.g: Amina Juma" autocomplete="name">
       </div>
       <div class="field">
-        <label>Namba ya Simu <span class="sub">(hiari)</span></label>
+        <label>Namba ya Simu / Phone Number <span class="sub">(hiari / optional)</span></label>
         <input type="tel" id="f-simu" placeholder="+255 7XX XXX XXX">
       </div>
       <div class="field">
-        <label>Chagua Chumba Chako <span class="req">*</span></label>
-        <div class="sync-status" id="sync-status">
-          <span class="sync-dot loading" id="sync-dot"></span>
-          <span id="sync-txt">Inapakia taarifa za vyumba...</span>
-        </div>
+        <label>Chagua Chumba Chako / Select Your Room <span class="req">*</span></label>
+        <p style="font-size:12px;color:var(--text-3);margin-bottom:10px">Vyumba vilivyopigiwa rangi nyekundu vimeshasajiliwa</p>
         <div class="chumba-grid" id="chumba-grid"></div>
         <input type="hidden" id="f-chumba">
       </div>
       <div class="field">
-        <label>Tarehe ya Kuingia</label>
+        <label>Tarehe ya Kuingia / Move-in Date</label>
         <input type="date" id="f-tarehe">
       </div>
       <div class="field">
-        <label>Hali ya Chumba</label>
+        <label>Hali ya Chumba / Room Status</label>
         <div class="sel-wrap">
           <select id="f-hali">
-            <option value="AMEKAA">Ninaishi hapa</option>
-            <option value="MPYA">Mpya — niliingia wiki hii</option>
-            <option value="TUPU">Chumba kiko wazi</option>
+            <option value="AMEKAA">Ninaishi hapa / I live here</option>
+            <option value="MPYA">Mpya / New tenant (wiki hii)</option>
+            <option value="TUPU">Chumba wazi / Room is empty</option>
           </select>
         </div>
       </div>
       <div class="field">
-        <label>Watu Wanaoishi Nawe</label>
+        <label>Watu Wanaoishi Nawe / People Living With You</label>
         <div class="sel-wrap">
           <select id="f-watu">
-            <option value="0">Ninaishi peke yangu</option>
-            <option value="1">Mtu 1 wa ziada</option>
-            <option value="2">Watu 2 wa ziada</option>
-            <option value="3+">Watu 3+ wa ziada</option>
+            <option value="0">Ninaishi peke yangu / I live alone</option>
+            <option value="1">Mtu 1 wa ziada / 1 extra person</option>
+            <option value="2">Watu 2 wa ziada / 2 extra people</option>
+            <option value="3+">Watu 3+ wa ziada / 3+ extra people</option>
           </select>
         </div>
       </div>
@@ -229,7 +195,6 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
   </div>
   <div class="btns">
     <button class="btn-primary" onclick="goPage(2)">Endelea — Vifaa →</button>
-    <button class="btn-secondary" onclick="refreshRooms()">🔄 Sasisha Vyumba</button>
   </div>
 </div>
 
@@ -239,20 +204,20 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
       <div class="card-icon">🔌</div>
       <div class="card-head-text">
         <h2>Vifaa vya Umeme</h2>
-        <p>Hatua 2 kati ya 3</p>
+        <p>Hatua 2 kati ya 3 • Step 2 of 3</p>
       </div>
     </div>
     <div class="card-body">
       <div class="hint">
-        <p><strong>Muhimu:</strong> Orodhesha kila kifaa kilichopo chumbani. Watts itajaza yenyewe. Masaa ni wastani wa siku moja.</p>
+        <p><strong>Muhimu:</strong> Orodhesha kila kifaa kilichopo chumbani mwako. Watts itajaza yenyewe ukichagua kifaa. Weka Saa na Dakika za matumizi kwa siku.</p>
       </div>
       <div id="vifaa-wrap"></div>
-      <button class="add-btn" onclick="addKifaa()">＋ Ongeza Kifaa</button>
+      <button class="add-btn" onclick="addKifaa()">＋ Ongeza Kifaa / Add Appliance</button>
     </div>
   </div>
   <div class="btns">
     <button class="btn-primary" onclick="goPage(3)">Endelea — Maswali ya Mwisho →</button>
-    <button class="btn-secondary" onclick="goPage(1)">← Rudi Nyuma</button>
+    <button class="btn-secondary" onclick="goPage(1)">← Rudi Nyuma / Go Back</button>
   </div>
 </div>
 
@@ -267,174 +232,122 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
     </div>
     <div class="card-body">
       <div class="field">
-        <label>Saa nyumbani kwa siku</label>
+        <label>Saa nyumbani kwa siku / Hours at home per day</label>
         <div class="sel-wrap">
           <select id="f-saa">
-            <option value="4">Chini ya saa 4 (mostly outside)</option>
-            <option value="8" selected>Saa 4–8 (work daytime)</option>
-            <option value="12">Saa 8–12 (half day home)</option>
-            <option value="18">Zaidi ya saa 12 (mostly home)</option>
+            <option value="4">Chini ya saa 4 / Less than 4hrs</option>
+            <option value="8" selected>Saa 4–8 / 4–8hrs</option>
+            <option value="12">Saa 8–12 / 8–12hrs</option>
+            <option value="18">Zaidi ya saa 12 / 12+hrs</option>
           </select>
         </div>
       </div>
       <div class="field">
-        <label>Vifaa vingine <span class="sub">(hiari)</span></label>
+        <label>Vifaa vingine / Other appliances <span class="sub">(hiari)</span></label>
         <textarea id="f-vingine" placeholder="Mfano: Shaver, hair dryer..."></textarea>
       </div>
       <div class="field">
-        <label>Maelezo mengine <span class="sub">(hiari)</span></label>
+        <label>Maelezo mengine / Other comments <span class="sub">(hiari)</span></label>
         <textarea id="f-maelezo" placeholder="Chochote unachotaka tufahamu..."></textarea>
       </div>
     </div>
   </div>
   <div class="btns">
-    <button class="btn-primary" id="btn-submit" onclick="submitForm()">✓ Wasilisha Fomu</button>
-    <button class="btn-secondary" onclick="goPage(2)">← Rudi Nyuma</button>
+    <button class="btn-primary" onclick="submitForm()">✓ Wasilisha Fomu / Submit Form</button>
+    <button class="btn-secondary" onclick="goPage(2)">← Rudi Nyuma / Go Back</button>
   </div>
 </div>
 
 <div id="entries-section" style="display:none">
   <div class="entries-wrap">
-    <div class="entries-title">✅ Majibu Yaliyohifadhiwa &nbsp;— <span id="e-count">0</span> / 16</div>
+    <div class="entries-title">✅ Majibu Yaliyohifadhiwa — <span id="e-count">0</span> / 16</div>
     <div id="entries-list"></div>
+    <button class="btn-secondary" onclick="downloadCSV()" style="background:var(--green);color:#fff;border-color:var(--green);margin-top:4px">
+      ⬇ Pakua Data (CSV) / Download Data
+    </button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const VIFAA_LIST=[
-  {g:"💡 Taa",n:"Taa LED (9W bulb)",w:9},
-  {g:"💡 Taa",n:"Taa LED kubwa (15W)",w:15},
-  {g:"💡 Taa",n:"Taa LED Strip",w:20},
-  {g:"💡 Taa",n:"Taa ya kawaida / Incandescent",w:60},
-  {g:"💡 Taa",n:"Taa ya CFL / Florescent",w:23},
-  {g:"🍚 Kupikia",n:"Rice Cooker ndogo",w:400},
-  {g:"🍚 Kupikia",n:"Rice Cooker kati",w:700},
-  {g:"🍚 Kupikia",n:"Rice Cooker kubwa",w:1000},
-  {g:"🍚 Kupikia",n:"Jagi la Umeme / Kettle",w:1500},
-  {g:"🍚 Kupikia",n:"Microwave",w:800},
-  {g:"🍚 Kupikia",n:"Blender / Juicer",w:300},
-  {g:"🍚 Kupikia",n:"Toaster",w:800},
-  {g:"🍚 Kupikia",n:"Electric Cooker / Jiko kubwa",w:2000},
-  {g:"🍚 Kupikia",n:"Hot Plate / Kichomeo",w:1000},
-  {g:"🍚 Kupikia",n:"Air Fryer",w:1500},
-  {g:"🍚 Kupikia",n:"Coffee Maker",w:800},
-  {g:"❄️ Friji & Baridi",n:"Friji ndogo / Bar fridge",w:80},
-  {g:"❄️ Friji & Baridi",n:"Friji ya kati",w:150},
-  {g:"❄️ Friji & Baridi",n:"Friji kubwa",w:200},
-  {g:"❄️ Friji & Baridi",n:"Freezer",w:180},
-  {g:"❄️ Friji & Baridi",n:"AC 1HP",w:750},
-  {g:"❄️ Friji & Baridi",n:"AC 1.5HP",w:1200},
-  {g:"❄️ Friji & Baridi",n:"AC 2HP",w:1800},
-  {g:"❄️ Friji & Baridi",n:"Fan ya kawaida / Stand fan",w:40},
-  {g:"❄️ Friji & Baridi",n:"Fan ya dari / Ceiling fan",w:75},
-  {g:"❄️ Friji & Baridi",n:"Water Dispenser",w:500},
-  {g:"📺 TV & Burudani",n:"TV 24\"",w:60},
-  {g:"📺 TV & Burudani",n:"TV 32\"",w:80},
-  {g:"📺 TV & Burudani",n:"TV 43\"",w:120},
-  {g:"📺 TV & Burudani",n:"TV 55\"",w:150},
-  {g:"📺 TV & Burudani",n:"TV 65\"",w:200},
-  {g:"📺 TV & Burudani",n:"Decoder / Set-top Box",w:15},
-  {g:"📺 TV & Burudani",n:"Radio / Redio",w:5},
-  {g:"📺 TV & Burudani",n:"Woofer / Spika kubwa",w:50},
-  {g:"📺 TV & Burudani",n:"Gaming Console (PS/Xbox)",w:150},
-  {g:"📺 TV & Burudani",n:"Projector",w:300},
-  {g:"💻 Kompyuta & Simu",n:"Laptop",w:65},
-  {g:"💻 Kompyuta & Simu",n:"Desktop Computer",w:200},
-  {g:"💻 Kompyuta & Simu",n:"Monitor",w:30},
-  {g:"💻 Kompyuta & Simu",n:"Printer",w:50},
-  {g:"💻 Kompyuta & Simu",n:"Router / Modem (Wi-Fi)",w:10},
-  {g:"💻 Kompyuta & Simu",n:"Chaja ya Simu / Phone charger",w:10},
-  {g:"💻 Kompyuta & Simu",n:"Tablet (kuchaji)",w:20},
-  {g:"💻 Kompyuta & Simu",n:"Headphone Charging",w:5},
-  {g:"👗 Nguo & Usafi",n:"Pasi / Iron",w:1200},
-  {g:"👗 Nguo & Usafi",n:"Washing Machine",w:500},
-  {g:"👗 Nguo & Usafi",n:"Hair Dryer",w:1800},
-  {g:"👗 Nguo & Usafi",n:"Shaver / Trimmer",w:15},
-  {g:"👗 Nguo & Usafi",n:"Vacuum Cleaner",w:1000},
-  {g:"👗 Nguo & Usafi",n:"Hair Straightener",w:150},
-  {g:"🔧 Nyingine",n:"Water Pump / Pampu ya maji",w:500},
-  {g:"🔧 Nyingine",n:"Water Heater / Geyser",w:3000},
-  {g:"🔧 Nyingine",n:"Solar Inverter (charging)",w:200},
-  {g:"🔧 Nyingine",n:"UPS / Battery backup",w:100},
-  {g:"🔧 Nyingine",n:"Kingine / Other",w:0},
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbzF0lyhtDdvMCrV_zDgH_wzzO-sa98H1Wm7ZWjzDiOhy7kKpYNskt4m3cEnnide_AwY/exec";
+
+const VIFAA_LIST = [
+  {g:"💡 Taa",n:"Taa LED (9W)",w:9},{g:"💡 Taa",n:"Taa LED kubwa (15W)",w:15},
+  {g:"💡 Taa",n:"Taa LED Strip",w:20},{g:"💡 Taa",n:"Taa ya kawaida / Incandescent",w:60},
+  {g:"💡 Taa",n:"Taa ya CFL / Florescent",w:23},{g:"💡 Taa",n:"Solar Lamp",w:5},
+  {g:"💡 Taa",n:"Torch ya Umeme",w:3},{g:"💡 Taa",n:"Night Light",w:2},
+  {g:"🍚 Kupikia",n:"Rice Cooker ndogo",w:400},{g:"🍚 Kupikia",n:"Rice Cooker kati",w:700},
+  {g:"🍚 Kupikia",n:"Rice Cooker kubwa",w:1000},{g:"🍚 Kupikia",n:"Jagi la Umeme / Kettle",w:1500},
+  {g:"🍚 Kupikia",n:"Microwave",w:800},{g:"🍚 Kupikia",n:"Blender / Juicer",w:300},
+  {g:"🍚 Kupikia",n:"Toaster",w:800},{g:"🍚 Kupikia",n:"Electric Cooker / Jiko",w:2000},
+  {g:"🍚 Kupikia",n:"Hot Plate / Kichomeo",w:1000},{g:"🍚 Kupikia",n:"Air Fryer",w:1500},
+  {g:"🍚 Kupikia",n:"Sufuria ya Umeme",w:1200},{g:"🍚 Kupikia",n:"Coffee Maker",w:800},
+  {g:"🍚 Kupikia",n:"Electric Grill",w:1800},{g:"🍚 Kupikia",n:"Popcorn Maker",w:1200},
+  {g:"🍚 Kupikia",n:"Yoghurt Maker",w:15},{g:"🍚 Kupikia",n:"Electric Wok",w:1800},
+  {g:"❄️ Friji & Baridi",n:"Friji ndogo / Bar fridge",w:80},{g:"❄️ Friji & Baridi",n:"Friji ya kati",w:150},
+  {g:"❄️ Friji & Baridi",n:"Friji kubwa",w:200},{g:"❄️ Friji & Baridi",n:"Freezer",w:180},
+  {g:"❄️ Friji & Baridi",n:"AC 1HP / Kipoza Hewa",w:750},{g:"❄️ Friji & Baridi",n:"AC 1.5HP",w:1200},
+  {g:"❄️ Friji & Baridi",n:"AC 2HP",w:1800},{g:"❄️ Friji & Baridi",n:"Fan ya kawaida",w:40},
+  {g:"❄️ Friji & Baridi",n:"Fan ya dari / Ceiling fan",w:75},{g:"❄️ Friji & Baridi",n:"Mini Cooler",w:60},
+  {g:"❄️ Friji & Baridi",n:"Water Dispenser",w:500},{g:"❄️ Friji & Baridi",n:"Ice Maker",w:150},
+  {g:"📺 TV & Burudani",n:"TV 24\"",w:60},{g:"📺 TV & Burudani",n:"TV 32\"",w:80},
+  {g:"📺 TV & Burudani",n:"TV 43\"",w:120},{g:"📺 TV & Burudani",n:"TV 55\"",w:150},
+  {g:"📺 TV & Burudani",n:"TV 65\"",w:200},{g:"📺 TV & Burudani",n:"Decoder / Set-top Box",w:15},
+  {g:"📺 TV & Burudani",n:"Radio / Redio",w:5},{g:"📺 TV & Burudani",n:"Woofer / Spika kubwa",w:50},
+  {g:"📺 TV & Burudani",n:"DVD / Blu-ray Player",w:25},{g:"📺 TV & Burudani",n:"Deki ya Muziki",w:30},
+  {g:"📺 TV & Burudani",n:"Gaming Console (PS/Xbox)",w:150},{g:"📺 TV & Burudani",n:"Projector",w:300},
+  {g:"📺 TV & Burudani",n:"Smart Speaker",w:15},{g:"📺 TV & Burudani",n:"Headphone Charging",w:5},
+  {g:"💻 Kompyuta & Simu",n:"Laptop",w:65},{g:"💻 Kompyuta & Simu",n:"Desktop Computer",w:200},
+  {g:"💻 Kompyuta & Simu",n:"Monitor",w:30},{g:"💻 Kompyuta & Simu",n:"Printer",w:50},
+  {g:"💻 Kompyuta & Simu",n:"Router / Modem (Wi-Fi)",w:10},{g:"💻 Kompyuta & Simu",n:"Chaja ya Simu",w:10},
+  {g:"💻 Kompyuta & Simu",n:"Tablet (charging)",w:20},{g:"💻 Kompyuta & Simu",n:"Scanner",w:15},
+  {g:"💻 Kompyuta & Simu",n:"External HDD",w:10},{g:"💻 Kompyuta & Simu",n:"Smart Watch",w:5},
+  {g:"💻 Kompyuta & Simu",n:"CCTV Camera",w:15},{g:"💻 Kompyuta & Simu",n:"Ethernet Switch",w:8},
+  {g:"👗 Nguo & Usafi",n:"Pasi / Iron",w:1200},{g:"👗 Nguo & Usafi",n:"Washing Machine",w:500},
+  {g:"👗 Nguo & Usafi",n:"Hair Dryer",w:1800},{g:"👗 Nguo & Usafi",n:"Shaver / Trimmer",w:15},
+  {g:"👗 Nguo & Usafi",n:"Vacuum Cleaner",w:1000},{g:"👗 Nguo & Usafi",n:"Hair Straightener",w:150},
+  {g:"👗 Nguo & Usafi",n:"Hair Curler",w:100},{g:"👗 Nguo & Usafi",n:"Clothes Dryer",w:3000},
+  {g:"👗 Nguo & Usafi",n:"Steam Iron",w:2000},{g:"👗 Nguo & Usafi",n:"Sewing Machine",w:100},
+  {g:"🔧 Nyingine",n:"Water Pump / Pampu",w:500},{g:"🔧 Nyingine",n:"Water Heater / Geyser",w:3000},
+  {g:"🔧 Nyingine",n:"Solar Inverter",w:200},{g:"🔧 Nyingine",n:"UPS / Battery backup",w:100},
+  {g:"🔧 Nyingine",n:"Treadmill",w:1500},{g:"🔧 Nyingine",n:"Electric Blanket",w:200},
+  {g:"🔧 Nyingine",n:"Aquarium Pump",w:30},{g:"🔧 Nyingine",n:"Baby Monitor",w:5},
+  {g:"🔧 Nyingine",n:"Medical Equipment",w:50},{g:"🔧 Nyingine",n:"Kingine / Other",w:0},
 ];
 
 const GROUPS=[...new Set(VIFAA_LIST.map(v=>v.g))];
-function buildOpts(){
-  return GROUPS.map(g=>`<optgroup label="${g}">`+
-    VIFAA_LIST.filter(v=>v.g===g).map(v=>
-      `<option value="${v.n}" data-w="${v.w}">${v.n} — ${v.w}W</option>`
-    ).join('')+`</optgroup>`).join('');
-}
+function buildOpts(){return GROUPS.map(g=>`<optgroup label="${g}">`+VIFAA_LIST.filter(v=>v.g===g).map(v=>`<option value="${v.n}" data-w="${v.w}">${v.n} — ${v.w}W</option>`).join('')+`</optgroup>`).join('');}
 const OPTS=buildOpts();
 
 let LANG='sw';
-function setLang(l){
-  LANG=l;
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent.includes(l==='sw'?'Kiswahili':'English')));
-}
+function setLang(l){LANG=l;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent.includes(l==='sw'?'Kiswahili':'English')));}
 
 let entries=[],selectedRoom='',kifaaCount=0;
-let filledRoomsCache=[];
-
-const SHEET_URL="https://script.google.com/macros/s/AKfycbzF0lyhtDdvMCrV_zDgH_wzzO-sa98H1Wm7ZWjzDiOhy7kKpYNskt4m3cEnnide_AwY/exec";
-
-async function fetchFilledRooms(){
-  const dot=document.getElementById('sync-dot');
-  const txt=document.getElementById('sync-txt');
-  dot.className='sync-dot loading';
-  txt.textContent='Inapakia taarifa za vyumba...';
-  try{
-    const res=await fetch(SHEET_URL+'?action=rooms');
-    const rooms=await res.json();
-    filledRoomsCache=Array.isArray(rooms)?rooms:[];
-    dot.className='sync-dot online';
-    txt.textContent='Imeunganika — vyumba vinaonyeshwa kutoka Sheet';
-    return filledRoomsCache;
-  }catch(e){
-    dot.className='sync-dot';
-    txt.textContent='Hakuna mtandao — inaonyesha hali ya mwisho';
-    return filledRoomsCache;
-  }
-}
-
-async function refreshRooms(){
-  await fetchFilledRooms();
-  buildRoomGrid();
-  showToast('🔄 Vyumba vimesasishwa!',true);
-}
 
 function buildRoomGrid(){
-  const g=document.getElementById('chumba-grid');
-  g.innerHTML='';
-  const filled=filledRoomsCache;
-  const total=filled.length;
-  document.getElementById('prog-bar').style.width=(total/16*100)+'%';
-  document.getElementById('prog-txt').textContent=total+' / 16';
+  const g=document.getElementById('chumba-grid');g.innerHTML='';
   for(let i=1;i<=16;i++){
     const code='C'+String(i).padStart(2,'0');
-    const taken=filled.includes(code);
+    const taken=entries.some(e=>e.chumba===code);
     const div=document.createElement('div');
     div.className='c-pill'+(taken?' taken':'')+(selectedRoom===code?' selected':'');
-    div.innerHTML=taken?`${code}<br><span style="font-size:9px">✅</span>`:code;
+    div.textContent=code;
     div.onclick=()=>selectRoom(code,div,taken);
     g.appendChild(div);
   }
 }
 
 function selectRoom(code,el,taken){
-  if(taken&&!confirm('Chumba hiki kimeshasajiliwa kwenye Sheet. Unataka kubadilisha taarifa zake?')) return;
-  selectedRoom=code;
-  document.getElementById('f-chumba').value=code;
+  if(taken&&!confirm(LANG==='sw'?'Chumba hiki kimeshasajiliwa. Badilisha?':'Room already registered. Replace?'))return;
+  selectedRoom=code;document.getElementById('f-chumba').value=code;
   document.querySelectorAll('.c-pill').forEach(p=>p.classList.remove('selected'));
   el.classList.add('selected');
 }
 
 function addKifaa(){
-  kifaaCount++;
-  const id=kifaaCount;
+  kifaaCount++;const id=kifaaCount;
   const div=document.createElement('div');
   div.className='kifaa-card';div.id='kc-'+id;
   div.innerHTML=`
@@ -442,30 +355,39 @@ function addKifaa(){
     <button class="del-btn" onclick="delKifaa(${id})">✕</button>
     <div class="kifaa-body">
       <div class="field">
-        <label>Jina la Kifaa <span class="req">*</span></label>
+        <label>Jina la Kifaa / Appliance <span class="req">*</span></label>
         <div class="sel-wrap">
           <select id="kn-${id}" onchange="autoW(${id})">
-            <option value="">-- Chagua Kifaa --</option>${OPTS}
+            <option value="">-- Chagua / Select --</option>${OPTS}
           </select>
         </div>
       </div>
       <div class="row2">
         <div class="field">
-          <label>Nguvu (Watts)</label>
+          <label>Nguvu / Power (Watts)</label>
           <input type="number" id="kw-${id}" placeholder="Watts" min="0">
         </div>
         <div class="field">
-          <label>Idadi</label>
+          <label>Idadi / Qty</label>
           <input type="number" id="ki-${id}" placeholder="1" min="1" value="1">
         </div>
       </div>
       <div class="row2">
         <div class="field">
-          <label>Masaa/Siku</label>
-          <input type="number" id="kh-${id}" placeholder="Mfano: 4" min="0" max="24" step="0.5">
+          <label>Muda wa Matumizi / Usage Time (kwa siku)</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div>
+              <input type="number" id="kh-${id}" placeholder="0" min="0" max="24" style="margin:0">
+              <span class="time-lbl">Saa / Hours</span>
+            </div>
+            <div>
+              <input type="number" id="km-${id}" placeholder="0" min="0" max="59" style="margin:0">
+              <span class="time-lbl">Dakika / Minutes</span>
+            </div>
+          </div>
         </div>
         <div class="field">
-          <label>Siku/Mwezi</label>
+          <label>Siku/Mwezi / Days/Month</label>
           <input type="number" id="ks-${id}" placeholder="30" min="1" max="31" value="30">
         </div>
       </div>
@@ -474,25 +396,22 @@ function addKifaa(){
   div.scrollIntoView({behavior:'smooth',block:'center'});
 }
 
-function autoW(id){
-  const sel=document.getElementById('kn-'+id);
-  const w=sel.options[sel.selectedIndex]?.getAttribute('data-w');
-  if(w&&w!=='0') document.getElementById('kw-'+id).value=w;
-}
-
+function autoW(id){const sel=document.getElementById('kn-'+id);const w=sel.options[sel.selectedIndex]?.getAttribute('data-w');if(w&&w!=='0')document.getElementById('kw-'+id).value=w;}
 function delKifaa(id){document.getElementById('kc-'+id)?.remove();}
 
 function collectVifaa(){
   const v=[];
   for(let i=1;i<=kifaaCount;i++){
-    if(!document.getElementById('kc-'+i)) continue;
+    if(!document.getElementById('kc-'+i))continue;
     const n=document.getElementById('kn-'+i)?.value?.trim();
-    if(!n) continue;
+    if(!n)continue;
+    const saa=parseFloat(document.getElementById('kh-'+i)?.value)||0;
+    const dak=parseFloat(document.getElementById('km-'+i)?.value)||0;
     v.push({
       jina:n,
       watts:parseFloat(document.getElementById('kw-'+i)?.value)||0,
       idadi:parseInt(document.getElementById('ki-'+i)?.value)||1,
-      hrs:parseFloat(document.getElementById('kh-'+i)?.value)||0,
+      hrs:saa+(dak/60),
       siku:parseInt(document.getElementById('ks-'+i)?.value)||30,
     });
   }
@@ -503,20 +422,13 @@ function goPage(n){
   if(n===2){
     const jina=document.getElementById('f-jina').value.trim();
     const chumba=document.getElementById('f-chumba').value;
-    if(!jina){showToast('Tafadhali weka jina lako');return;}
-    if(!chumba){showToast('Tafadhali chagua chumba');return;}
-    if(!document.getElementById('vifaa-wrap').children.length) addKifaa();
+    if(!jina){showToast('Tafadhali weka jina lako / Please enter your name');return;}
+    if(!chumba){showToast('Tafadhali chagua chumba / Please select a room');return;}
+    if(!document.getElementById('vifaa-wrap').children.length)addKifaa();
   }
-  if(n===3){
-    const v=collectVifaa();
-    if(!v.length){showToast('Ongeza angalau kifaa kimoja');return;}
-  }
+  if(n===3){const v=collectVifaa();if(!v.length){showToast('Ongeza angalau kifaa kimoja / Add at least one appliance');return;}}
   document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i===n-1));
-  ['step1','step2','step3'].forEach((s,i)=>{
-    const el=document.getElementById(s);
-    el.classList.toggle('active',i===n-1);
-    el.classList.toggle('done',i<n-1);
-  });
+  ['step1','step2','step3'].forEach((s,i)=>{const el=document.getElementById(s);el.classList.toggle('active',i===n-1);el.classList.toggle('done',i<n-1);});
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -527,69 +439,17 @@ async function submitForm(){
   if(!chumba){showToast('Tafadhali chagua chumba');return;}
   const vifaa=collectVifaa();
   if(!vifaa.length){showToast('Ongeza angalau kifaa kimoja');return;}
-
-  const taarifa={
-    jina,chumba,
-    simu:document.getElementById('f-simu').value||'',
-    tarehe:document.getElementById('f-tarehe').value||'',
-    hali:document.getElementById('f-hali').value,
-    watu:document.getElementById('f-watu').value,
-    saa:document.getElementById('f-saa').value,
-    vingine:document.getElementById('f-vingine').value||'',
-    maelezo:document.getElementById('f-maelezo').value||'',
-  };
-
-  const btn=document.getElementById('btn-submit');
-  btn.innerHTML='⏳ Inatuma...';
-  btn.disabled=true;
-
+  const entry={jina,chumba,simu:document.getElementById('f-simu').value,tarehe:document.getElementById('f-tarehe').value,hali:document.getElementById('f-hali').value,watu:document.getElementById('f-watu').value,saa:document.getElementById('f-saa').value,vingine:document.getElementById('f-vingine').value,maelezo:document.getElementById('f-maelezo').value,vifaa,wakati:new Date().toISOString(),aina:"SENSA"};
+  const btn=document.querySelector('#page3 .btn-primary');
+  const origText=btn.innerHTML;btn.innerHTML='⏳ Inatuma...';btn.disabled=true;
   try{
-    for(let i=0;i<vifaa.length;i++){
-      const v=vifaa[i];
-      const kwh=(v.watts*v.idadi*v.hrs*v.siku/1000).toFixed(3);
-      const row={
-        aina:'SENSA',
-        jina:taarifa.jina,
-        chumba:taarifa.chumba,
-        simu:taarifa.simu,
-        tarehe:taarifa.tarehe,
-        hali:taarifa.hali,
-        watu:taarifa.watu,
-        saa:taarifa.saa,
-        vingine:taarifa.vingine,
-        maelezo:taarifa.maelezo,
-        kifaa:v.jina,
-        idadi:v.idadi,
-        watts:v.watts,
-        masaa_siku:v.hrs,
-        siku_mwezi:v.siku,
-        kwh_mwezi:kwh,
-        wakati:new Date().toISOString()
-      };
-      await fetch(SHEET_URL,{
-        method:'POST',
-        mode:'no-cors',
-        headers:{'Content-Type':'text/plain'},
-        body:JSON.stringify(row)
-      });
-    }
-
-    if(!filledRoomsCache.includes(chumba)) filledRoomsCache.push(chumba);
+    await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
     const idx=entries.findIndex(e=>e.chumba===chumba);
-    const entry={...taarifa,vifaa};
-    if(idx>=0) entries[idx]=entry; else entries.push(entry);
-
-    renderEntries();
-    clearForm();
-    goPage(1);
-    showToast(`✅ ${chumba} — ${jina} imetumwa! (Vifaa ${vifaa.length})`,true);
-    setTimeout(()=>fetchFilledRooms().then(()=>buildRoomGrid()),3000);
-
-  }catch(err){
-    showToast('❌ Tatizo la mtandao. Jaribu tena.');
-  }
-  btn.innerHTML='✓ Wasilisha Fomu';
-  btn.disabled=false;
+    if(idx>=0)entries[idx]=entry;else entries.push(entry);
+    renderEntries();clearForm();goPage(1);
+    showToast(`✅ ${chumba} — ${jina} imetumwa Google Sheets!`,true);
+  }catch(err){showToast('❌ Tatizo la mtandao. Hakikisha una internet.');}
+  finally{btn.innerHTML=origText;btn.disabled=false;}
 }
 
 function clearForm(){
@@ -599,38 +459,37 @@ function clearForm(){
   document.getElementById('f-watu').value='0';
   document.getElementById('f-saa').value='8';
   document.getElementById('f-chumba').value='';
-  selectedRoom='';
-  document.getElementById('vifaa-wrap').innerHTML='';
-  kifaaCount=0;
-  buildRoomGrid();
+  selectedRoom='';document.getElementById('vifaa-wrap').innerHTML='';kifaaCount=0;buildRoomGrid();
 }
 
 function renderEntries(){
   const sec=document.getElementById('entries-section');
   if(!entries.length){sec.style.display='none';return;}
   sec.style.display='block';
-  document.getElementById('e-count').textContent=filledRoomsCache.length;
+  const pct=Math.round(entries.length/16*100);
+  document.getElementById('prog-bar').style.width=pct+'%';
+  document.getElementById('prog-txt').textContent=`${entries.length} / 16`;
+  document.getElementById('e-count').textContent=entries.length;
   document.getElementById('entries-list').innerHTML=entries.map(e=>{
     const kwh=e.vifaa.reduce((s,v)=>s+(v.watts*v.idadi*v.hrs*v.siku/1000),0);
-    return `<div class="entry-card">
-      <div class="entry-top">
-        <div><div class="entry-name">${e.jina}</div><div class="entry-room">${e.chumba} · ${e.hali}</div></div>
-        <div class="entry-kwh">${kwh.toFixed(1)}<span>kWh/mwezi</span></div>
-      </div>
-      <div class="tags">${e.vifaa.map(v=>`<span class="tag">${v.jina.split('/')[0].trim()} ×${v.idadi}</span>`).join('')}</div>
-    </div>`;
+    return `<div class="entry-card"><div class="entry-top"><div><div class="entry-name">${e.jina}</div><div class="entry-room">${e.chumba} · ${e.hali}</div></div><div class="entry-kwh">${kwh.toFixed(1)}<span>kWh/mwezi</span></div></div><div class="tags">${e.vifaa.map(v=>`<span class="tag">${v.jina.split('/')[0].trim()} ×${v.idadi}</span>`).join('')}</div></div>`;
   }).join('');
 }
 
-function showToast(msg,green=false){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.className='toast'+(green?' green':'');
-  setTimeout(()=>t.classList.add('show'),10);
-  setTimeout(()=>t.classList.remove('show'),3500);
+function downloadCSV(){
+  if(!entries.length){showToast('Hakuna data bado');return;}
+  const rows=[['Chumba','Jina','Simu','Tarehe','Hali','Watu','Saa/Siku','Kifaa','Idadi','Watts','Masaa/Siku','Siku/Mwezi','kWh/Mwezi','Vingine','Maelezo','Wakati']];
+  entries.forEach(e=>{e.vifaa.forEach(v=>{const kwh=(v.watts*v.idadi*v.hrs*v.siku/1000).toFixed(3);rows.push([e.chumba,e.jina,e.simu,e.tarehe,e.hali,e.watu,e.saa,v.jina,v.idadi,v.watts,v.hrs.toFixed(2),v.siku,kwh,e.vingine,e.maelezo,e.wakati]);});});
+  const csv=rows.map(r=>r.map(x=>`"${String(x||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='sensa_ya_vifaa_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
 
-fetchFilledRooms().then(()=>buildRoomGrid());
+function showToast(msg,green=false){
+  const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(green?' green':'');
+  setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+buildRoomGrid();
 </script>
 </body>
 </html>
