@@ -15,16 +15,17 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4ff;color:#202124}
 .stat .n{font-size:1.3rem;font-weight:700;color:#1a73e8}
 .stat .l{font-size:0.65rem;color:#5f6368;margin-top:2px}
 .card{background:white;border-radius:16px;margin:12px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
-.card-title{font-size:1rem;font-weight:700;color:#1557b0;margin-bottom:14px}
+.card-title{font-size:1rem;font-weight:700;color:#1557b0;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 label{display:block;font-size:0.8rem;font-weight:600;color:#5f6368;margin:12px 0 5px}
 input,select,textarea{width:100%;padding:12px;border:2px solid #dadce0;border-radius:10px;font-size:1rem;background:#f8f9fa;outline:none}
-input:focus,select:focus,textarea:focus{border-color:#1a73e8;background:white}
+input:focus,select:focus{border-color:#1a73e8;background:white}
 .wakati-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .wbtn{padding:14px;border:2px solid #dadce0;border-radius:12px;text-align:center;cursor:pointer;background:#f8f9fa;transition:all 0.2s;user-select:none}
 .wbtn.active{border-color:#1a73e8;background:#e8f0fe;color:#1557b0;font-weight:700}
 .wbtn .icon{font-size:1.5rem;display:block;margin-bottom:4px}
 .wbtn .txt{font-size:0.85rem;font-weight:600}
 .wbtn .sub{font-size:0.7rem;color:#5f6368}
+.wbtn.active .sub{color:#1a73e8}
 .hewa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .hbtn{padding:10px 4px;border:2px solid #dadce0;border-radius:10px;text-align:center;cursor:pointer;background:#f8f9fa;font-size:0.75rem;transition:all 0.2s;user-select:none}
 .hbtn .icon{font-size:1.4rem;display:block;margin-bottom:3px}
@@ -44,42 +45,81 @@ input:focus,select:focus,textarea:focus{border-color:#1a73e8;background:white}
 .usection.show{display:block}
 .btn-sub{width:100%;padding:16px;background:linear-gradient(135deg,#1a73e8,#0d47a1);color:white;border:none;border-radius:14px;font-size:1.05rem;font-weight:700;cursor:pointer;margin-top:8px}
 .btn-sub:disabled{opacity:0.5}
-.ritem{border:1px solid #dadce0;border-radius:10px;padding:12px;margin-bottom:8px;background:#f8f9fa;font-size:0.82rem}
-.rtop{display:flex;justify-content:space-between;margin-bottom:4px}
+.ritem{border:1px solid #dadce0;border-radius:12px;padding:14px;margin-bottom:10px;background:#f8f9fa;font-size:0.82rem;position:relative}
+.rtop{display:flex;justify-content:space-between;margin-bottom:6px}
 .rdate{font-weight:700;color:#1557b0}
+.rbadge{font-size:0.7rem;padding:3px 8px;border-radius:50px;background:#e8f0fe;color:#1557b0;font-weight:600}
+.rdata{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.rditem{background:white;border-radius:8px;padding:8px;text-align:center;border:1px solid #e8eaf6}
+.rditem .rv{font-size:1rem;font-weight:700;color:#1557b0}
+.rditem .rl{font-size:0.65rem;color:#5f6368;margin-top:2px}
+.rbtns{display:flex;gap:8px;margin-top:10px}
+.rbtn{flex:1;padding:8px;border:none;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer}
+.rbtn-edit{background:#e8f0fe;color:#1557b0}
+.rbtn-del{background:#fce8e6;color:#c5221f}
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-end}
+.modal-bg.show{display:flex}
+.modal{background:white;border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:1rem;font-weight:700;color:#1557b0;margin-bottom:16px;text-align:center}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.mbtn{padding:14px;border:none;border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer}
+.mbtn-save{background:linear-gradient(135deg,#1a73e8,#0d47a1);color:white}
+.mbtn-cancel{background:#f1f3f4;color:#5f6368}
+.notif-banner{display:none;margin:12px;padding:14px 16px;border-radius:12px;font-size:0.85rem;font-weight:600;align-items:center;gap:10px}
+.notif-banner.show{display:flex}
+.nb-asubuhi{background:#fff8e1;border:2px solid #fbbc04;color:#795000}
+.nb-jioni{background:#e8f0fe;border:2px solid #1a73e8;color:#1557b0}
+.nb-missed{background:#fce8e6;border:2px solid #ea4335;color:#c5221f}
 .empty{text-align:center;padding:24px;color:#5f6368;font-size:0.85rem}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#202124;color:white;padding:12px 24px;border-radius:24px;font-size:0.9rem;font-weight:600;transition:transform 0.3s;z-index:9999;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
+.loading{text-align:center;padding:20px;color:#5f6368;font-size:0.85rem}
+.tab-btns{display:flex;gap:0;margin:12px;border-radius:12px;overflow:hidden;border:2px solid #dadce0}
+.tab-btn{flex:1;padding:12px;border:none;background:#f8f9fa;font-size:0.85rem;font-weight:600;cursor:pointer;color:#5f6368}
+.tab-btn.active{background:#1a73e8;color:white}
+.tab-content{display:none}.tab-content.active{display:block}
 </style>
 </head>
 <body>
+
 <div class="header">
   <h1>⚡ Rekodi ya Mita ya LUKU</h1>
-  <p>Smart Home Energy Project — Nyumba ya Vyumba 16</p>
+  <p>Smart Home Energy Project — Vyumba 16</p>
 </div>
+
 <div class="stats">
   <div class="stat"><div class="n" id="sSalio">—</div><div class="l">Salio (Units)</div></div>
   <div class="stat"><div class="n" id="sRekodi">0</div><div class="l">Rekodi Zote</div></div>
   <div class="stat"><div class="n" id="sWastani">—</div><div class="l">Wastani/Siku</div></div>
   <div class="stat"><div class="n" id="sSiku">0/60</div><div class="l">Siku/Lengo</div></div>
 </div>
+
+<div class="notif-banner" id="notifBanner"></div>
+
+<div class="tab-btns">
+  <button class="tab-btn active" onclick="setTab('jaza')">📝 Jaza Rekodi</button>
+  <button class="tab-btn" onclick="setTab('rekodi')">📋 Rekodi Zote</button>
+</div>
+
+<div class="tab-content active" id="tab-jaza">
 <div class="card">
   <div class="card-title">🕐 Wakati wa Kusoma Mita</div>
   <div class="wakati-grid">
-    <div class="wbtn active" id="bAsubuhi" onclick="setWakati('Asubuhi')">
+    <div class="wbtn" id="bAsubuhi" onclick="setWakati('Asubuhi')">
       <span class="icon">🌅</span>
       <span class="txt">Asubuhi</span>
-      <span class="sub">Saa 12 asubuhi</span>
+      <span class="sub">Saa 3 asubuhi (6:00 AM)</span>
     </div>
     <div class="wbtn" id="bJioni" onclick="setWakati('Jioni')">
       <span class="icon">🌆</span>
       <span class="txt">Jioni</span>
-      <span class="sub">Saa 12 jioni</span>
+      <span class="sub">Saa 3 jioni (9:00 PM)</span>
     </div>
   </div>
   <label>📅 Tarehe</label>
   <input type="date" id="tarehe">
 </div>
+
 <div class="card">
   <div class="card-title">📟 Salio la Mita</div>
   <label>Salio Jipya (Units) — Soma kutoka mita yako</label>
@@ -90,9 +130,10 @@ input:focus,select:focus,textarea:focus{border-color:#1a73e8;background:white}
     <div class="mrow"><span class="lbl">⚡ Matumizi:</span><span class="val" id="mMat" style="color:#ea4335">—</span></div>
     <div class="mrow"><span class="lbl">💰 Gharama:</span><span class="val" id="mGhar" style="color:#34a853">—</span></div>
   </div>
-  <div class="alert ay" id="alertY" style="display:none">⚠️ Salio chini ya Units 30. Pakia LUKU hivi karibuni!</div>
-  <div class="alert ar" id="alertR" style="display:none">🚨 DHARURA! Salio chini ya Units 10. Pakia LUKU SASA!</div>
+  <div class="alert ay" id="alertY">⚠️ Salio chini ya Units 30. Pakia LUKU hivi karibuni!</div>
+  <div class="alert ar" id="alertR">🚨 DHARURA! Salio chini ya Units 10. Pakia LUKU SASA!</div>
 </div>
+
 <div class="card">
   <div class="card-title">☁️ Hali ya Hewa</div>
   <div class="hewa-grid">
@@ -102,10 +143,11 @@ input:focus,select:focus,textarea:focus{border-color:#1a73e8;background:white}
     <div class="hbtn" id="hDhoruba" onclick="setHewa('🌩 Dhoruba','hDhoruba')"><span class="icon">🌩</span>Dhoruba</div>
   </div>
 </div>
+
 <div class="card">
   <div class="card-title">📝 Maelezo Maalum <span style="font-weight:400;font-size:0.8rem;color:#5f6368">(hiari)</span></div>
   <div class="mgrid">
-    <div class="mitem" id="mLuku" onclick="toggleM(this,'💳 LUKU ilipakiwa'); toggleU()">💳 LUKU ilipakiwa</div>
+    <div class="mitem" id="mLuku" onclick="toggleM(this,'💳 LUKU ilipakiwa');toggleU()">💳 LUKU ilipakiwa</div>
     <div class="mitem" id="mIliisha" onclick="toggleM(this,'⚠️ LUKU iliisha')">⚠️ LUKU iliisha</div>
     <div class="mitem" id="mKukatika" onclick="toggleM(this,'⚡ Umeme ulikatika')">⚡ Umeme ulikatika</div>
     <div class="mitem" id="mWageni" onclick="toggleM(this,'👥 Wageni walikuwepo')">👥 Wageni walikuwepo</div>
@@ -119,36 +161,307 @@ input:focus,select:focus,textarea:focus{border-color:#1a73e8;background:white}
   <label>Maelezo ya ziada (hiari)</label>
   <textarea id="maelezoZaidi" rows="2" placeholder="Andika hapa..." style="resize:none"></textarea>
 </div>
+
 <div style="margin:0 12px 24px">
   <button class="btn-sub" id="btnSub" onclick="wasilisha()">✓ Hifadhi Rekodi</button>
 </div>
-<div class="card" style="margin-bottom:24px">
-  <div class="card-title">📋 Rekodi za Leo</div>
-  <div id="rekodiList"><div class="empty">Bado hakuna rekodi — jaza hapo juu!</div></div>
 </div>
+
+<div class="tab-content" id="tab-rekodi">
+  <div style="margin:12px">
+    <div id="rekodiList"><div class="loading">⏳ Inapakia rekodi kutoka Sheets...</div></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-title">✏️ Hariri Rekodi</div>
+    <input type="hidden" id="editTimestamp">
+    <label>📅 Tarehe</label>
+    <input type="date" id="editTarehe">
+    <label>🕐 Wakati</label>
+    <select id="editWakati">
+      <option value="Asubuhi">🌅 Asubuhi (Saa 3 asubuhi)</option>
+      <option value="Jioni">🌆 Jioni (Saa 3 jioni)</option>
+    </select>
+    <label>📟 Salio Jipya (Units)</label>
+    <input type="number" id="editSalio" step="0.1" placeholder="Mfano: 245.6">
+    <label>☁️ Hali ya Hewa</label>
+    <select id="editHewa">
+      <option value="☀️ Jua">☀️ Jua</option>
+      <option value="🌤 Mawingu">🌤 Mawingu</option>
+      <option value="🌧 Mvua">🌧 Mvua</option>
+      <option value="🌩 Dhoruba">🌩 Dhoruba</option>
+    </select>
+    <label>📝 Maelezo Maalum</label>
+    <textarea id="editMaelezo" rows="2" style="resize:none"></textarea>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="closeModal()">✕ Ghairi</button>
+      <button class="mbtn mbtn-save" onclick="saveEdit()">💾 Hifadhi</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
+
 <script>
-const SHEETS_URL = "https://script.google.com/macros/s/AKfycbzF0lyhtDdvMCrV_zDgH_wzzO-sa98H1Wm7ZWjzDiOhy7kKpYNskt4m3cEnnide_AwY/exec";
-const BEI = 292;
-let wakati="Asubuhi",hewa="☀️ Jua",maelezo=[],rekodi=[],salioAwali=null;
-try{rekodi=JSON.parse(localStorage.getItem("luku_v2")||"[]");}catch(e){}
+const SHEETS_URL="https://script.google.com/macros/s/AKfycbx5kL3XZLuL10M4Z8lyKd5kTEH8IQxifsEDkZxfhQkOjZ2fz6pAhSOGCRQd174kCFFZ/exec";
+const BEI=292;
+let wakati='',hewa='☀️ Jua',maelezo=[],salioAwali=null,rekodiZote=[];
+
+function detectWakati(){
+  const h=new Date().getHours();
+  return h>=5&&h<12?'Asubuhi':'Jioni';
+}
+
+function setWakati(w){
+  wakati=w;
+  document.getElementById('bAsubuhi').classList.toggle('active',w==='Asubuhi');
+  document.getElementById('bJioni').classList.toggle('active',w==='Jioni');
+}
+
+function showNotifBanner(){
+  const banner=document.getElementById('notifBanner');
+  const h=new Date().getHours();
+  const leo=new Date().toISOString().slice(0,10);
+  const leoRekodi=rekodiZote.filter(r=>r.tarehe===leo);
+  const ameshaJazaAsubuhi=leoRekodi.some(r=>r.wakati==='Asubuhi');
+  const ameshaJazaJioni=leoRekodi.some(r=>r.wakati==='Jioni');
+  if(h===6&&!ameshaJazaAsubuhi){
+    banner.className='notif-banner show nb-asubuhi';
+    banner.innerHTML='⏰ Wakati wa kusoma mita — <strong>Saa 3 Asubuhi!</strong> Jaza rekodi yako sasa.';
+  } else if(h===21&&!ameshaJazaJioni){
+    banner.className='notif-banner show nb-jioni';
+    banner.innerHTML='⏰ Wakati wa kusoma mita — <strong>Saa 3 Jioni!</strong> Jaza rekodi yako sasa.';
+  } else if(h>6&&h<12&&!ameshaJazaAsubuhi){
+    banner.className='notif-banner show nb-missed';
+    banner.innerHTML='⚠️ Umekosa rekodi ya <strong>Asubuhi</strong> leo! Jaza sasa hata kama imechelewa.';
+  } else if(h>21&&!ameshaJazaJioni){
+    banner.className='notif-banner show nb-missed';
+    banner.innerHTML='⚠️ Umekosa rekodi ya <strong>Jioni</strong> leo! Jaza sasa hata kama imechelewa.';
+  } else {
+    banner.className='notif-banner';
+  }
+}
+
+function setTab(tab){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='jaza')||(i===1&&tab==='rekodi')));
+  document.getElementById('tab-jaza').classList.toggle('active',tab==='jaza');
+  document.getElementById('tab-rekodi').classList.toggle('active',tab==='rekodi');
+  if(tab==='rekodi') loadRekodiFromSheets();
+}
+
+async function loadRekodiFromSheets(){
+  const el=document.getElementById('rekodiList');
+  el.innerHTML='<div class="loading">⏳ Inapakia kutoka Google Sheets...</div>';
+  try{
+    const res=await fetch(SHEETS_URL+'?sheet=LUKU');
+    const data=await res.json();
+    rekodiZote=data.reverse();
+    renderRekodiList();
+    sasishaStats();
+    showNotifBanner();
+  }catch(e){
+    el.innerHTML='<div class="empty">❌ Imeshindwa kupakia — hakikisha una internet</div>';
+  }
+}
+
+function renderRekodiList(){
+  const el=document.getElementById('rekodiList');
+  if(!rekodiZote.length){el.innerHTML='<div class="empty">Bado hakuna rekodi kwenye Sheets</div>';return;}
+  el.innerHTML=rekodiZote.map((r,i)=>{
+    const mat=r.matumizi_units&&r.matumizi_units!=='—'?r.matumizi_units:null;
+    const ghar=r.gharama_tzs&&r.gharama_tzs!=='—'?parseInt(r.gharama_tzs).toLocaleString():null;
+    return `<div class="ritem">
+      <div class="rtop"><span class="rdate">${r.tarehe||''} · ${r.wakati||''}</span><span class="rbadge">${r.hali_hewa||''}</span></div>
+      <div class="rdata">
+        <div class="rditem"><div class="rv">📟 ${parseFloat(r.salio_jipya||0).toFixed(1)}</div><div class="rl">Units</div></div>
+        ${mat?`<div class="rditem"><div class="rv" style="color:#ea4335">-${mat}</div><div class="rl">Matumizi</div></div>`:'<div class="rditem"><div class="rv">—</div><div class="rl">Matumizi</div></div>'}
+        ${ghar?`<div class="rditem"><div class="rv" style="color:#34a853">TZS ${ghar}</div><div class="rl">Gharama</div></div>`:''}
+        ${r.maelezo_maalum&&r.maelezo_maalum!=='—'?`<div class="rditem" style="grid-column:1/-1"><div class="rv" style="font-size:0.75rem">${r.maelezo_maalum}</div><div class="rl">Maelezo</div></div>`:''}
+      </div>
+      <div class="rbtns">
+        <button class="rbtn rbtn-edit" onclick="openEdit(${i})">✏️ Hariri</button>
+        <button class="rbtn rbtn-del" onclick="futaRekodi(${i})">🗑️ Futa</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openEdit(idx){
+  const r=rekodiZote[idx];
+  document.getElementById('editTimestamp').value=r.timestamp||'';
+  document.getElementById('editTarehe').value=r.tarehe||'';
+  document.getElementById('editWakati').value=r.wakati||'Asubuhi';
+  document.getElementById('editSalio').value=r.salio_jipya||'';
+  document.getElementById('editHewa').value=r.hali_hewa||'☀️ Jua';
+  document.getElementById('editMaelezo').value=r.maelezo_maalum!=='—'?(r.maelezo_maalum||''):'';
+  document.getElementById('modalBg').classList.add('show');
+}
+
+function closeModal(){document.getElementById('modalBg').classList.remove('show');}
+
+async function saveEdit(){
+  const ts=document.getElementById('editTimestamp').value;
+  const salio=parseFloat(document.getElementById('editSalio').value);
+  if(!salio){toast('Weka salio la mita');return;}
+  const data={
+    action:'UPDATE',timestamp:ts,
+    tarehe:document.getElementById('editTarehe').value,
+    wakati:document.getElementById('editWakati').value,
+    salio_jipya:salio,
+    hali_hewa:document.getElementById('editHewa').value,
+    maelezo_maalum:document.getElementById('editMaelezo').value||'—'
+  };
+  const btn=document.querySelector('.mbtn-save');
+  btn.textContent='⏳ Inahifadhi...';btn.disabled=true;
+  try{
+    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    closeModal();
+    toast('✅ Rekodi imebadilishwa!');
+    setTimeout(()=>loadRekodiFromSheets(),1500);
+  }catch(e){toast('❌ Hitilafu — jaribu tena');}
+  btn.textContent='💾 Hifadhi';btn.disabled=false;
+}
+
+async function futaRekodi(idx){
+  const r=rekodiZote[idx];
+  if(!confirm(`Futa rekodi ya ${r.tarehe} ${r.wakati}?`)) return;
+  try{
+    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'DELETE',timestamp:r.timestamp})});
+    toast('🗑️ Rekodi imefutwa!');
+    setTimeout(()=>loadRekodiFromSheets(),1500);
+  }catch(e){toast('❌ Hitilafu — jaribu tena');}
+}
+
+function setHewa(h,id){
+  hewa=h;
+  ['hJua','hMawingu','hMvua','hDhoruba'].forEach(x=>document.getElementById(x).classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function toggleM(el,val){
+  el.classList.toggle('checked');
+  if(el.classList.contains('checked')){if(!maelezo.includes(val))maelezo.push(val);}
+  else{maelezo=maelezo.filter(m=>m!==val);}
+}
+function toggleU(){
+  document.getElementById('uSection').classList.toggle('show',document.getElementById('mLuku').classList.contains('checked'));
+}
+
+function hesabu(){
+  const j=parseFloat(document.getElementById('salioJipya').value);
+  document.getElementById('alertY').style.display='none';
+  document.getElementById('alertR').style.display='none';
+  if(isNaN(j)){document.getElementById('mbox').classList.remove('show');return;}
+  if(j<10)document.getElementById('alertR').style.display='block';
+  else if(j<30)document.getElementById('alertY').style.display='block';
+  if(salioAwali!==null&&j<salioAwali){
+    const m=(salioAwali-j).toFixed(1);
+    const g=(m*BEI).toLocaleString();
+    document.getElementById('mbox').classList.add('show');
+    document.getElementById('mAwali').textContent=salioAwali+' Units';
+    document.getElementById('mJipya').textContent=j+' Units';
+    document.getElementById('mMat').textContent=m+' Units';
+    document.getElementById('mGhar').textContent='TZS '+g;
+  }else{document.getElementById('mbox').classList.remove('show');}
+}
+
+async function wasilisha(){
+  const tarehe=document.getElementById('tarehe').value;
+  const sj=document.getElementById('salioJipya').value;
+  if(!wakati){toast('⚠️ Chagua wakati — Asubuhi au Jioni');return;}
+  if(!tarehe||!sj){toast('⚠️ Jaza tarehe na salio la mita!');return;}
+  const j=parseFloat(sj);
+  let mat='—',ghar='—';
+  if(salioAwali!==null&&j<salioAwali){
+    const m=salioAwali-j;
+    mat=m.toFixed(1);
+    ghar=(m*BEI).toFixed(0);
+  }
+  const data={
+    timestamp:new Date().toISOString(),tarehe,wakati,
+    salio_awali:salioAwali??'—',salio_jipya:j,
+    matumizi_units:mat,gharama_tzs:ghar,hali_hewa:hewa,
+    maelezo_maalum:maelezo.join(', ')||'—',
+    units_pakiwa:document.getElementById('unitsPakiwa').value||'0',
+    maelezo_zaidi:document.getElementById('maelezoZaidi').value||'—',
+    aina:'LUKU_REKODI'
+  };
+  const btn=document.getElementById('btnSub');
+  btn.disabled=true;btn.textContent='⏳ Inatuma...';
+  try{
+    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    salioAwali=j;
+    safisha();
+    toast('✅ Rekodi imehifadhiwa kwenye Google Sheets!');
+    setTimeout(()=>loadRekodiFromSheets(),2000);
+  }catch(e){toast('❌ Hitilafu — jaribu tena');}
+  btn.disabled=false;btn.textContent='✓ Hifadhi Rekodi';
+}
+
+function sasishaStats(){
+  document.getElementById('sRekodi').textContent=rekodiZote.length;
+  if(rekodiZote.length>0){
+    const mpya=rekodiZote[0];
+    document.getElementById('sSalio').textContent=parseFloat(mpya.salio_jipya||0).toFixed(0);
+    salioAwali=parseFloat(mpya.salio_jipya)||null;
+  }
+  const nm=rekodiZote.filter(r=>r.matumizi_units&&r.matumizi_units!=='—');
+  if(nm.length>=2){
+    const j=nm.reduce((s,r)=>s+parseFloat(r.matumizi_units||0),0);
+    document.getElementById('sWastani').textContent=(j/(nm.length/2)).toFixed(1);
+  }
+  const siku=new Set(rekodiZote.map(r=>r.tarehe)).size;
+  document.getElementById('sSiku').textContent=siku+'/60';
+}
+
+function safisha(){
+  document.getElementById('salioJipya').value='';
+  document.getElementById('maelezoZaidi').value='';
+  document.getElementById('unitsPakiwa').value='';
+  document.getElementById('mbox').classList.remove('show');
+  document.getElementById('alertY').style.display='none';
+  document.getElementById('alertR').style.display='none';
+  document.getElementById('uSection').classList.remove('show');
+  maelezo=[];
+  document.querySelectorAll('.mitem').forEach(e=>e.classList.remove('checked'));
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function requestNotifPermission(){
+  if('Notification' in window&&Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+}
+
+function scheduleNotifications(){
+  if(!('Notification' in window)) return;
+  setInterval(()=>{
+    const h=new Date().getHours();
+    const m=new Date().getMinutes();
+    if(Notification.permission!=='granted') return;
+    if(h===6&&m===0){
+      new Notification('⚡ Wakati wa Kusoma Mita!',{body:'Saa 3 Asubuhi — Soma mita yako ya LUKU sasa!'});
+    }
+    if(h===21&&m===0){
+      new Notification('⚡ Wakati wa Kusoma Mita!',{body:'Saa 3 Jioni — Soma mita yako ya LUKU sasa!'});
+    }
+  },60000);
+}
+
 window.onload=function(){
   const leo=new Date();
-  document.getElementById("tarehe").value=leo.toISOString().slice(0,10);
-  setWakati(leo.getHours()>=12?"Jioni":"Asubuhi");
-  if(rekodi.length>0)salioAwali=parseFloat(rekodi[rekodi.length-1].salio_jipya)||null;
-  sasishaStats();onyeshaRekodi();
+  document.getElementById('tarehe').value=leo.toISOString().slice(0,10);
+  setWakati(detectWakati());
+  requestNotifPermission();
+  scheduleNotifications();
+  loadRekodiFromSheets();
 };
-function setWakati(w){wakati=w;document.getElementById("bAsubuhi").classList.toggle("active",w==="Asubuhi");document.getElementById("bJioni").classList.toggle("active",w==="Jioni");}
-function setHewa(h,id){hewa=h;["hJua","hMawingu","hMvua","hDhoruba"].forEach(x=>document.getElementById(x).classList.remove("active"));document.getElementById(id).classList.add("active");}
-function toggleM(el,val){el.classList.toggle("checked");if(el.classList.contains("checked")){if(!maelezo.includes(val))maelezo.push(val);}else{maelezo=maelezo.filter(m=>m!==val);}}
-function toggleU(){const show=document.getElementById("mLuku").classList.contains("checked");document.getElementById("uSection").classList.toggle("show",show);}
-function hesabu(){const j=parseFloat(document.getElementById("salioJipya").value);document.getElementById("alertY").style.display="none";document.getElementById("alertR").style.display="none";if(isNaN(j)){document.getElementById("mbox").classList.remove("show");return;}if(j<10)document.getElementById("alertR").style.display="block";else if(j<30)document.getElementById("alertY").style.display="block";if(salioAwali!==null&&j<salioAwali){const m=(salioAwali-j).toFixed(1);const g=(m*BEI).toLocaleString();document.getElementById("mbox").classList.add("show");document.getElementById("mAwali").textContent=salioAwali+" Units";document.getElementById("mJipya").textContent=j+" Units";document.getElementById("mMat").textContent=m+" Units";document.getElementById("mGhar").textContent="TZS "+g;}else{document.getElementById("mbox").classList.remove("show");}}
-async function wasilisha(){const tarehe=document.getElementById("tarehe").value;const sj=document.getElementById("salioJipya").value;if(!tarehe||!sj){toast("⚠️ Jaza tarehe na salio la mita!");return;}const j=parseFloat(sj);let mat="—",ghar="—";if(salioAwali!==null&&j<salioAwali){const m=salioAwali-j;mat=m.toFixed(1);ghar=(m*BEI).toFixed(0);}const data={timestamp:new Date().toISOString(),tarehe,wakati,salio_awali:salioAwali??"—",salio_jipya:j,matumizi_units:mat,gharama_tzs:ghar,hali_hewa:hewa,maelezo_maalum:maelezo.join(", ")||"—",units_pakiwa:document.getElementById("unitsPakiwa").value||"0",maelezo_zaidi:document.getElementById("maelezoZaidi").value||"—",rekodi_nambari:rekodi.length+1,aina:"LUKU_REKODI"};const btn=document.getElementById("btnSub");btn.disabled=true;btn.textContent="⏳ Inatuma...";try{await fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});rekodi.push(data);try{localStorage.setItem("luku_v2",JSON.stringify(rekodi));}catch(e){}salioAwali=j;sasishaStats();onyeshaRekodi();safisha();toast("✅ Rekodi imehifadhiwa kwenye Google Sheets!");}catch(e){toast("❌ Hitilafu — jaribu tena");}btn.disabled=false;btn.textContent="✓ Hifadhi Rekodi";}
-function sasishaStats(){document.getElementById("sRekodi").textContent=rekodi.length;if(rekodi.length>0)document.getElementById("sSalio").textContent=parseFloat(rekodi[rekodi.length-1].salio_jipya).toFixed(0);const nm=rekodi.filter(r=>r.matumizi_units!=="—");if(nm.length>=2){const j=nm.reduce((s,r)=>s+parseFloat(r.matumizi_units||0),0);document.getElementById("sWastani").textContent=(j/(nm.length/2)).toFixed(1);}const siku=new Set(rekodi.map(r=>r.tarehe)).size;document.getElementById("sSiku").textContent=siku+"/60";}
-function onyeshaRekodi(){const el=document.getElementById("rekodiList");const leo=new Date().toISOString().slice(0,10);const za=rekodi.filter(r=>r.tarehe===leo).reverse();if(za.length===0){el.innerHTML='<div class="empty">Bado hakuna rekodi leo!</div>';return;}el.innerHTML=za.map(r=>`<div class="ritem"><div class="rtop"><span class="rdate">${r.tarehe} · ${r.wakati}</span><span>${r.hali_hewa}</span></div><div style="display:flex;justify-content:space-between"><span style="font-weight:700">📟 ${parseFloat(r.salio_jipya).toFixed(1)} Units</span>${r.matumizi_units!=="—"?`<span style="color:#ea4335;font-weight:600">-${r.matumizi_units} Units</span>`:""}</div>${r.maelezo_maalum!=="—"?`<div style="margin-top:4px;color:#5f6368;font-size:0.75rem">${r.maelezo_maalum}</div>`:""}</div>`).join("");}
-function safisha(){document.getElementById("salioJipya").value="";document.getElementById("maelezoZaidi").value="";document.getElementById("unitsPakiwa").value="";document.getElementById("mbox").classList.remove("show");document.getElementById("alertY").style.display="none";document.getElementById("alertR").style.display="none";document.getElementById("uSection").classList.remove("show");maelezo=[];document.querySelectorAll(".mitem").forEach(e=>e.classList.remove("checked"));setWakati(new Date().getHours()>=12?"Jioni":"Asubuhi");}
-function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000);}
 </script>
 </body>
 </html>
