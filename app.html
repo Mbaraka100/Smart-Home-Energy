@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="sw">
 <head>
@@ -98,3 +99,171 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 9px;
         <div class="card stat"><div class="n" id="stBill">TZS 0</div><div class="l" data-sw="Makadirio ya bili" data-en="Estimated bill">Makadirio ya bili</div></div>
         <div class="card stat"><div class="n" id="stRank">#0</div><div class="l" id="rankLabel" data-sw="Nafasi ya matumizi" data-en="Usage rank">Nafasi ya matumizi</div></div>
         <div class="card stat"><div class="n" id="stDays">0</div><div class="l" data-sw="Siku za data ya LUKU" data-en="LUKU data days">Siku za data ya LUKU</div></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3 data-sw="Maana ya namba za muhtasari" data-en="What the overview numbers mean">Maana ya namba za muhtasari</h3>
+        <div id="summaryHelp" class="tips"></div>
+      </div>
+      <div class="grid two" style="margin-top:14px">
+        <div class="card"><h3 id="usageChartTitle" data-sw="Matumizi ya nyumba na chumba chako" data-en="House and your room usage">Matumizi ya nyumba na chumba chako</h3><canvas class="canvas" id="barChart" width="900" height="300"></canvas></div>
+        <div class="card"><h3 data-sw="Hali ya LUKU" data-en="LUKU status">Hali ya LUKU</h3><div id="lukuStatus" class="alert ok"></div><div style="margin-top:12px" id="forecastBox"></div></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3 data-sw="Asilimia ya matumizi" data-en="Usage percentage">Asilimia ya matumizi</h3>
+        <div class="sharebox">
+          <canvas id="shareChart" width="220" height="220"></canvas>
+          <div>
+            <div class="mini">
+              <div class="stat"><strong id="myShare" class="share-green">0%</strong><span data-sw="Matumizi yako" data-en="Your usage">Matumizi yako</span></div>
+              <div class="stat"><strong id="otherShare" class="share-blue">0%</strong><span data-sw="Matumizi mengine ya nyumba" data-en="Other house usage">Matumizi mengine ya nyumba</span></div>
+            </div>
+            <p id="shareNote" style="color:var(--muted);font-size:13px;line-height:1.5;margin:12px 0 0"></p>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3 data-sw="Ujumbe wa Utabiri" data-en="Prediction message">Ujumbe wa Utabiri</h3>
+        <div id="predictionMessage" class="alert ok"></div>
+      </div>
+    </section>
+
+    <section class="section" id="luku">
+      <div class="title"><div><h2 data-sw="Ingiza salio la LUKU" data-en="Enter LUKU balance">Ingiza salio la LUKU</h2><p data-sw="Mfumo utatabiri siku za kuisha na kutoa ushauri wa kupunguza matumizi." data-en="The system predicts remaining days and suggests optimization.">Mfumo utatabiri siku za kuisha na kutoa ushauri wa kupunguza matumizi.</p></div></div>
+      <div class="grid two">
+        <div class="card">
+          <div class="formrow">
+            <div><label data-sw="Salio la sasa (Units)" data-en="Current balance (Units)">Salio la sasa (Units)</label><input type="number" id="newBalance" step="0.1" placeholder="245.6"></div>
+            <div><label data-sw="Units ulizopakia leo" data-en="Units topped up today">Units ulizopakia leo</label><input type="number" id="topupUnits" step="0.1" placeholder="0"></div>
+          </div>
+          <div class="formrow">
+            <div><label data-sw="Wakati" data-en="Time">Wakati</label><select id="readTime"><option value="Asubuhi">Asubuhi</option><option value="Jioni">Jioni</option><option value="Ziada">Ziada</option></select></div>
+            <div><label data-sw="Hali ya hewa" data-en="Weather">Hali ya hewa</label><select id="weather"><option>Jua</option><option>Mawingu</option><option>Mvua</option><option>Dhoruba</option></select></div>
+          </div>
+          <label data-sw="Maelezo" data-en="Notes">Maelezo</label><input id="note" placeholder="Mfano: LUKU ilipakiwa, wageni walikuwepo">
+          <button class="btn blue" style="width:100%;margin-top:14px" onclick="saveLuku()" data-sw="Hifadhi na tabiri" data-en="Save and predict">Hifadhi na tabiri</button>
+        </div>
+        <div class="card"><h3 data-sw="Utabiri wa papo hapo" data-en="Instant prediction">Utabiri wa papo hapo</h3><div id="instantPredict" class="alert">Jaza salio la sasa kisha bonyeza hifadhi.</div></div>
+      </div>
+    </section>
+
+    <section class="section" id="rooms">
+      <div class="title"><div><h2 data-sw="Hali ya vyumba" data-en="Room status">Hali ya vyumba</h2><p data-sw="Kijani kinaonyesha chumba chenye data ya sensa." data-en="Green means the room has census data.">Kijani kinaonyesha chumba chenye data ya sensa.</p></div></div>
+      <div class="card"><div class="roomlist" id="roomList"></div></div>
+      <div class="card" style="margin-top:14px;overflow:auto"><table id="roomTable"></table></div>
+    </section>
+
+    <section class="section" id="compare">
+      <div class="title"><div><h2 data-sw="Ulinganisho wa vyumba" data-en="Room comparison">Ulinganisho wa vyumba</h2><p data-sw="Wiki hii dhidi ya wiki iliyopita na ranking ya matumizi." data-en="This week versus last week and usage ranking.">Wiki hii dhidi ya wiki iliyopita na ranking ya matumizi.</p></div></div>
+      <div class="grid two">
+        <div class="card"><h3 data-sw="Wiki hii vs wiki iliyopita" data-en="This week vs last week">Wiki hii vs wiki iliyopita</h3><canvas class="canvas" id="weekChart" width="900" height="300"></canvas></div>
+        <div class="card"><h3 data-sw="Ranking" data-en="Ranking">Ranking</h3><div id="ranking"></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="tips">
+      <div class="title"><div><h2 data-sw="Optimization na ushauri" data-en="Optimization and tips">Optimization na ushauri</h2><p data-sw="Mapendekezo yanatokana na vifaa na matumizi yako." data-en="Suggestions are based on appliances and usage.">Mapendekezo yanatokana na vifaa na matumizi yako.</p></div></div>
+      <div class="card tips" id="tipsList"></div>
+    </section>
+
+    <section class="section" id="admin">
+      <div class="title"><div><h2>Admin Dashboard</h2><p data-sw="Unaona vyumba vyote, LUKU na tahadhari." data-en="View all rooms, LUKU and alerts.">Unaona vyumba vyote, LUKU na tahadhari.</p></div></div>
+      <div class="grid three">
+        <div class="card stat"><div class="n" id="adRooms">0/16</div><div class="l">Vyumba vilivyojazwa</div></div>
+        <div class="card stat"><div class="n" id="adHigh">0</div><div class="l">Vyumba matumizi juu</div></div>
+        <div class="card stat"><div class="n" id="adAvg">0</div><div class="l">Wastani kWh/chumba</div></div>
+      </div>
+      <div class="card" style="margin-top:14px;overflow:auto"><table id="adminTable"></table></div>
+    </section>
+  </section>
+</main>
+
+<script>
+const SHEETS_URL="https://script.google.com/macros/s/AKfycbx5kL3XZLuL10M4Z8lyKd5kTEH8IQxifsEDkZxfhQkOjZ2fz6pAhSOGCRQd174kCFFZ/exec";
+const PRICE=292;
+let lang='sw', user=null, lukuRows=[], sensaRows=[];
+const $=id=>document.getElementById(id);
+
+const sampleRooms=[
+ {room:'C01',name:'Amina',kwh:82,devices:['Friji','Taa LED','TV','Fan']},
+ {room:'C02',name:'Brayton',kwh:116,devices:['TV','Laptop','Pasi','Kettle','Taa LED']},
+ {room:'C03',name:'Juma',kwh:64,devices:['Taa LED','Fan','Chaja']},
+ {room:'C04',name:'Neema',kwh:138,devices:['Friji','Rice Cooker','TV','Pasi']},
+ {room:'C05',name:'Hassan',kwh:51,devices:['Taa LED','Router','Laptop']},
+ {room:'C06',name:'Rehema',kwh:95,devices:['Fan','TV','Blender','Taa LED']},
+ {room:'C07',name:'Musa',kwh:74,devices:['TV','Chaja','Taa LED']},
+ {room:'C08',name:'Fatma',kwh:153,devices:['Friji','Kettle','Rice Cooker','Pasi','TV']}
+];
+
+function t(sw,en){return lang==='sw'?sw:en}
+function money(n){return 'TZS '+Math.round(n).toLocaleString()}
+function getStore(key,fallback=null){try{return localStorage.getItem(key)??fallback}catch(e){return fallback}}
+function setStore(key,value){try{localStorage.setItem(key,value)}catch(e){}}
+function removeStore(key){try{localStorage.removeItem(key)}catch(e){}}
+function setLang(l){lang=l;$('bSw').classList.toggle('active',l==='sw');$('bEn').classList.toggle('active',l==='en');document.querySelectorAll('[data-sw]').forEach(e=>e.textContent=e.dataset[l]);renderAll()}
+function normalizeRoom(value){const raw=value.trim().toUpperCase().replace(/\s+/g,'');if(!raw)return'';if(raw==='MRENO')return raw;const num=raw.match(/^C?0?(\d{1,2})$/);if(!num)return raw;return'C'+String(Number(num[1])).padStart(2,'0')}
+function showLoginError(msg){const box=$('loginError');box.textContent=msg;box.classList.add('show')}
+function clearLoginError(){$('loginError').classList.remove('show');$('loginError').textContent=''}
+function login(){clearLoginError();const name=$('loginName').value.trim();let room=normalizeRoom($('loginRoom').value);const isAdmin=name.toLowerCase()==='admin'||room==='MRENO';if(!name)return showLoginError(t('Andika jina lako kwanza. Mfano: Kelvin.','Enter your name first. Example: Kelvin.'));if(!room&&!isAdmin)return showLoginError(t('Andika namba ya chumba. Mfano: C02 au 2.','Enter your room number. Example: C02 or 2.'));if(isAdmin&&!room)room='MRENO';user={name,room,isAdmin};setStore('energy_user',JSON.stringify(user));showApp()}
+function logout(){removeStore('energy_user');user=null;$('app').classList.add('hidden');$('userbar').classList.add('hidden');$('loginBox').classList.remove('hidden');clearLoginError()}
+function showApp(){$('loginBox').classList.add('hidden');$('app').classList.remove('hidden');$('userbar').classList.remove('hidden');$('who').textContent=user.isAdmin?'Admin':`${user.name} · ${user.room}`;$('roleText').textContent=user.isAdmin?t('Unaona vyumba vyote','You can view all rooms'):t('Unaona chumba chako na wastani wa nyumba','You see your room and house average');$('adminTab').style.display=user.isAdmin?'inline-block':'none';$('lukuTab').style.display=user.isAdmin?'inline-block':'none';document.querySelectorAll('.section').forEach((s,i)=>s.classList.toggle('active',i===0));document.querySelectorAll('.nav button').forEach((b,i)=>b.classList.toggle('active',i===0));refreshData()}
+function tab(id,btn){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAll()}
+
+async function refreshData(){
+  sensaRows=sampleRooms;
+  lukuRows=JSON.parse(getStore('luku_local','[]'));
+  renderAll();
+  try{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),3500);
+    const res=await fetch(SHEETS_URL+'?sheet=LUKU&v='+Date.now(),{signal:controller.signal});
+    clearTimeout(timer);
+    const data=await res.json();
+    if(Array.isArray(data)) lukuRows=data;
+  }catch(e){}
+  renderAll();
+}
+function roomData(){return sensaRows.map(r=>({...r,bill:r.kwh*PRICE,weekNow:r.kwh*.24,weekPrev:r.kwh*(.18+Math.random()*.08)})).sort((a,b)=>b.kwh-a.kwh)}
+function currentRoom(){const rooms=roomData(),room=normalizeRoom(user?.room||'');return user?.isAdmin?rooms[0]:(rooms.find(r=>r.room===room)||{room:room||user.room,name:user.name,kwh:0,bill:0,devices:[],weekNow:0,weekPrev:0})}
+function lukuStats(){const rows=[...lukuRows].filter(r=>r.salio_jipya).sort((a,b)=>new Date(b.timestamp||b.tarehe)-new Date(a.timestamp||a.tarehe));const latest=parseFloat(rows[0]?.salio_jipya||0);const used=rows.map(r=>parseFloat(r.matumizi_units||0)).filter(n=>n>0);const daily=used.length?used.reduce((a,b)=>a+b,0)/Math.max(1,used.length/2):8.5;return{latest,daily,days:latest&&daily?latest/daily:0,count:new Set(rows.map(r=>r.tarehe)).size}}
+function heavyDevices(room){return room.devices.filter(d=>/Pasi|Kettle|Jagi|Rice|Cooker|Friji|Freezer|AC|Heater|Microwave/i.test(d))}
+function predictionText(room,ls,totalKwh=0){const roomDaily=Math.max(room.kwh/30,0.1),houseDaily=Math.max(totalKwh/30,0.1),roomDays=ls.latest?ls.latest/roomDaily:0,houseDays=ls.latest?ls.latest/houseDaily:0,heavy=heavyDevices(room);const heavyMsg=heavy.length?t(` Kifaa kinachoweza kuongeza matumizi: ${heavy.join(', ')}.`,` Possible high-consumption device: ${heavy.join(', ')}.`):t(' Hakuna kifaa kikubwa kilichoonekana kwenye orodha yako.',' No heavy device was detected in your list.');if(!ls.latest)return{cls:'alert',text:t(`Chumba ${room.room}: bado hakuna salio la LUKU. Matumizi ya nyumba yote ni ${totalKwh.toFixed(1)} kWh/mwezi, na matumizi yako ni ${room.kwh.toFixed(1)} kWh/mwezi.${heavyMsg}`,`Room ${room.room}: no LUKU balance yet. Total house usage is ${totalKwh.toFixed(1)} kWh/month, and your usage is ${room.kwh.toFixed(1)} kWh/month.${heavyMsg}`)};if(houseDays<3||roomDays<3)return{cls:'alert bad',text:t(`Tahadhari: salio la nyumba linaweza kutosha siku ${houseDays.toFixed(1)} kwa matumizi yote. Kwa matumizi yako ya ${roomDaily.toFixed(1)} units/siku, sehemu yako inakadiriwa siku ${roomDays.toFixed(1)}. Matumizi yako ni ${room.kwh.toFixed(1)} kWh/mwezi kati ya ${totalKwh.toFixed(1)} kWh za nyumba.${heavyMsg}`,`Alert: the house balance may last ${houseDays.toFixed(1)} days for total usage. At your ${roomDaily.toFixed(1)} units/day, your share is estimated at ${roomDays.toFixed(1)} days. Your usage is ${room.kwh.toFixed(1)} kWh/month out of ${totalKwh.toFixed(1)} kWh for the house.${heavyMsg}`)};if(houseDays<7||roomDays<7)return{cls:'alert',text:t(`Utabiri: matumizi yote ya nyumba yanaweza kumaliza salio ndani ya siku ${houseDays.toFixed(1)}. Matumizi yako ni ${room.kwh.toFixed(1)} kWh/mwezi, sawa na takribani ${roomDaily.toFixed(1)} units/siku.${heavyMsg}`,`Prediction: total house usage may drain the balance in ${houseDays.toFixed(1)} days. Your usage is ${room.kwh.toFixed(1)} kWh/month, about ${roomDaily.toFixed(1)} units/day.${heavyMsg}`)};return{cls:'alert ok',text:t(`Utabiri: kwa matumizi yote ya nyumba, salio linaweza kutosha takribani siku ${houseDays.toFixed(1)}. Matumizi yako ni ${room.kwh.toFixed(1)} kWh/mwezi (${roomDaily.toFixed(1)} units/siku).${heavyMsg}`,`Prediction: for total house usage, the balance may last about ${houseDays.toFixed(1)} days. Your usage is ${room.kwh.toFixed(1)} kWh/month (${roomDaily.toFixed(1)} units/day).${heavyMsg}`)}}
+function visibleRooms(rooms){const room=normalizeRoom(user?.room||'');return user?.isAdmin?rooms:rooms.filter(r=>r.room===room)}
+function renderAll(){if(!user)return;const rooms=roomData(), shown=visibleRooms(rooms), me=currentRoom(), ls=lukuStats(), totalKwh=rooms.reduce((s,r)=>s+r.kwh,0), avg=totalKwh/rooms.length;$('homeSub').textContent=user.isAdmin?t('Muhtasari wa nyumba nzima','Whole house overview'):`${me.room} · ${t('taarifa zako binafsi','your personal data')}`;
+  $('usageChartTitle').textContent=user.isAdmin?t('Matumizi kwa vyumba vyote','Usage by all rooms'):t('Matumizi ya nyumba yote na chumba chako','Total house usage and your room');
+  $('stKwh').textContent=(user.isAdmin?totalKwh:me.kwh).toFixed(1);$('stBill').textContent=money(user.isAdmin?rooms.reduce((s,r)=>s+r.bill,0):me.bill);$('stRank').textContent=user.isAdmin?'#1':me.devices.length;$('rankLabel').textContent=user.isAdmin?t('Chumba kinachoongoza','Top room'):t('Idadi ya vifaa','Number of devices');$('stDays').textContent=ls.count;
+  renderSummaryHelp(me,ls,totalKwh);
+  $('lukuStatus').className='alert '+(ls.days<3?'bad':ls.days<7?'':'ok');$('lukuStatus').textContent=ls.latest?`${t('Salio','Balance')}: ${ls.latest.toFixed(1)} units · ${t('Makadirio','Estimate')}: ${ls.days.toFixed(1)} ${t('siku zimebaki','days left')}`:t('Bado hakuna data ya LUKU iliyopatikana.','No LUKU data found yet.');
+  $('forecastBox').innerHTML=`<div class="bar"><span style="width:${Math.min(100,ls.days/14*100)}%"></span></div><p style="color:var(--muted);font-size:13px">${t('Wastani wa matumizi','Average usage')}: ${ls.daily.toFixed(1)} units/siku</p>`;
+  const msg=predictionText(me,ls,totalKwh);$('predictionMessage').className=msg.cls;$('predictionMessage').textContent=user.isAdmin?t('Admin anaona ujumbe wa kila chumba kwenye jedwali la Admin. Mpangaji akiingia ataona ujumbe wake hapa.','Admin sees each room message in the Admin table. Tenants see their own message here.'):msg.text;
+  if(user.isAdmin) drawBar($('barChart'),shown.map(r=>r.room),shown.map(r=>r.kwh)); else drawBar($('barChart'),[t('Nyumba yote','Whole house'),t('Chumba chako','Your room')],[totalKwh,me.kwh]);
+  renderShare(me,totalKwh);
+  drawWeek($('weekChart'),shown);
+  renderRooms(rooms);renderRanking(rooms);renderTips(me,avg,ls);renderAdmin(rooms,avg);
+}
+function helpLine(label,text){return`<div class="tip"><strong>${label}:</strong> ${text}</div>`}
+function renderSummaryHelp(me,ls,totalKwh){const lines=user.isAdmin?[
+  helpLine(t('kWh/mwezi','kWh/month'),t(`jumla ya matumizi ya vyumba vyote kwa mwezi (${totalKwh.toFixed(1)} kWh).`,`total monthly usage for all rooms (${totalKwh.toFixed(1)} kWh).`)),
+  helpLine(t('Makadirio ya bili','Estimated bill'),t('gharama ya umeme inayokadiriwa kwa nyumba nzima.','projected electricity cost for the whole house.')),
+  helpLine(t('Chumba kinachoongoza','Top room'),t('chumba chenye matumizi makubwa zaidi kwa sasa.','the room with the highest usage right now.')),
+  helpLine(t('Siku za data ya LUKU','LUKU data days'),t(`idadi ya siku ambazo rekodi za mita zimehifadhiwa (${ls.count}).`,`number of days meter readings have been saved (${ls.count}).`))
+]:[
+  helpLine(t('kWh/mwezi','kWh/month'),t(`makadirio ya matumizi ya chumba chako kwa mwezi (${me.kwh.toFixed(1)} kWh/unit).`,`estimated monthly usage for your room (${me.kwh.toFixed(1)} kWh/unit).`)),
+  helpLine(t('Makadirio ya bili','Estimated bill'),t(`kiasi kinachokadiriwa kutokana na matumizi ya chumba chako (${money(me.bill)}).`,`projected amount from your room usage (${money(me.bill)}).`)),
+  helpLine(t('Idadi ya vifaa','Number of devices'),t(`vifaa vilivyosajiliwa kwenye chumba chako (${me.devices.length}).`,`appliances registered in your room (${me.devices.length}).`)),
+  helpLine(t('Siku za data ya LUKU','LUKU data days'),t(`siku ambazo admin ameweka rekodi za mita (${ls.count}); zikiongezeka, utabiri unakuwa sahihi zaidi.`,`days the admin has recorded meter readings (${ls.count}); more days make predictions more accurate.`))
+];$('summaryHelp').innerHTML=lines.join('')}
+function renderShare(me,totalKwh){const pct=totalKwh?me.kwh/totalKwh*100:0,other=Math.max(0,100-pct);$('myShare').textContent=pct.toFixed(1)+'%';$('otherShare').textContent=other.toFixed(1)+'%';$('shareNote').textContent=user.isAdmin?t('Kwa admin, asilimia inaonyesha chumba kinachoongoza ukilinganisha na matumizi yote ya nyumba.','For admin, the percentage shows the leading room compared with total house usage.'):t(`Hii inaonyesha chumba chako kinachukua ${pct.toFixed(1)}% ya matumizi yote ya nyumba. Sehemu iliyobaki (${other.toFixed(1)}%) ni matumizi ya vyumba vyengine.`,`This shows your room takes ${pct.toFixed(1)}% of total house usage. The remaining ${other.toFixed(1)}% is usage from other rooms.`);drawPie($('shareChart'),pct,other)}
+function renderRooms(rooms){const list=visibleRooms(rooms);$('roomList').innerHTML='';if(user.isAdmin){for(let i=1;i<=16;i++){const code='C'+String(i).padStart(2,'0'),r=rooms.find(x=>x.room===code);$('roomList').innerHTML+=`<div class="room ${r?'used':''}">${code}${r?'<br>✓':''}</div>`}}else{$('roomList').innerHTML=`<div class="room used">${user.room}<br>✓</div>`}
+  $('roomTable').innerHTML='<tr><th>Chumba</th><th>Jina</th><th>kWh</th><th>Bili</th><th>Vifaa</th></tr>'+list.map(r=>`<tr><td><b>${r.room}</b></td><td>${r.name}</td><td>${r.kwh.toFixed(1)}</td><td>${money(r.bill)}</td><td>${r.devices.join(', ')}</td></tr>`).join('')}
+function renderRanking(rooms){if(!user.isAdmin){const me=currentRoom();$('ranking').innerHTML=`<div class="alert ok">${t('Hapa unaona taarifa za chumba chako tu. Ranking ya vyumba vyote inaonekana kwa admin pekee.','You only see your own room here. Full ranking is visible to admin only.')}</div><div style="display:flex;justify-content:space-between;gap:10px;padding:10px;border-bottom:1px solid #edf0f6"><span><b>${me.room}</b> ${me.name}</span><span class="badge ${me.kwh>120?'red':me.kwh>90?'amber':''}">${me.kwh.toFixed(1)} kWh</span></div>`;return}
+  $('ranking').innerHTML=rooms.map((r,i)=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:10px;border-bottom:1px solid #edf0f6"><span><b>#${i+1} ${r.room}</b> ${r.name}</span><span class="badge ${r.kwh>120?'red':r.kwh>90?'amber':''}">${r.kwh.toFixed(1)} kWh</span></div>`).join('')}
+function renderTips(r,avg,ls){const tips=[];if(r.kwh>avg)tips.push(t(`Chumba ${r.room} kiko juu ya wastani. Punguza muda wa vifaa vikubwa kama pasi, kettle na rice cooker.`,`Room ${r.room} is above average. Reduce heavy appliances like iron, kettle and rice cooker.`));if(r.devices.some(d=>/Friji/i.test(d)))tips.push(t('Kwa friji: usiache mlango wazi, epuka kuiweka karibu na jiko, na hakikisha rubber ya mlango inabana vizuri.','For fridge: keep the door closed, avoid placing it near heat, and check the door seal.'));if(r.devices.some(d=>/Pasi|Kettle|Rice/i.test(d)))tips.push(t('Vifaa vya joto hutumia umeme mwingi. Tumia kwa batch moja badala ya mara nyingi nyingi.','Heating appliances use high power. Use them in batches instead of many separate sessions.'));if(ls.days&&ls.days<5)tips.push(t('LUKU inaweza kuisha karibuni. Punguza matumizi ya vifaa vya watts kubwa na panga kununua units.','LUKU may run out soon. Reduce high-watt appliances and plan a top-up.'));if(!tips.length)tips.push(t('Matumizi yako yako vizuri. Endelea kurekodi LUKU asubuhi na jioni ili utabiri uwe sahihi zaidi.','Your usage looks good. Keep recording LUKU morning and evening for better prediction.'));$('tipsList').innerHTML=tips.map(x=>`<div class="tip">${x}</div>`).join('')}
+function renderAdmin(rooms,avg){const ls=lukuStats(),totalKwh=rooms.reduce((s,r)=>s+r.kwh,0);$('adRooms').textContent=rooms.length+'/16';$('adHigh').textContent=rooms.filter(r=>r.kwh>avg*1.2).length;$('adAvg').textContent=avg.toFixed(1);$('adminTable').innerHTML='<tr><th>Rank</th><th>Chumba</th><th>Jina</th><th>kWh</th><th>Bili</th><th>Hali</th><th>Ujumbe wa utabiri</th></tr>'+rooms.map((r,i)=>{const msg=predictionText(r,ls,totalKwh);return`<tr><td>#${i+1}</td><td>${r.room}</td><td>${r.name}</td><td>${r.kwh.toFixed(1)}</td><td>${money(r.bill)}</td><td><span class="badge ${r.kwh>120?'red':r.kwh>90?'amber':'blue'}">${r.kwh>120?'Juu':r.kwh>90?'Kati':'Sawa'}</span></td><td>${msg.text}</td></tr>`}).join('')}
+function saveLuku(){const bal=parseFloat($('newBalance').value), top=parseFloat($('topupUnits').value||0);if(!bal)return alert(t('Weka salio la sasa','Enter current balance'));const ls=lukuStats(), daily=ls.daily||8.5, days=bal/daily;const row={timestamp:new Date().toISOString(),tarehe:new Date().toISOString().slice(0,10),wakati:$('readTime').value,salio_jipya:bal,units_pakiwa:top,hali_hewa:$('weather').value,maelezo_maalum:$('note').value||'—',aina:'LUKU_REKODI'};lukuRows.unshift(row);setStore('luku_local',JSON.stringify(lukuRows));fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(row)}).catch(()=>{});$('instantPredict').className='alert '+(days<3?'bad':days<7?'':'ok');$('instantPredict').innerHTML=`${t('Salio hili linakadiriwa kutosha','This balance is estimated to last')} <b>${days.toFixed(1)} ${t('siku','days')}</b>.<br>${top>0?t('Umeweka LUKU mpya; rekodi imehifadhiwa.','Top-up recorded and saved.'):t('Hakuna top-up mpya iliyowekwa.','No new top-up entered.')}`;$('newBalance').value='';$('topupUnits').value='';$('note').value='';renderAll()}
+function drawPie(c,my,other){const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2-4,r=82;ctx.clearRect(0,0,w,h);const slices=[{label:t('Yako','Yours'),val:my,color:'#00a86b'},{label:t('Vyengine','Others'),val:other,color:'#2563eb'}];let start=-Math.PI/2;slices.forEach(s=>{const ang=Math.PI*2*(s.val/100),end=start+ang;ctx.beginPath();ctx.moveTo(cx,cy);ctx.fillStyle=s.color;ctx.arc(cx,cy,r,start,end);ctx.closePath();ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke();const mid=start+ang/2,tx=cx+Math.cos(mid)*r*.58,ty=cy+Math.sin(mid)*r*.58;ctx.fillStyle='white';ctx.font='800 15px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(s.val.toFixed(1)+'%',tx,ty);start=end});ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.fillStyle='#00a86b';ctx.fillRect(18,h-24,12,12);ctx.fillStyle='#667085';ctx.font='12px Arial';ctx.fillText(t('Matumizi yako','Your usage'),36,h-14);ctx.fillStyle='#2563eb';ctx.fillRect(126,h-24,12,12);ctx.fillStyle='#667085';ctx.fillText(t('Vyumba vyengine','Other rooms'),144,h-14)}
+function drawBar(c,labels,vals){const ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);const max=Math.max(...vals,1),bw=Math.min(160,w/(labels.length*1.8));ctx.font='22px Arial';vals.forEach((v,i)=>{const gap=w/(labels.length+1),x=gap*(i+1)-bw/2,y=h-45,bh=(h-90)*(v/max);ctx.fillStyle=labels[i].includes('Nyumba')||labels[i].includes('Whole')?'#2563eb':(v>120?'#dc2626':v>90?'#d97706':'#00a86b');ctx.fillRect(x,y-bh,bw,bh);ctx.fillStyle='#172033';ctx.font='18px Arial';ctx.fillText(v.toFixed(1),x,y-bh-10);ctx.fillStyle='#667085';ctx.font='17px Arial';ctx.fillText(labels[i],x,y+24)});ctx.fillStyle='#172033';ctx.font='18px Arial';ctx.fillText('kWh/mwezi',12,25)}
+function drawWeek(c,rooms){const ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);const vals=rooms.slice(0,8),max=Math.max(...vals.map(r=>Math.max(r.weekNow,r.weekPrev)),1);ctx.font='18px Arial';vals.forEach((r,i)=>{const x=45+i*(w-80)/vals.length,bw=22,base=h-35;let a=(h-80)*r.weekPrev/max,b=(h-80)*r.weekNow/max;ctx.fillStyle='#9ca3af';ctx.fillRect(x,base-a,bw,a);ctx.fillStyle='#2563eb';ctx.fillRect(x+bw+4,base-b,bw,b);ctx.fillStyle='#667085';ctx.fillText(r.room,x,base+22)});ctx.fillStyle='#172033';ctx.fillText(t('Kijivu: iliyopita · Bluu: hii','Gray: previous · Blue: current'),12,24)}
+window.onload=()=>{['loginName','loginRoom'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')login()}));const saved=getStore('energy_user');if(saved){try{user=JSON.parse(saved);user.room=normalizeRoom(user.room||'');showApp()}catch(e){removeStore('energy_user')}}}
+</script>
+</body>
+</html>
