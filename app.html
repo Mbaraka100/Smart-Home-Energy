@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Home Energy System</title>
+<style>
+:root{
+  --green:#00a86b;--green2:#057a55;--blue:#2563eb;--red:#dc2626;--amber:#d97706;
+  --bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#d8deea;
+  --soft:#eaf7f1;--shadow:0 10px 30px rgba(17,24,39,.08);--r:14px;
+}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}button{cursor:pointer}
+.top{background:linear-gradient(135deg,#0f8f5f,#164e9f);color:white;padding:18px 16px 22px}
+.topbar{max-width:1180px;margin:auto;display:flex;gap:12px;align-items:center;justify-content:space-between}
+.brand h1{font-size:22px;margin:0 0 4px}.brand p{margin:0;font-size:13px;opacity:.88}
+.lang{display:flex;gap:6px}.lang button{border:1px solid rgba(255,255,255,.45);background:transparent;color:white;border-radius:999px;padding:7px 11px;font-weight:700;font-size:12px}
+.lang button.active{background:white;color:#116347}
+.wrap{max-width:1180px;margin:-12px auto 34px;padding:0 14px}
+.login{max-width:460px;margin:34px auto;background:white;border-radius:18px;padding:22px;box-shadow:var(--shadow)}
+.login h2{margin:0 0 6px}.login p{margin:0 0 18px;color:var(--muted);font-size:14px}
+label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin:12px 0 6px}
+input,select{width:100%;border:2px solid var(--line);border-radius:12px;padding:13px;background:#fbfcff;outline:none}
+input:focus,select:focus{border-color:var(--green);background:white}
+.btn{border:0;border-radius:12px;padding:13px 16px;font-weight:800;background:var(--green);color:white}
+.btn.secondary{background:white;color:var(--text);border:2px solid var(--line)}
+.btn.danger{background:var(--red)}.btn.blue{background:var(--blue)}
+.hidden{display:none!important}.grid{display:grid;gap:14px}.cards{grid-template-columns:repeat(4,1fr)}
+.card{background:white;border:1px solid #edf0f6;border-radius:var(--r);box-shadow:0 2px 10px rgba(17,24,39,.04);padding:16px}
+.stat .n{font-size:26px;font-weight:900;margin-bottom:3px}.stat .l{font-size:12px;color:var(--muted);font-weight:700}
+.nav{display:flex;gap:8px;overflow:auto;padding:12px 0}.nav button{white-space:nowrap;border:1px solid var(--line);background:white;border-radius:999px;padding:10px 14px;font-weight:800;color:var(--muted)}
+.nav button.active{background:var(--green);border-color:var(--green);color:white}
+.section{display:none}.section.active{display:block}
+.title{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:16px 0 10px}
+.title h2{font-size:18px;margin:0}.title p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.two{grid-template-columns:1.35fr .9fr}.three{grid-template-columns:repeat(3,1fr)}
+.bar{height:10px;background:#edf1f7;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;background:var(--green);border-radius:999px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 9px;border-bottom:1px solid #edf0f6;text-align:left}th{color:var(--muted);font-size:11px;text-transform:uppercase}
+.badge{display:inline-flex;border-radius:999px;padding:4px 9px;font-size:11px;font-weight:800;background:var(--soft);color:var(--green2)}
+.badge.red{background:#fee2e2;color:#b91c1c}.badge.amber{background:#fef3c7;color:#92400e}.badge.blue{background:#dbeafe;color:#1d4ed8}
+.canvas{width:100%;height:230px;border:1px solid #edf0f6;border-radius:12px;background:linear-gradient(#fff,#fbfcff)}
+.tips{display:grid;gap:10px}.tip{border-left:4px solid var(--green);background:#f7fffb;border-radius:10px;padding:11px;font-size:13px;line-height:1.45}
+.roomlist{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}.room{border:2px solid var(--line);border-radius:12px;background:white;padding:12px 4px;text-align:center;font-weight:900}
+.room.used{background:var(--soft);border-color:var(--green);color:var(--green2)}
+.formrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.alert{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:12px;font-weight:700;font-size:13px}
+.ok{background:#ecfdf5;border-color:#bbf7d0;color:#047857}.bad{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+.userbar{display:flex;justify-content:space-between;align-items:center;margin:14px 0;color:white}
+.userbar button{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);color:white;border-radius:10px;padding:9px 12px;font-weight:800}
+@media(max-width:850px){.cards,.two,.three{grid-template-columns:1fr}.roomlist{grid-template-columns:repeat(4,1fr)}.formrow{grid-template-columns:1fr}.topbar{display:block}.lang{margin-top:12px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="topbar">
+    <div class="brand">
+      <h1 data-sw="Smart Home Energy System" data-en="Smart Home Energy System">Smart Home Energy System</h1>
+      <p data-sw="Sensa, LUKU, utabiri, bili na optimization kwa vyumba 16" data-en="Census, LUKU, prediction, billing and optimization for 16 rooms">Sensa, LUKU, utabiri, bili na optimization kwa vyumba 16</p>
+    </div>
+    <div class="lang"><button id="bSw" class="active" onclick="setLang('sw')">Kiswahili</button><button id="bEn" onclick="setLang('en')">English</button></div>
+  </div>
+  <div class="wrap userbar hidden" id="userbar">
+    <div><strong id="who"></strong><div id="roleText" style="font-size:12px;opacity:.85"></div></div>
+    <button onclick="logout()" data-sw="Toka" data-en="Logout">Toka</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="login" id="loginBox">
+    <h2 data-sw="Ingia kwenye mfumo" data-en="Login to the system">Ingia kwenye mfumo</h2>
+    <p data-sw="Mpangaji ingiza jina lako na namba yako ya chumba." data-en="Tenant, enter your name and room number.">Mpangaji ingiza jina lako na namba yako ya chumba.</p>
+    <label data-sw="Jina lako" data-en="Your name">Jina lako</label>
+    <input id="loginName" placeholder="Mfano: Kelvin">
+    <label data-sw="Namba ya chumba" data-en="Room number">Namba ya chumba</label>
+    <input id="loginRoom" placeholder="Mfano: C12">
+    <button class="btn" style="width:100%;margin-top:16px" onclick="login()" data-sw="Ingia" data-en="Login">Ingia</button>
+  </section>
+
+  <section id="app" class="hidden">
+    <nav class="nav">
+      <button class="active" onclick="tab('home',this)" data-sw="Muhtasari" data-en="Overview">Muhtasari</button>
+      <button onclick="tab('luku',this)" data-sw="Ingiza LUKU" data-en="Enter LUKU">Ingiza LUKU</button>
+      <button onclick="tab('rooms',this)" data-sw="Vyumba" data-en="Rooms">Vyumba</button>
+      <button onclick="tab('compare',this)" data-sw="Ulinganisho" data-en="Compare">Ulinganisho</button>
+      <button onclick="tab('tips',this)" data-sw="Ushauri" data-en="Tips">Ushauri</button>
+      <button id="adminTab" onclick="tab('admin',this)" data-sw="Admin" data-en="Admin">Admin</button>
+    </nav>
+
+    <section class="section active" id="home">
+      <div class="title"><div><h2 data-sw="Muhtasari wa matumizi" data-en="Energy overview">Muhtasari wa matumizi</h2><p id="homeSub"></p></div><button class="btn secondary" onclick="refreshData()" data-sw="Sasisha data" data-en="Refresh data">Sasisha data</button></div>
+      <div class="grid cards">
+        <div class="card stat"><div class="n" id="stKwh">0</div><div class="l">kWh/mwezi</div></div>
+        <div class="card stat"><div class="n" id="stBill">TZS 0</div><div class="l" data-sw="Makadirio ya bili" data-en="Estimated bill">Makadirio ya bili</div></div>
+        <div class="card stat"><div class="n" id="stRank">#0</div><div class="l" id="rankLabel" data-sw="Nafasi ya matumizi" data-en="Usage rank">Nafasi ya matumizi</div></div>
+        <div class="card stat"><div class="n" id="stDays">0</div><div class="l" data-sw="Siku za data ya LUKU" data-en="LUKU data days">Siku za data ya LUKU</div></div>
+      </div>
+      <div class="grid two" style="margin-top:14px">
+        <div class="card"><h3 data-sw="Matumizi kwa chumba" data-en="Usage by room">Matumizi kwa chumba</h3><canvas class="canvas" id="barChart" width="900" height="300"></canvas></div>
+        <div class="card"><h3 data-sw="Hali ya LUKU" data-en="LUKU status">Hali ya LUKU</h3><div id="lukuStatus" class="alert ok"></div><div style="margin-top:12px" id="forecastBox"></div></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3 data-sw="Ujumbe wa Utabiri" data-en="Prediction message">Ujumbe wa Utabiri</h3>
+        <div id="predictionMessage" class="alert ok"></div>
+      </div>
+    </section>
+
+    <section class="section" id="luku">
+      <div class="title"><div><h2 data-sw="Ingiza salio la LUKU" data-en="Enter LUKU balance">Ingiza salio la LUKU</h2><p data-sw="Mfumo utatabiri siku za kuisha na kutoa ushauri wa kupunguza matumizi." data-en="The system predicts remaining days and suggests optimization.">Mfumo utatabiri siku za kuisha na kutoa ushauri wa kupunguza matumizi.</p></div></div>
+      <div class="grid two">
+        <div class="card">
+          <div class="formrow">
+            <div><label data-sw="Salio la sasa (Units)" data-en="Current balance (Units)">Salio la sasa (Units)</label><input type="number" id="newBalance" step="0.1" placeholder="245.6"></div>
+            <div><label data-sw="Units ulizopakia leo" data-en="Units topped up today">Units ulizopakia leo</label><input type="number" id="topupUnits" step="0.1" placeholder="0"></div>
+          </div>
+          <div class="formrow">
+            <div><label data-sw="Wakati" data-en="Time">Wakati</label><select id="readTime"><option value="Asubuhi">Asubuhi</option><option value="Jioni">Jioni</option><option value="Ziada">Ziada</option></select></div>
+            <div><label data-sw="Hali ya hewa" data-en="Weather">Hali ya hewa</label><select id="weather"><option>Jua</option><option>Mawingu</option><option>Mvua</option><option>Dhoruba</option></select></div>
+          </div>
+          <label data-sw="Maelezo" data-en="Notes">Maelezo</label><input id="note" placeholder="Mfano: LUKU ilipakiwa, wageni walikuwepo">
+          <button class="btn blue" style="width:100%;margin-top:14px" onclick="saveLuku()" data-sw="Hifadhi na tabiri" data-en="Save and predict">Hifadhi na tabiri</button>
+        </div>
+        <div class="card"><h3 data-sw="Utabiri wa papo hapo" data-en="Instant prediction">Utabiri wa papo hapo</h3><div id="instantPredict" class="alert">Jaza salio la sasa kisha bonyeza hifadhi.</div></div>
+      </div>
+    </section>
+
+    <section class="section" id="rooms">
+      <div class="title"><div><h2 data-sw="Hali ya vyumba" data-en="Room status">Hali ya vyumba</h2><p data-sw="Kijani kinaonyesha chumba chenye data ya sensa." data-en="Green means the room has census data.">Kijani kinaonyesha chumba chenye data ya sensa.</p></div></div>
+      <div class="card"><div class="roomlist" id="roomList"></div></div>
+      <div class="card" style="margin-top:14px;overflow:auto"><table id="roomTable"></table></div>
+    </section>
+
+    <section class="section" id="compare">
+      <div class="title"><div><h2 data-sw="Ulinganisho wa vyumba" data-en="Room comparison">Ulinganisho wa vyumba</h2><p data-sw="Wiki hii dhidi ya wiki iliyopita na ranking ya matumizi." data-en="This week versus last week and usage ranking.">Wiki hii dhidi ya wiki iliyopita na ranking ya matumizi.</p></div></div>
+      <div class="grid two">
+        <div class="card"><h3 data-sw="Wiki hii vs wiki iliyopita" data-en="This week vs last week">Wiki hii vs wiki iliyopita</h3><canvas class="canvas" id="weekChart" width="900" height="300"></canvas></div>
+        <div class="card"><h3 data-sw="Ranking" data-en="Ranking">Ranking</h3><div id="ranking"></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="tips">
+      <div class="title"><div><h2 data-sw="Optimization na ushauri" data-en="Optimization and tips">Optimization na ushauri</h2><p data-sw="Mapendekezo yanatokana na vifaa na matumizi yako." data-en="Suggestions are based on appliances and usage.">Mapendekezo yanatokana na vifaa na matumizi yako.</p></div></div>
+      <div class="card tips" id="tipsList"></div>
+    </section>
+
+    <section class="section" id="admin">
+      <div class="title"><div><h2>Admin Dashboard</h2><p data-sw="Unaona vyumba vyote, LUKU na tahadhari." data-en="View all rooms, LUKU and alerts.">Unaona vyumba vyote, LUKU na tahadhari.</p></div></div>
+      <div class="grid three">
+        <div class="card stat"><div class="n" id="adRooms">0/16</div><div class="l">Vyumba vilivyojazwa</div></div>
+        <div class="card stat"><div class="n" id="adHigh">0</div><div class="l">Vyumba matumizi juu</div></div>
+        <div class="card stat"><div class="n" id="adAvg">0</div><div class="l">Wastani kWh/chumba</div></div>
+      </div>
+      <div class="card" style="margin-top:14px;overflow:auto"><table id="adminTable"></table></div>
+    </section>
+  </section>
+</main>
+
+<script>
+const SHEETS_URL="https://script.google.com/macros/s/AKfycbx5kL3XZLuL10M4Z8lyKd5kTEH8IQxifsEDkZxfhQkOjZ2fz6pAhSOGCRQd174kCFFZ/exec";
+const PRICE=292;
+let lang='sw', user=null, lukuRows=[], sensaRows=[];
+const $=id=>document.getElementById(id);
+
+const sampleRooms=[
+ {room:'C01',name:'Amina',kwh:82,devices:['Friji','Taa LED','TV','Fan']},
+ {room:'C02',name:'Brayton',kwh:116,devices:['TV','Laptop','Pasi','Kettle','Taa LED']},
+ {room:'C03',name:'Juma',kwh:64,devices:['Taa LED','Fan','Chaja']},
+ {room:'C04',name:'Neema',kwh:138,devices:['Friji','Rice Cooker','TV','Pasi']},
+ {room:'C05',name:'Hassan',kwh:51,devices:['Taa LED','Router','Laptop']},
+ {room:'C06',name:'Rehema',kwh:95,devices:['Fan','TV','Blender','Taa LED']},
+ {room:'C07',name:'Musa',kwh:74,devices:['TV','Chaja','Taa LED']},
+ {room:'C08',name:'Fatma',kwh:153,devices:['Friji','Kettle','Rice Cooker','Pasi','TV']}
+];
+
+function t(sw,en){return lang==='sw'?sw:en}
+function money(n){return 'TZS '+Math.round(n).toLocaleString()}
+function setLang(l){lang=l;$('bSw').classList.toggle('active',l==='sw');$('bEn').classList.toggle('active',l==='en');document.querySelectorAll('[data-sw]').forEach(e=>e.textContent=e.dataset[l]);renderAll()}
+function login(){const name=$('loginName').value.trim();const roomRaw=$('loginRoom').value.trim();const room=roomRaw.toUpperCase();if(!name||!room)return alert(t('Jaza jina lako na namba ya chumba','Enter your name and room number'));user={name,room:roomRaw,isAdmin:name.toLowerCase()==='admin'||room==='MRENO'};localStorage.setItem('energy_user',JSON.stringify(user));showApp()}
+function logout(){localStorage.removeItem('energy_user');location.reload()}
+function showApp(){$('loginBox').classList.add('hidden');$('app').classList.remove('hidden');$('userbar').classList.remove('hidden');$('who').textContent=user.isAdmin?'Admin':`${user.name} · ${user.room}`;$('roleText').textContent=user.isAdmin?t('Unaona vyumba vyote','You can view all rooms'):t('Unaona chumba chako na wastani wa nyumba','You see your room and house average');$('adminTab').style.display=user.isAdmin?'inline-block':'none';document.querySelectorAll('.section').forEach((s,i)=>s.classList.toggle('active',i===0));document.querySelectorAll('.nav button').forEach((b,i)=>b.classList.toggle('active',i===0));refreshData()}
+function tab(id,btn){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAll()}
+
+async function refreshData(){
+  sensaRows=sampleRooms;
+  lukuRows=JSON.parse(localStorage.getItem('luku_local')||'[]');
+  renderAll();
+  try{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),3500);
+    const res=await fetch(SHEETS_URL+'?sheet=LUKU&v='+Date.now(),{signal:controller.signal});
+    clearTimeout(timer);
+    const data=await res.json();
+    if(Array.isArray(data)) lukuRows=data;
+  }catch(e){}
+  renderAll();
+}
+function roomData(){return sensaRows.map(r=>({...r,bill:r.kwh*PRICE,weekNow:r.kwh*.24,weekPrev:r.kwh*(.18+Math.random()*.08)})).sort((a,b)=>b.kwh-a.kwh)}
+function currentRoom(){const rooms=roomData();return user?.isAdmin?rooms[0]:(rooms.find(r=>r.room===user.room)||{room:user.room,name:user.name,kwh:0,bill:0,devices:[],weekNow:0,weekPrev:0})}
+function lukuStats(){const rows=[...lukuRows].filter(r=>r.salio_jipya).sort((a,b)=>new Date(b.timestamp||b.tarehe)-new Date(a.timestamp||a.tarehe));const latest=parseFloat(rows[0]?.salio_jipya||0);const used=rows.map(r=>parseFloat(r.matumizi_units||0)).filter(n=>n>0);const daily=used.length?used.reduce((a,b)=>a+b,0)/Math.max(1,used.length/2):8.5;return{latest,daily,days:latest&&daily?latest/daily:0,count:new Set(rows.map(r=>r.tarehe)).size}}
+function predictionText(room,ls){const roomDaily=Math.max(room.kwh/30,0.1),days=ls.latest?ls.latest/roomDaily:0;if(!ls.latest)return{cls:'alert',text:t(`Chumba ${room.room}: bado hakuna salio la LUKU lililoingizwa. Ingiza salio ili mfumo utoe utabiri wako.`,`Room ${room.room}: no LUKU balance has been entered yet. Enter a balance to generate your prediction.`)};if(days<3)return{cls:'alert bad',text:t(`Tahadhari ${room.room}: kwa matumizi yako ya wastani (${roomDaily.toFixed(1)} units/siku), salio linaweza kutosha takribani siku ${days.toFixed(1)} tu. Punguza vifaa vya watts kubwa na panga kununua LUKU.`,`Alert ${room.room}: at your average use (${roomDaily.toFixed(1)} units/day), the balance may last about ${days.toFixed(1)} days. Reduce high-watt appliances and plan a top-up.`)};if(days<7)return{cls:'alert',text:t(`Utabiri ${room.room}: salio linaweza kutosha takribani siku ${days.toFixed(1)}. Anza kupunguza matumizi ya vifaa vikubwa.`,`Prediction ${room.room}: the balance may last about ${days.toFixed(1)} days. Start reducing heavy appliance usage.`)};return{cls:'alert ok',text:t(`Utabiri ${room.room}: kwa matumizi yako ya sasa, salio linaweza kutosha takribani siku ${days.toFixed(1)}. Matumizi yako yako kwenye hali nzuri.`,`Prediction ${room.room}: at your current usage, the balance may last about ${days.toFixed(1)} days. Your usage looks healthy.`)}}
+function visibleRooms(rooms){return user?.isAdmin?rooms:rooms.filter(r=>r.room===user.room)}
+function renderAll(){if(!user)return;const rooms=roomData(), shown=visibleRooms(rooms), me=currentRoom(), ls=lukuStats(), avg=rooms.reduce((s,r)=>s+r.kwh,0)/rooms.length;$('homeSub').textContent=user.isAdmin?t('Muhtasari wa nyumba nzima','Whole house overview'):`${me.room} · ${t('taarifa zako binafsi','your personal data')}`;
+  $('stKwh').textContent=(user.isAdmin?rooms.reduce((s,r)=>s+r.kwh,0):me.kwh).toFixed(1);$('stBill').textContent=money(user.isAdmin?rooms.reduce((s,r)=>s+r.bill,0):me.bill);$('stRank').textContent=user.isAdmin?'#1':me.devices.length;$('rankLabel').textContent=user.isAdmin?t('Chumba kinachoongoza','Top room'):t('Idadi ya vifaa','Number of devices');$('stDays').textContent=ls.count;
+  $('lukuStatus').className='alert '+(ls.days<3?'bad':ls.days<7?'':'ok');$('lukuStatus').textContent=ls.latest?`${t('Salio','Balance')}: ${ls.latest.toFixed(1)} units · ${t('Makadirio','Estimate')}: ${ls.days.toFixed(1)} ${t('siku zimebaki','days left')}`:t('Bado hakuna data ya LUKU iliyopatikana.','No LUKU data found yet.');
+  $('forecastBox').innerHTML=`<div class="bar"><span style="width:${Math.min(100,ls.days/14*100)}%"></span></div><p style="color:var(--muted);font-size:13px">${t('Wastani wa matumizi','Average usage')}: ${ls.daily.toFixed(1)} units/siku</p>`;
+  const msg=predictionText(me,ls);$('predictionMessage').className=msg.cls;$('predictionMessage').textContent=user.isAdmin?t('Admin anaona ujumbe wa kila chumba kwenye jedwali la Admin. Mpangaji akiingia ataona ujumbe wake hapa.','Admin sees each room message in the Admin table. Tenants see their own message here.'):msg.text;
+  drawBar($('barChart'),shown.map(r=>r.room),shown.map(r=>r.kwh));drawWeek($('weekChart'),shown);
+  renderRooms(rooms);renderRanking(rooms);renderTips(me,avg,ls);renderAdmin(rooms,avg);
+}
+function renderRooms(rooms){const list=visibleRooms(rooms);$('roomList').innerHTML='';if(user.isAdmin){for(let i=1;i<=16;i++){const code='C'+String(i).padStart(2,'0'),r=rooms.find(x=>x.room===code);$('roomList').innerHTML+=`<div class="room ${r?'used':''}">${code}${r?'<br>✓':''}</div>`}}else{$('roomList').innerHTML=`<div class="room used">${user.room}<br>✓</div>`}
+  $('roomTable').innerHTML='<tr><th>Chumba</th><th>Jina</th><th>kWh</th><th>Bili</th><th>Vifaa</th></tr>'+list.map(r=>`<tr><td><b>${r.room}</b></td><td>${r.name}</td><td>${r.kwh.toFixed(1)}</td><td>${money(r.bill)}</td><td>${r.devices.join(', ')}</td></tr>`).join('')}
+function renderRanking(rooms){if(!user.isAdmin){const me=currentRoom();$('ranking').innerHTML=`<div class="alert ok">${t('Hapa unaona taarifa za chumba chako tu. Ranking ya vyumba vyote inaonekana kwa admin pekee.','You only see your own room here. Full ranking is visible to admin only.')}</div><div style="display:flex;justify-content:space-between;gap:10px;padding:10px;border-bottom:1px solid #edf0f6"><span><b>${me.room}</b> ${me.name}</span><span class="badge ${me.kwh>120?'red':me.kwh>90?'amber':''}">${me.kwh.toFixed(1)} kWh</span></div>`;return}
+  $('ranking').innerHTML=rooms.map((r,i)=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:10px;border-bottom:1px solid #edf0f6"><span><b>#${i+1} ${r.room}</b> ${r.name}</span><span class="badge ${r.kwh>120?'red':r.kwh>90?'amber':''}">${r.kwh.toFixed(1)} kWh</span></div>`).join('')}
+function renderTips(r,avg,ls){const tips=[];if(r.kwh>avg)tips.push(t(`Chumba ${r.room} kiko juu ya wastani. Punguza muda wa vifaa vikubwa kama pasi, kettle na rice cooker.`,`Room ${r.room} is above average. Reduce heavy appliances like iron, kettle and rice cooker.`));if(r.devices.some(d=>/Friji/i.test(d)))tips.push(t('Kwa friji: usiache mlango wazi, epuka kuiweka karibu na jiko, na hakikisha rubber ya mlango inabana vizuri.','For fridge: keep the door closed, avoid placing it near heat, and check the door seal.'));if(r.devices.some(d=>/Pasi|Kettle|Rice/i.test(d)))tips.push(t('Vifaa vya joto hutumia umeme mwingi. Tumia kwa batch moja badala ya mara nyingi nyingi.','Heating appliances use high power. Use them in batches instead of many separate sessions.'));if(ls.days&&ls.days<5)tips.push(t('LUKU inaweza kuisha karibuni. Punguza matumizi ya vifaa vya watts kubwa na panga kununua units.','LUKU may run out soon. Reduce high-watt appliances and plan a top-up.'));if(!tips.length)tips.push(t('Matumizi yako yako vizuri. Endelea kurekodi LUKU asubuhi na jioni ili utabiri uwe sahihi zaidi.','Your usage looks good. Keep recording LUKU morning and evening for better prediction.'));$('tipsList').innerHTML=tips.map(x=>`<div class="tip">${x}</div>`).join('')}
+function renderAdmin(rooms,avg){const ls=lukuStats();$('adRooms').textContent=rooms.length+'/16';$('adHigh').textContent=rooms.filter(r=>r.kwh>avg*1.2).length;$('adAvg').textContent=avg.toFixed(1);$('adminTable').innerHTML='<tr><th>Rank</th><th>Chumba</th><th>Jina</th><th>kWh</th><th>Bili</th><th>Hali</th><th>Ujumbe wa utabiri</th></tr>'+rooms.map((r,i)=>{const msg=predictionText(r,ls);return`<tr><td>#${i+1}</td><td>${r.room}</td><td>${r.name}</td><td>${r.kwh.toFixed(1)}</td><td>${money(r.bill)}</td><td><span class="badge ${r.kwh>120?'red':r.kwh>90?'amber':'blue'}">${r.kwh>120?'Juu':r.kwh>90?'Kati':'Sawa'}</span></td><td>${msg.text}</td></tr>`}).join('')}
+function saveLuku(){const bal=parseFloat($('newBalance').value), top=parseFloat($('topupUnits').value||0);if(!bal)return alert(t('Weka salio la sasa','Enter current balance'));const ls=lukuStats(), daily=ls.daily||8.5, days=bal/daily;const row={timestamp:new Date().toISOString(),tarehe:new Date().toISOString().slice(0,10),wakati:$('readTime').value,salio_jipya:bal,units_pakiwa:top,hali_hewa:$('weather').value,maelezo_maalum:$('note').value||'—',aina:'LUKU_REKODI'};lukuRows.unshift(row);localStorage.setItem('luku_local',JSON.stringify(lukuRows));fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(row)}).catch(()=>{});$('instantPredict').className='alert '+(days<3?'bad':days<7?'':'ok');$('instantPredict').innerHTML=`${t('Salio hili linakadiriwa kutosha','This balance is estimated to last')} <b>${days.toFixed(1)} ${t('siku','days')}</b>.<br>${top>0?t('Umeweka LUKU mpya; rekodi imehifadhiwa.','Top-up recorded and saved.'):t('Hakuna top-up mpya iliyowekwa.','No new top-up entered.')}`;$('newBalance').value='';$('topupUnits').value='';$('note').value='';renderAll()}
+function drawBar(c,labels,vals){const ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);const max=Math.max(...vals,1),bw=w/(vals.length*1.7);ctx.font='22px Arial';vals.forEach((v,i)=>{const x=34+i*bw*1.65,y=h-35,bh=(h-75)*(v/max);ctx.fillStyle=v>120?'#dc2626':v>90?'#d97706':'#00a86b';ctx.fillRect(x,y-bh,bw,bh);ctx.fillStyle='#667085';ctx.font='18px Arial';ctx.fillText(labels[i],x,y+22)});ctx.fillStyle='#172033';ctx.font='18px Arial';ctx.fillText('kWh',12,25)}
+function drawWeek(c,rooms){const ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);const vals=rooms.slice(0,8),max=Math.max(...vals.map(r=>Math.max(r.weekNow,r.weekPrev)),1);ctx.font='18px Arial';vals.forEach((r,i)=>{const x=45+i*(w-80)/vals.length,bw=22,base=h-35;let a=(h-80)*r.weekPrev/max,b=(h-80)*r.weekNow/max;ctx.fillStyle='#9ca3af';ctx.fillRect(x,base-a,bw,a);ctx.fillStyle='#2563eb';ctx.fillRect(x+bw+4,base-b,bw,b);ctx.fillStyle='#667085';ctx.fillText(r.room,x,base+22)});ctx.fillStyle='#172033';ctx.fillText(t('Kijivu: iliyopita · Bluu: hii','Gray: previous · Blue: current'),12,24)}
+window.onload=()=>{const saved=localStorage.getItem('energy_user');if(saved){user=JSON.parse(saved);showApp()}}
+</script>
+</body>
+</html>
