@@ -15,7 +15,8 @@
 button,input,select{font:inherit}button{cursor:pointer}
 .top{background:linear-gradient(135deg,#0f8f5f,#164e9f);color:white;padding:18px 16px 22px}
 .topbar{max-width:1180px;margin:auto;display:flex;gap:12px;align-items:center;justify-content:space-between}
-.brand h1{font-size:22px;margin:0 0 4px}.brand p{margin:0;font-size:13px;opacity:.88}
+.brand{flex:1;text-align:center}
+.brand h1{font-size:34px;line-height:1.15;margin:0 0 8px;text-transform:uppercase;letter-spacing:0;font-weight:900}.brand p{margin:0;font-size:15px;opacity:.92;font-weight:600}
 .lang{display:flex;gap:6px}.lang button{border:1px solid rgba(255,255,255,.45);background:transparent;color:white;border-radius:999px;padding:7px 11px;font-weight:700;font-size:12px}
 .lang button.active{background:white;color:#116347}
 .wrap{max-width:1180px;margin:-12px auto 34px;padding:0 14px}
@@ -52,15 +53,15 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 9px;
 .ok{background:#ecfdf5;border-color:#bbf7d0;color:#047857}.bad{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
 .userbar{display:flex;justify-content:space-between;align-items:center;margin:14px 0;color:white}
 .userbar button{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);color:white;border-radius:10px;padding:9px 12px;font-weight:800}
-@media(max-width:850px){.cards,.two,.three,.sharebox{grid-template-columns:1fr}.roomlist{grid-template-columns:repeat(4,1fr)}.formrow{grid-template-columns:1fr}.topbar{display:block}.lang{margin-top:12px}}
+@media(max-width:850px){.cards,.two,.three,.sharebox{grid-template-columns:1fr}.roomlist{grid-template-columns:repeat(4,1fr)}.formrow{grid-template-columns:1fr}.topbar{display:block}.brand h1{font-size:25px}.brand p{font-size:13px}.lang{margin-top:12px;justify-content:center}}
 </style>
 </head>
 <body>
 <header class="top">
   <div class="topbar">
     <div class="brand">
-      <h1 data-sw="Smart Home Energy System" data-en="Smart Home Energy System">Smart Home Energy System</h1>
-      <p data-sw="Sensa, LUKU, utabiri, bili na optimization kwa vyumba 16" data-en="Census, LUKU, prediction, billing and optimization for 16 rooms">Sensa, LUKU, utabiri, bili na optimization kwa vyumba 16</p>
+      <h1 data-sw="SMART HOME ENERGY PREDICTION AND OPTIMIZATION SYSTEM" data-en="SMART HOME ENERGY PREDICTION AND OPTIMIZATION SYSTEM">SMART HOME ENERGY PREDICTION AND OPTIMIZATION SYSTEM</h1>
+      <p data-sw="Mfumo wa kufuatilia matumizi ya umeme, kutabiri salio la LUKU, na kutoa ushauri wa kupunguza gharama za nishati." data-en="A system for tracking electricity usage, predicting LUKU balance, and giving guidance to reduce energy costs.">Mfumo wa kufuatilia matumizi ya umeme, kutabiri salio la LUKU, na kutoa ushauri wa kupunguza gharama za nishati.</p>
     </div>
     <div class="lang"><button id="bSw" class="active" onclick="setLang('sw')">Kiswahili</button><button id="bEn" onclick="setLang('en')">English</button></div>
   </div>
@@ -203,7 +204,7 @@ function setLang(l){lang=l;$('bSw').classList.toggle('active',l==='sw');$('bEn')
 function normalizeRoom(value){const raw=value.trim().toUpperCase().replace(/\s+/g,'');if(!raw)return'';if(raw==='MRENO')return raw;const num=raw.match(/^C?0?(\d{1,2})$/);if(!num)return raw;return'C'+String(Number(num[1])).padStart(2,'0')}
 function showLoginError(msg){const box=$('loginError');box.textContent=msg;box.classList.add('show')}
 function clearLoginError(){$('loginError').classList.remove('show');$('loginError').textContent=''}
-function login(){clearLoginError();const name=$('loginName').value.trim();let room=normalizeRoom($('loginRoom').value);const isAdmin=name.toLowerCase()==='admin'||room==='MRENO';if(!name)return showLoginError(t('Andika jina lako kwanza. Mfano: Kelvin.','Enter your name first. Example: Kelvin.'));if(!room&&!isAdmin)return showLoginError(t('Andika namba ya chumba. Mfano: C02 au 2.','Enter your room number. Example: C02 or 2.'));if(isAdmin&&!room)room='MRENO';user={name,room,isAdmin};setStore('energy_user',JSON.stringify(user));showApp()}
+function login(){clearLoginError();const name=$('loginName').value.trim();let room=normalizeRoom($('loginRoom').value);const isAdmin=name.toLowerCase()==='admin'||room==='MRENO';if(!name)return showLoginError(t('Andika jina lako kwanza. Mfano: Kelvin.','Enter your name first. Example: Kelvin.'));if(!room&&!isAdmin)return showLoginError(t('Andika namba ya chumba. Mfano: C02 au 2.','Enter your room number. Example: C02 or 2.'));if(isAdmin&&!room)room='MRENO';const roomRecord=sampleRooms.find(r=>r.room===room);if(!isAdmin&&(!roomRecord||roomRecord.name.toLowerCase()!==name.toLowerCase()))return showLoginError(t('Hakikisha umeandika jina sahihi na namba sahihi ya chumba. Jina lazima liendane na chumba hicho.','Make sure you enter the correct name and correct room number. The name must match that room.'));user={name:roomRecord?roomRecord.name:name,room,isAdmin};setStore('energy_user',JSON.stringify(user));showApp()}
 function logout(){removeStore('energy_user');user=null;$('app').classList.add('hidden');$('userbar').classList.add('hidden');$('loginBox').classList.remove('hidden');clearLoginError()}
 function showApp(){$('loginBox').classList.add('hidden');$('app').classList.remove('hidden');$('userbar').classList.remove('hidden');$('who').textContent=user.isAdmin?'Admin':`${user.name} · ${user.room}`;$('roleText').textContent=user.isAdmin?t('Unaona vyumba vyote','You can view all rooms'):t('Unaona chumba chako na wastani wa nyumba','You see your room and house average');$('adminTab').style.display=user.isAdmin?'inline-block':'none';$('lukuTab').style.display=user.isAdmin?'inline-block':'none';document.querySelectorAll('.section').forEach((s,i)=>s.classList.toggle('active',i===0));document.querySelectorAll('.nav button').forEach((b,i)=>b.classList.toggle('active',i===0));refreshData()}
 function tab(id,btn){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAll()}
