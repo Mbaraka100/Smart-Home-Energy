@@ -81,7 +81,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 9px;
   <section id="app" class="hidden">
     <nav class="nav">
       <button class="active" onclick="tab('home',this)" data-sw="Muhtasari" data-en="Overview">Muhtasari</button>
-      <button onclick="tab('luku',this)" data-sw="Ingiza LUKU" data-en="Enter LUKU">Ingiza LUKU</button>
+      <button id="lukuTab" onclick="tab('luku',this)" data-sw="Ingiza LUKU" data-en="Enter LUKU">Ingiza LUKU</button>
       <button onclick="tab('rooms',this)" data-sw="Vyumba" data-en="Rooms">Vyumba</button>
       <button onclick="tab('compare',this)" data-sw="Ulinganisho" data-en="Compare">Ulinganisho</button>
       <button onclick="tab('tips',this)" data-sw="Ushauri" data-en="Tips">Ushauri</button>
@@ -178,7 +178,7 @@ function money(n){return 'TZS '+Math.round(n).toLocaleString()}
 function setLang(l){lang=l;$('bSw').classList.toggle('active',l==='sw');$('bEn').classList.toggle('active',l==='en');document.querySelectorAll('[data-sw]').forEach(e=>e.textContent=e.dataset[l]);renderAll()}
 function login(){const name=$('loginName').value.trim();const roomRaw=$('loginRoom').value.trim();const room=roomRaw.toUpperCase();if(!name||!room)return alert(t('Jaza jina lako na namba ya chumba','Enter your name and room number'));user={name,room:roomRaw,isAdmin:name.toLowerCase()==='admin'||room==='MRENO'};localStorage.setItem('energy_user',JSON.stringify(user));showApp()}
 function logout(){localStorage.removeItem('energy_user');location.reload()}
-function showApp(){$('loginBox').classList.add('hidden');$('app').classList.remove('hidden');$('userbar').classList.remove('hidden');$('who').textContent=user.isAdmin?'Admin':`${user.name} · ${user.room}`;$('roleText').textContent=user.isAdmin?t('Unaona vyumba vyote','You can view all rooms'):t('Unaona chumba chako na wastani wa nyumba','You see your room and house average');$('adminTab').style.display=user.isAdmin?'inline-block':'none';document.querySelectorAll('.section').forEach((s,i)=>s.classList.toggle('active',i===0));document.querySelectorAll('.nav button').forEach((b,i)=>b.classList.toggle('active',i===0));refreshData()}
+function showApp(){$('loginBox').classList.add('hidden');$('app').classList.remove('hidden');$('userbar').classList.remove('hidden');$('who').textContent=user.isAdmin?'Admin':`${user.name} · ${user.room}`;$('roleText').textContent=user.isAdmin?t('Unaona vyumba vyote','You can view all rooms'):t('Unaona chumba chako na wastani wa nyumba','You see your room and house average');$('adminTab').style.display=user.isAdmin?'inline-block':'none';$('lukuTab').style.display=user.isAdmin?'inline-block':'none';document.querySelectorAll('.section').forEach((s,i)=>s.classList.toggle('active',i===0));document.querySelectorAll('.nav button').forEach((b,i)=>b.classList.toggle('active',i===0));refreshData()}
 function tab(id,btn){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAll()}
 
 async function refreshData(){
