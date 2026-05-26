@@ -8,192 +8,162 @@
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0e1a;
-    --panel: #111827;
-    --panel2: #1a2236;
-    --border: #1e3a5f;
-    --accent: #00d4ff;
-    --accent2: #f59e0b;
-    --accent3: #10b981;
-    --danger: #ef4444;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --card: #0f1929;
+    --bg:#0a0e1a;--panel:#111827;--panel2:#1a2236;--border:#1e3a5f;
+    --accent:#00d4ff;--accent2:#f59e0b;--accent3:#10b981;--danger:#ef4444;
+    --text:#e2e8f0;--muted:#64748b;--card:#0f1929;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans', sans-serif; min-height: 100vh; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans',sans-serif;min-height:100vh;}
 
-  /* ─── LOGIN ─── */
-  #loginPage {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    background: radial-gradient(ellipse at 60% 40%, #0d2137 0%, #0a0e1a 70%);
-  }
-  .login-box {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 16px; padding: 48px 40px; width: 100%; max-width: 420px;
-    box-shadow: 0 0 60px rgba(0,212,255,0.08);
-  }
-  .login-logo { text-align: center; margin-bottom: 32px; }
-  .login-logo .icon { font-size: 48px; display: block; margin-bottom: 8px; }
-  .login-logo h1 { font-family: 'Rajdhani', sans-serif; font-size: 1.6rem; color: var(--accent); letter-spacing: 2px; }
-  .login-logo p { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
-  .form-group { margin-bottom: 20px; }
-  .form-group label { display: block; color: var(--muted); font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-  .form-group input, .form-group select {
-    width: 100%; background: var(--card); border: 1px solid var(--border);
-    color: var(--text); padding: 12px 16px; border-radius: 8px; font-size: 1rem;
-    outline: none; transition: border-color 0.2s;
-  }
-  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
-  .btn-login {
-    width: 100%; background: var(--accent); color: #0a0e1a; font-family: 'Rajdhani', sans-serif;
-    font-size: 1.1rem; font-weight: 700; letter-spacing: 2px; padding: 14px;
-    border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.2s;
-  }
-  .btn-login:hover { opacity: 0.85; }
-  .login-error { background: rgba(239,68,68,0.15); border: 1px solid var(--danger); color: #fca5a5; padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; margin-bottom: 16px; display: none; }
-  .login-hint { text-align: center; margin-top: 20px; color: var(--muted); font-size: 0.82rem; }
-  .debug-btn { width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; }
-  .debug-output { margin-top: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 0.75rem; color: var(--muted); max-height: 160px; overflow-y: auto; display: none; white-space: pre-wrap; }
+  /* LOGIN */
+  #loginPage{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 60% 40%,#0d2137 0%,#0a0e1a 70%);}
+  .login-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 0 60px rgba(0,212,255,0.08);}
+  .login-logo{text-align:center;margin-bottom:32px;}
+  .login-logo .icon{font-size:48px;display:block;margin-bottom:8px;}
+  .login-logo h1{font-family:'Rajdhani',sans-serif;font-size:1.6rem;color:var(--accent);letter-spacing:2px;}
+  .login-logo p{color:var(--muted);font-size:0.85rem;margin-top:4px;}
+  .fg{margin-bottom:20px;}
+  .fg label{display:block;color:var(--muted);font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+  .fg input,.fg select{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 16px;border-radius:8px;font-size:1rem;outline:none;transition:border-color .2s;}
+  .fg input:focus,.fg select:focus{border-color:var(--accent);}
+  .btn-login{width:100%;background:var(--accent);color:#0a0e1a;font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:2px;padding:14px;border:none;border-radius:8px;cursor:pointer;transition:opacity .2s;}
+  .btn-login:hover{opacity:.85;}
+  .login-error{background:rgba(239,68,68,.15);border:1px solid var(--danger);color:#fca5a5;padding:10px 14px;border-radius:8px;font-size:.88rem;margin-bottom:16px;display:none;}
+  .login-hint{text-align:center;margin-top:16px;color:var(--muted);font-size:.82rem;}
 
-  /* ─── APP SHELL ─── */
-  #appPage { display: none; flex-direction: column; min-height: 100vh; }
-  .topbar {
-    background: var(--panel); border-bottom: 1px solid var(--border);
-    padding: 0 24px; display: flex; align-items: center; justify-content: space-between;
-    height: 60px; position: sticky; top: 0; z-index: 100;
-  }
-  .topbar-brand { font-family: 'Rajdhani', sans-serif; color: var(--accent); font-size: 1.2rem; letter-spacing: 2px; display: flex; align-items: center; gap: 8px; }
-  .user-badge { background: var(--panel2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
-  .user-badge span { color: var(--accent3); font-weight: 600; }
-  .btn-logout { background: transparent; border: none; color: var(--muted); cursor: pointer; font-size: 0.8rem; }
-  .btn-logout:hover { color: var(--danger); }
+  /* SETUP URL MODAL */
+  .setup-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;align-items:center;justify-content:center;}
+  .setup-modal.open{display:flex;}
+  .setup-box{background:var(--panel);border:2px solid var(--accent2);border-radius:16px;padding:36px;max-width:500px;width:90%;}
+  .setup-title{font-family:'Rajdhani',sans-serif;font-size:1.3rem;color:var(--accent2);margin-bottom:8px;}
+  .setup-desc{color:var(--muted);font-size:.85rem;line-height:1.6;margin-bottom:20px;}
+  .setup-input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:8px;font-size:.88rem;outline:none;margin-bottom:16px;}
+  .setup-input:focus{border-color:var(--accent2);}
+  .setup-btns{display:flex;gap:10px;}
 
-  /* ─── NAV TABS ─── */
-  .nav-tabs {
-    background: var(--panel); border-bottom: 1px solid var(--border);
-    display: flex; overflow-x: auto; padding: 0 24px; gap: 2px;
-  }
-  .nav-tabs::-webkit-scrollbar { height: 3px; }
-  .nav-tabs::-webkit-scrollbar-thumb { background: var(--border); }
-  .nav-tab {
-    padding: 14px 18px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;
-    font-weight: 600; letter-spacing: 1px; color: var(--muted); cursor: pointer;
-    border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s;
-  }
-  .nav-tab:hover { color: var(--text); }
-  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .nav-tab.admin-tab { color: var(--accent2); }
-  .nav-tab.admin-tab.active { border-bottom-color: var(--accent2); }
+  /* APP */
+  #appPage{display:none;flex-direction:column;min-height:100vh;}
+  .topbar{background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+  .topbar-brand{font-family:'Rajdhani',sans-serif;color:var(--accent);font-size:1.2rem;letter-spacing:2px;}
+  .user-badge{background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:.85rem;display:flex;align-items:center;gap:8px;}
+  .user-badge span{color:var(--accent3);font-weight:600;}
+  .btn-logout{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;}
+  .btn-logout:hover{color:var(--danger);}
 
-  /* ─── CONTENT ─── */
-  .content { flex: 1; padding: 28px 24px; max-width: 1400px; margin: 0 auto; width: 100%; }
-  .page { display: none; }
-  .page.active { display: block; }
+  /* TABS */
+  .nav-tabs{background:var(--panel);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;padding:0 16px;gap:2px;}
+  .nav-tabs::-webkit-scrollbar{height:3px;}
+  .nav-tabs::-webkit-scrollbar-thumb{background:var(--border);}
+  .nav-tab{padding:14px 16px;font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:1px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;}
+  .nav-tab:hover{color:var(--text);}
+  .nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .nav-tab.atab{color:var(--accent2);}
+  .nav-tab.atab.active{border-bottom-color:var(--accent2);}
 
-  /* ─── CARDS ─── */
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
-  .stat-card {
-    background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
-    padding: 20px 24px; position: relative; overflow: hidden;
-  }
-  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-  .stat-card.blue::before { background: var(--accent); }
-  .stat-card.green::before { background: var(--accent3); }
-  .stat-card.yellow::before { background: var(--accent2); }
-  .stat-card.red::before { background: var(--danger); }
-  .stat-label { color: var(--muted); font-size: 0.78rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-  .stat-value { font-family: 'Rajdhani', sans-serif; font-size: 2rem; font-weight: 700; color: var(--text); }
-  .stat-sub { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
+  /* CONTENT */
+  .content{flex:1;padding:24px;max-width:1400px;margin:0 auto;width:100%;}
+  .page{display:none;}
+  .page.active{display:block;}
 
-  /* ─── SECTION TITLES ─── */
-  .section-title { font-family: 'Rajdhani', sans-serif; font-size: 1.2rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  /* CARDS */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+  .stat-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 22px;position:relative;overflow:hidden;}
+  .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+  .stat-card.blue::before{background:var(--accent);}
+  .stat-card.green::before{background:var(--accent3);}
+  .stat-card.yellow::before{background:var(--accent2);}
+  .stat-card.red::before{background:var(--danger);}
+  .stat-label{color:var(--muted);font-size:.75rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+  .stat-value{font-family:'Rajdhani',sans-serif;font-size:2rem;font-weight:700;}
+  .stat-sub{color:var(--muted);font-size:.78rem;margin-top:3px;}
+  .section-title{font-family:'Rajdhani',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--accent);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
 
-  /* ─── ROOM GRID ─── */
-  .room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-  .room-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-    padding: 16px; cursor: pointer; transition: all 0.2s; position: relative;
-  }
-  .room-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .room-card.occupied { border-color: #1e4d3a; }
-  .room-card.vacant { border-color: #1e3a5f; opacity: 0.6; }
-  .room-num { font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--accent); }
-  .room-tenant { font-size: 0.85rem; color: var(--text); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .room-kwh { font-size: 0.78rem; color: var(--muted); margin-top: 6px; }
-  .room-badge { position: absolute; top: 10px; right: 10px; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
-  .badge-occ { background: rgba(16,185,129,0.2); color: var(--accent3); }
-  .badge-vac { background: rgba(100,116,139,0.15); color: var(--muted); }
+  /* ROOM GRID */
+  .room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
+  .room-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;position:relative;}
+  .room-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+  .room-card.occupied{border-color:#1e4d3a;}
+  .room-num{font-family:'Rajdhani',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent);}
+  .room-tenant{font-size:.83rem;color:var(--text);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .room-kwh{font-size:.75rem;color:var(--muted);margin-top:5px;}
+  .room-badge{position:absolute;top:8px;right:8px;padding:2px 7px;border-radius:10px;font-size:.68rem;font-weight:600;}
+  .badge-occ{background:rgba(16,185,129,.2);color:var(--accent3);}
+  .badge-vac{background:rgba(100,116,139,.15);color:var(--muted);}
 
-  /* ─── LUKU FORM ─── */
-  .form-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 28px; max-width: 600px; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .form-field { margin-bottom: 18px; }
-  .form-field label { display: block; color: var(--muted); font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-  .form-field input, .form-field select {
-    width: 100%; background: var(--card); border: 1px solid var(--border);
-    color: var(--text); padding: 11px 14px; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s;
-  }
-  .form-field input:focus, .form-field select:focus { border-color: var(--accent); }
-  .form-field input[readonly] { color: var(--accent3); }
-  .kwh-display { background: rgba(0,212,255,0.08); border: 1px solid var(--accent); border-radius: 8px; padding: 16px; text-align: center; margin-bottom: 18px; }
-  .kwh-big { font-family: 'Rajdhani', sans-serif; font-size: 2.4rem; color: var(--accent); font-weight: 700; }
-  .btn { padding: 12px 28px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 1px; transition: opacity 0.2s; }
-  .btn:hover { opacity: 0.82; }
-  .btn-primary { background: var(--accent); color: #0a0e1a; }
-  .btn-success { background: var(--accent3); color: #0a0e1a; }
-  .btn-danger { background: var(--danger); color: #fff; }
-  .btn-sm { padding: 6px 14px; font-size: 0.82rem; }
-  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-  .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.88rem; }
-  .alert-success { background: rgba(16,185,129,0.15); border: 1px solid var(--accent3); color: #6ee7b7; }
-  .alert-danger { background: rgba(239,68,68,0.12); border: 1px solid var(--danger); color: #fca5a5; }
+  /* FORM */
+  .form-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:580px;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .ff{margin-bottom:16px;}
+  .ff label{display:block;color:var(--muted);font-size:.76rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;}
+  .ff input,.ff select{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 13px;border-radius:8px;font-size:.93rem;outline:none;transition:border-color .2s;}
+  .ff input:focus,.ff select:focus{border-color:var(--accent);}
+  .ff input[readonly]{color:var(--accent3);}
+  .kwh-display{background:rgba(0,212,255,.07);border:1px solid var(--accent);border-radius:8px;padding:14px;text-align:center;margin-bottom:16px;}
+  .kwh-big{font-family:'Rajdhani',sans-serif;font-size:2.2rem;color:var(--accent);font-weight:700;}
+  .btn{padding:11px 24px;border-radius:8px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:1px;transition:opacity .2s;}
+  .btn:hover{opacity:.82;}
+  .btn-primary{background:var(--accent);color:#0a0e1a;}
+  .btn-success{background:var(--accent3);color:#0a0e1a;}
+  .btn-danger{background:var(--danger);color:#fff;}
+  .btn-warn{background:var(--accent2);color:#0a0e1a;}
+  .btn-sm{padding:6px 13px;font-size:.8rem;}
+  .btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);}
+  .btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+  .alert{padding:11px 15px;border-radius:8px;margin-bottom:14px;font-size:.87rem;}
+  .alert-success{background:rgba(16,185,129,.14);border:1px solid var(--accent3);color:#6ee7b7;}
+  .alert-danger{background:rgba(239,68,68,.12);border:1px solid var(--danger);color:#fca5a5;}
 
-  /* ─── TABLE ─── */
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; }
-  th { background: var(--panel2); color: var(--muted); font-size: 0.78rem; letter-spacing: 1px; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
-  td { padding: 12px 16px; border-bottom: 1px solid rgba(30,58,95,0.4); font-size: 0.9rem; }
-  tr:hover td { background: rgba(0,212,255,0.03); }
-  .tag { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
-  .tag-blue { background: rgba(0,212,255,0.15); color: var(--accent); }
-  .tag-green { background: rgba(16,185,129,0.15); color: var(--accent3); }
-  .tag-yellow { background: rgba(245,158,11,0.15); color: var(--accent2); }
+  /* TABLE */
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;}
+  th{background:var(--panel2);color:var(--muted);font-size:.75rem;letter-spacing:1px;text-transform:uppercase;padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);}
+  td{padding:11px 14px;border-bottom:1px solid rgba(30,58,95,.35);font-size:.88rem;}
+  tr:hover td{background:rgba(0,212,255,.025);}
+  .tag{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.73rem;font-weight:600;}
+  .tag-blue{background:rgba(0,212,255,.14);color:var(--accent);}
+  .tag-green{background:rgba(16,185,129,.14);color:var(--accent3);}
+  .tag-yellow{background:rgba(245,158,11,.14);color:var(--accent2);}
 
-  /* ─── CHART BARS ─── */
-  .chart-wrap { display: flex; align-items: flex-end; gap: 8px; height: 160px; padding: 8px 0; }
-  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
-  .bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.6s ease; position: relative; cursor: pointer; }
-  .bar-label { font-size: 0.65rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
-  .bar-val { font-size: 0.7rem; color: var(--text); }
+  /* CHART */
+  .chart-wrap{display:flex;align-items:flex-end;gap:6px;height:150px;padding:6px 0;}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end;}
+  .bar{width:100%;border-radius:4px 4px 0 0;min-height:3px;transition:height .6s;}
+  .bar-label{font-size:.62rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-align:center;}
+  .bar-val{font-size:.68rem;color:var(--text);}
 
-  /* ─── ADMIN ─── */
-  .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  @media(max-width:768px){ .admin-grid { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } }
-  .admin-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
-  .tenant-table-wrap { max-height: 400px; overflow-y: auto; }
+  /* ADMIN */
+  .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:700px){.admin-grid,.form-row{grid-template-columns:1fr;}}
+  .admin-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px;}
+  .admin-sub{font-family:'Rajdhani',sans-serif;color:var(--accent2);font-size:.95rem;letter-spacing:1px;margin-bottom:16px;}
+  .tenant-wrap{max-height:380px;overflow-y:auto;}
 
-  /* ─── USHAURI ─── */
-  .advice-list { display: flex; flex-direction: column; gap: 12px; }
-  .advice-item { background: var(--panel); border-left: 3px solid var(--accent2); border-radius: 0 10px 10px 0; padding: 16px 20px; }
-  .advice-title { font-weight: 600; color: var(--accent2); margin-bottom: 4px; font-size: 0.9rem; }
-  .advice-body { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+  /* USHAURI */
+  .advice-list{display:flex;flex-direction:column;gap:10px;}
+  .advice-item{background:var(--panel);border-left:3px solid var(--accent2);border-radius:0 10px 10px 0;padding:14px 18px;}
+  .advice-title{font-weight:600;color:var(--accent2);margin-bottom:3px;font-size:.88rem;}
+  .advice-body{color:var(--muted);font-size:.83rem;line-height:1.6;}
 
-  /* ─── KUMBUKUMBU ─── */
-  .hist-filters { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-  .hist-filters select, .hist-filters input { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 0.88rem; outline: none; }
-  
-  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: center; justify-content: center; }
-  .modal-bg.open { display: flex; }
-  .modal { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 28px; max-width: 480px; width: 90%; }
-  .modal-title { font-family: 'Rajdhani', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 20px; }
-  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+  /* HIST FILTERS */
+  .hist-filters{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+  .hist-filters select,.hist-filters input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:.86rem;outline:none;}
+
+  /* URL SETUP BADGE */
+  .url-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,.12);border:1px solid var(--accent2);border-radius:20px;padding:4px 12px;font-size:.75rem;color:var(--accent2);cursor:pointer;margin-left:12px;}
+  .url-badge:hover{background:rgba(245,158,11,.2);}
+  .url-ok{background:rgba(16,185,129,.12);border-color:var(--accent3);color:var(--accent3);}
+
+  /* MODAL */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;}
+  .modal-bg.open{display:flex;}
+  .modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px;max-width:460px;width:90%;}
+  .modal-title{font-family:'Rajdhani',sans-serif;font-size:1.15rem;color:var(--accent);margin-bottom:18px;}
+  .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════ LOGIN PAGE ═══════════════ -->
+<!-- ═══ LOGIN ═══ -->
 <div id="loginPage">
   <div class="login-box">
     <div class="login-logo">
@@ -202,25 +172,45 @@
       <p>Mfumo wa Usimamizi wa Umeme — Vyumba 16</p>
     </div>
     <div class="login-error" id="loginError"></div>
-    <div class="form-group">
+    <div class="fg">
       <label>Namba ya Chumba (1–16, au acha wazi kwa Admin)</label>
       <input type="text" id="loginChumba" placeholder="Mfano: 1 au C01" />
     </div>
-    <div class="form-group">
+    <div class="fg">
       <label>Jina Lako / Nenosiri la Admin</label>
-      <input type="text" id="loginJina" placeholder="Andika jina lako" onkeydown="if(event.key==='Enter')login()" />
+      <input type="text" id="loginJina" placeholder="Andika jina lako" />
     </div>
     <button class="btn-login" onclick="login()">INGIA ⚡</button>
-    <button class="debug-btn" onclick="debugSensa()">🔍 Angalia data ya Sensa (Tatizo?)</button>
-    <div class="debug-output" id="debugOut"></div>
-    <p class="login-hint">Admin: acha chumba wazi, weka nenosiri la admin</p>
+    <p class="login-hint">Admin: acha chumba wazi, nenosiri: <b>mreno</b></p>
   </div>
 </div>
 
-<!-- ═══════════════ APP PAGE ═══════════════ -->
+<!-- ═══ SETUP URL MODAL ═══ -->
+<div class="setup-modal" id="setupModal">
+  <div class="setup-box">
+    <div class="setup-title">🔗 Weka URL ya Google Apps Script</div>
+    <div class="setup-desc">
+      Baada ya deploy kwenye Google Apps Script, copy URL yako na paste hapa.<br>
+      Mfano: <code style="color:var(--accent);font-size:.8rem;">https://script.google.com/macros/s/XXXXXX.../exec</code>
+    </div>
+    <input class="setup-input" id="setupUrl" type="text" placeholder="https://script.google.com/macros/s/.../exec" />
+    <div style="color:var(--muted);font-size:.78rem;margin-bottom:14px;">
+      ⚠ URL ya sasa: <span id="currentUrlShow" style="color:var(--accent3);word-break:break-all;"></span>
+    </div>
+    <div class="setup-btns">
+      <button class="btn btn-warn" onclick="saveUrl()">💾 Hifadhi URL</button>
+      <button class="btn btn-outline" onclick="closeSetup()">Funga</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
 <div id="appPage">
   <div class="topbar">
-    <div class="topbar-brand">⚡ SMART ENERGY</div>
+    <div style="display:flex;align-items:center;">
+      <div class="topbar-brand">⚡ SMART ENERGY</div>
+      <div class="url-badge" id="urlStatusBadge" onclick="openSetup()">🔗 Weka URL</div>
+    </div>
     <div class="user-badge">
       <span id="userBadgeName"></span>
       <span style="color:var(--muted)">|</span>
@@ -228,854 +218,783 @@
     </div>
   </div>
 
-  <div class="nav-tabs" id="navTabs">
+  <div class="nav-tabs">
     <div class="nav-tab active" onclick="showPage('muhtasari',this)">📊 Muhtasari</div>
-    <div class="nav-tab" onclick="showPage('ingizaLuku',this)">📥 Ingiza LUKU</div>
+    <div class="nav-tab" onclick="showPage('luku',this)">📥 Ingiza LUKU</div>
     <div class="nav-tab" onclick="showPage('vyumba',this)">🏠 Vyumba</div>
     <div class="nav-tab" onclick="showPage('ulinganisho',this)">📈 Ulinganisho</div>
     <div class="nav-tab" onclick="showPage('kumbukumbu',this)">📋 Kumbukumbu</div>
     <div class="nav-tab" onclick="showPage('ushauri',this)">💡 Ushauri</div>
-    <div class="nav-tab admin-tab" id="adminTabBtn" style="display:none" onclick="showPage('admin',this)">🔧 Admin</div>
+    <div class="nav-tab atab" id="adminTab" style="display:none" onclick="showPage('admin',this)">🔧 Admin</div>
   </div>
 
   <div class="content">
 
-    <!-- ── MUHTASARI ── -->
+    <!-- MUHTASARI -->
     <div class="page active" id="page-muhtasari">
       <div class="stat-grid">
-        <div class="stat-card blue">
-          <div class="stat-label">Vyumba Vyote</div>
-          <div class="stat-value" id="s-total">16</div>
-          <div class="stat-sub">C01 — C16</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-label">Vyumba Vilivyokaliwa</div>
-          <div class="stat-value" id="s-occ">0</div>
-          <div class="stat-sub">Wapangaji waliopo</div>
-        </div>
-        <div class="stat-card yellow">
-          <div class="stat-label">Jumla ya kWh Leo</div>
-          <div class="stat-value" id="s-kwh">0</div>
-          <div class="stat-sub">Units zilizotumika</div>
-        </div>
-        <div class="stat-card red">
-          <div class="stat-label">Vyumba Wazi</div>
-          <div class="stat-value" id="s-vacant">0</div>
-          <div class="stat-sub">Zinapatikana</div>
-        </div>
+        <div class="stat-card blue"><div class="stat-label">Vyumba Vyote</div><div class="stat-value">16</div><div class="stat-sub">C01 — C16</div></div>
+        <div class="stat-card green"><div class="stat-label">Vilivyokaliwa</div><div class="stat-value" id="s-occ">0</div><div class="stat-sub">Wapangaji</div></div>
+        <div class="stat-card yellow"><div class="stat-label">kWh Leo</div><div class="stat-value" id="s-kwh">0</div><div class="stat-sub">Jumla ya leo</div></div>
+        <div class="stat-card red"><div class="stat-label">Wazi</div><div class="stat-value" id="s-vacant">16</div><div class="stat-sub">Zinapatikana</div></div>
       </div>
       <div class="section-title">HALI YA VYUMBA</div>
-      <div class="room-grid" id="muhtasariRooms"></div>
+      <div class="room-grid" id="muhtasariGrid"></div>
     </div>
 
-    <!-- ── INGIZA LUKU ── -->
-    <div class="page" id="page-ingizaLuku">
+    <!-- LUKU -->
+    <div class="page" id="page-luku">
       <div class="section-title">INGIZA LUKU MPYA</div>
       <div id="lukuAlert"></div>
       <div class="form-card">
         <div class="form-row">
-          <div class="form-field">
+          <div class="ff">
             <label>Chumba</label>
-            <select id="lukuChumba" onchange="onLukuChumbaChange()">
-              <option value="">-- Chagua --</option>
-            </select>
+            <select id="lChumba" onchange="onLukuChange()"><option value="">-- Chagua --</option></select>
           </div>
-          <div class="form-field">
+          <div class="ff">
             <label>Mpangaji</label>
-            <input type="text" id="lukuMpangaji" readonly placeholder="Itatokea otomatiki" />
+            <input type="text" id="lMpangaji" readonly placeholder="Otomatiki" />
           </div>
         </div>
         <div class="form-row">
-          <div class="form-field">
+          <div class="ff">
             <label>Tarehe</label>
-            <input type="date" id="lukuTarehe" />
+            <input type="date" id="lTarehe" />
           </div>
-          <div class="form-field">
-            <label>LUKU Awali (Units)</label>
-            <input type="number" id="lukuAwali" placeholder="0" oninput="calcKwh()" />
+          <div class="ff">
+            <label>LUKU Awali</label>
+            <input type="number" id="lAwali" placeholder="0" oninput="calcKwh()" />
           </div>
         </div>
-        <div class="form-field">
-          <label>LUKU Sasa (Units)</label>
-          <input type="number" id="lukuSasa" placeholder="0" oninput="calcKwh()" />
+        <div class="ff">
+          <label>LUKU Sasa</label>
+          <input type="number" id="lSasa" placeholder="0" oninput="calcKwh()" />
         </div>
         <div class="kwh-display">
-          <div style="color:var(--muted);font-size:0.8rem;margin-bottom:4px;">MATUMIZI (kWh)</div>
-          <div class="kwh-big" id="kwhResult">0</div>
-          <div style="color:var(--muted);font-size:0.8rem;margin-top:4px;">× Tsh <span id="rateShow">500</span>/unit = Tsh <span id="costResult" style="color:var(--accent2)">0</span></div>
+          <div style="color:var(--muted);font-size:.78rem;margin-bottom:3px;">MATUMIZI (kWh)</div>
+          <div class="kwh-big" id="kwhRes">0</div>
+          <div style="color:var(--muted);font-size:.78rem;margin-top:3px;">× Tsh <span id="rateShow">500</span>/unit = Tsh <span id="costRes" style="color:var(--accent2)">0</span></div>
         </div>
         <div class="form-row">
-          <div class="form-field">
+          <div class="ff">
             <label>Bei kwa Unit (Tsh)</label>
-            <input type="number" id="lukuRate" value="500" oninput="calcKwh()" />
+            <input type="number" id="lRate" value="500" oninput="calcKwh()" />
           </div>
-          <div class="form-field">
+          <div class="ff">
             <label>Maelezo (Hiari)</label>
-            <input type="text" id="lukuNote" placeholder="Hiari..." />
+            <input type="text" id="lNote" placeholder="..." />
           </div>
         </div>
         <button class="btn btn-success" onclick="saveLuku()">💾 HIFADHI LUKU</button>
       </div>
     </div>
 
-    <!-- ── VYUMBA ── -->
+    <!-- VYUMBA -->
     <div class="page" id="page-vyumba">
-      <div class="section-title">HALI YA VYUMBA VYOTE</div>
+      <div class="section-title">HALI YA VYUMBA VYOTE (C01–C16)</div>
       <div class="room-grid" id="vyumbaGrid"></div>
     </div>
 
-    <!-- ── ULINGANISHO ── -->
+    <!-- ULINGANISHO -->
     <div class="page" id="page-ulinganisho">
-      <div class="section-title">ULINGANISHO WA MATUMIZI</div>
-      <div style="background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;">
-        <div style="color:var(--muted);font-size:0.8rem;margin-bottom:12px;">kWh kwa kila chumba (mwezi huu)</div>
+      <div class="section-title">ULINGANISHO WA MATUMIZI — MWEZI HUU</div>
+      <div style="background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:20px;">
+        <div style="color:var(--muted);font-size:.78rem;margin-bottom:10px;">kWh kwa kila chumba</div>
         <div class="chart-wrap" id="compChart"></div>
       </div>
-      <div class="section-title">JEDWALI LA ULINGANISHO</div>
+      <div class="section-title">JEDWALI</div>
       <div class="table-wrap">
         <table>
-          <thead><tr>
-            <th>Chumba</th><th>Mpangaji</th><th>kWh</th><th>Gharama (Tsh)</th><th>Hali</th>
-          </tr></thead>
-          <tbody id="compTable"></tbody>
+          <thead><tr><th>Chumba</th><th>Mpangaji</th><th>kWh</th><th>Gharama (Tsh)</th><th>Hali</th></tr></thead>
+          <tbody id="compTbody"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- ── KUMBUKUMBU ── -->
+    <!-- KUMBUKUMBU -->
     <div class="page" id="page-kumbukumbu">
       <div class="section-title">KUMBUKUMBU YA LUKU</div>
       <div class="hist-filters">
-        <select id="histChumba" onchange="renderHistory()">
-          <option value="">Vyumba Vyote</option>
-        </select>
-        <input type="month" id="histMonth" onchange="renderHistory()" />
-        <button class="btn btn-outline btn-sm" onclick="exportHistory()">📤 Hamisha CSV</button>
+        <select id="hChumba" onchange="renderHistory()"><option value="">Vyumba Vyote</option></select>
+        <input type="month" id="hMonth" onchange="renderHistory()" />
+        <button class="btn btn-outline btn-sm" onclick="exportCSV()">📤 Hamisha CSV</button>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr>
-            <th>Tarehe</th><th>Chumba</th><th>Mpangaji</th><th>LUKU Awali</th><th>LUKU Sasa</th><th>kWh</th><th>Gharama</th>
-          </tr></thead>
-          <tbody id="histTable"></tbody>
+          <thead><tr><th>Tarehe</th><th>Chumba</th><th>Mpangaji</th><th>Awali</th><th>Sasa</th><th>kWh</th><th>Gharama</th></tr></thead>
+          <tbody id="histTbody"></tbody>
         </table>
       </div>
-      <div id="histEmpty" style="text-align:center;color:var(--muted);padding:40px;display:none;">Hakuna rekodi zinazolingana</div>
+      <div id="histEmpty" style="text-align:center;color:var(--muted);padding:40px;display:none;">Hakuna rekodi</div>
     </div>
 
-    <!-- ── USHAURI ── -->
+    <!-- USHAURI -->
     <div class="page" id="page-ushauri">
-      <div class="section-title">USHAURI WA KUOKOA UMEME</div>
+      <div class="section-title">VIDOKEZO VYA KUOKOA UMEME</div>
       <div class="advice-list" id="adviceList"></div>
     </div>
 
-    <!-- ── ADMIN ── -->
+    <!-- ADMIN -->
     <div class="page" id="page-admin">
       <div class="section-title">🔧 DASHIBODI YA ADMIN</div>
+
+      <!-- URL SETUP NDANI YA ADMIN -->
+      <div style="background:rgba(245,158,11,.08);border:1px solid var(--accent2);border-radius:12px;padding:18px;margin-bottom:20px;">
+        <div style="font-family:'Rajdhani',sans-serif;color:var(--accent2);font-size:1rem;letter-spacing:1px;margin-bottom:10px;">🔗 URL YA GOOGLE APPS SCRIPT</div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input type="text" id="inlineUrl" placeholder="https://script.google.com/macros/s/.../exec"
+            style="flex:1;min-width:200px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 13px;border-radius:8px;font-size:.85rem;outline:none;" />
+          <button class="btn btn-warn btn-sm" onclick="saveUrlInline()">💾 Hifadhi</button>
+          <button class="btn btn-outline btn-sm" onclick="testUrl()">🔍 Jaribu</button>
+        </div>
+        <div id="urlTestResult" style="margin-top:8px;font-size:.8rem;color:var(--muted);"></div>
+      </div>
+
       <div class="admin-grid">
-        <!-- Sajili mpangaji -->
+        <!-- FOMU YA MPANGAJI -->
         <div class="admin-panel">
-          <div style="font-family:'Rajdhani',sans-serif;color:var(--accent2);font-size:1rem;letter-spacing:1px;margin-bottom:18px;">SAJILI / HARIRI MPANGAJI</div>
+          <div class="admin-sub">SAJILI / HARIRI MPANGAJI</div>
           <div id="adminAlert"></div>
-          <div class="form-field">
+          <div class="ff">
             <label>Chumba</label>
-            <select id="adminChumba">
-              <option value="">-- Chagua --</option>
-            </select>
+            <select id="aChumba"><option value="">-- Chagua --</option></select>
           </div>
-          <div class="form-field">
+          <div class="ff">
             <label>Jina la Mpangaji</label>
-            <input type="text" id="adminJina" placeholder="Jina kamili" />
+            <input type="text" id="aJina" placeholder="Jina kamili" />
           </div>
-          <div class="form-field">
-            <label>Vifaa (Tenganisha kwa koma)</label>
-            <input type="text" id="adminVifaa" placeholder="Friji, TV, Fan..." />
+          <div class="ff">
+            <label>Vifaa (koma kati yao)</label>
+            <input type="text" id="aVifaa" placeholder="Friji, TV, Fan..." />
           </div>
-          <div class="form-field">
+          <div class="ff">
             <label>kWh ya Awali</label>
-            <input type="number" id="adminKwh" value="0" />
+            <input type="number" id="aKwh" value="0" />
           </div>
-          <div style="display:flex;gap:10px;">
-            <button class="btn btn-success" onclick="saveTenant()">💾 Hifadhi Mpangaji</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-success" onclick="saveTenant()">💾 Hifadhi</button>
             <button class="btn btn-outline" onclick="clearAdminForm()">✕ Futa</button>
           </div>
         </div>
 
-        <!-- Stat ya admin -->
+        <!-- TAKWIMU YA ADMIN -->
         <div class="admin-panel">
-          <div style="font-family:'Rajdhani',sans-serif;color:var(--accent2);font-size:1rem;letter-spacing:1px;margin-bottom:18px;">MUHTASARI WA MFUMO</div>
+          <div class="admin-sub">MUHTASARI WA MFUMO</div>
           <div class="stat-grid" style="grid-template-columns:1fr 1fr;">
-            <div class="stat-card blue" style="padding:14px 16px;">
-              <div class="stat-label" style="font-size:0.7rem;">Wapangaji</div>
-              <div class="stat-value" id="a-occ" style="font-size:1.6rem;">0</div>
+            <div class="stat-card blue" style="padding:12px 14px;">
+              <div class="stat-label" style="font-size:.68rem;">Wapangaji</div>
+              <div class="stat-value" id="a-occ" style="font-size:1.5rem;">0</div>
             </div>
-            <div class="stat-card yellow" style="padding:14px 16px;">
-              <div class="stat-label" style="font-size:0.7rem;">Rekodi za LUKU</div>
-              <div class="stat-value" id="a-recs" style="font-size:1.6rem;">0</div>
+            <div class="stat-card yellow" style="padding:12px 14px;">
+              <div class="stat-label" style="font-size:.68rem;">Rekodi za LUKU</div>
+              <div class="stat-value" id="a-recs" style="font-size:1.5rem;">0</div>
             </div>
           </div>
-          <div style="margin-top:16px;color:var(--muted);font-size:0.82rem;">
-            <div style="margin-bottom:6px;">💾 Data imehifadhiwa kwenye: <span style="color:var(--accent3)">localStorage</span></div>
-            <div>🌐 Sheets URL: <span style="color:var(--accent);font-size:0.75rem;word-break:break-all;" id="sheetsUrlShow"></span></div>
+          <div style="margin-top:14px;">
+            <button class="btn btn-outline btn-sm" onclick="syncSheets()" style="width:100%;">🔄 Sync na Google Sheets</button>
+            <div id="syncStatus" style="margin-top:8px;font-size:.78rem;color:var(--muted);text-align:center;"></div>
           </div>
-          <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="syncSheets()">🔄 Sync na Google Sheets</button>
-          <div id="syncStatus" style="margin-top:8px;font-size:0.8rem;color:var(--muted);"></div>
+          <div style="margin-top:12px;">
+            <button class="btn btn-danger btn-sm" onclick="clearAllData()" style="width:100%;">🗑 Futa Data Yote (Tahadhari!)</button>
+          </div>
         </div>
       </div>
 
-      <!-- Jedwali la wapangaji -->
-      <div style="margin-top:24px;">
+      <!-- JEDWALI LA WAPANGAJI -->
+      <div style="margin-top:22px;">
         <div class="section-title">WAPANGAJI WOTE</div>
-        <div class="tenant-table-wrap table-wrap">
+        <div class="tenant-wrap table-wrap">
           <table>
-            <thead><tr>
-              <th>Chumba</th><th>Jina</th><th>Vifaa</th><th>kWh Awali</th><th>Vitendo</th>
-            </tr></thead>
-            <tbody id="tenantTable"></tbody>
+            <thead><tr><th>Chumba</th><th>Jina</th><th>Vifaa</th><th>kWh Awali</th><th>Vitendo</th></tr></thead>
+            <tbody id="tenantTbody"></tbody>
           </table>
         </div>
-        <div id="tenantEmpty" style="text-align:center;color:var(--muted);padding:30px;display:none;">Hakuna wapangaji waliosailiwa bado.</div>
+        <div id="tenantEmpty" style="text-align:center;color:var(--muted);padding:28px;display:none;">Hakuna wapangaji bado. Sajili hapo juu.</div>
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /appPage -->
+  </div>
+</div>
 
-<!-- ─── MODAL ─── -->
+<!-- ROOM MODAL -->
 <div class="modal-bg" id="roomModal">
   <div class="modal">
     <div class="modal-title" id="modalTitle">Chumba</div>
     <div id="modalBody"></div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal()">Funga</button>
-    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal()">Funga</button></div>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════════
-var SHEETS_URL = "https://script.google.com/macros/s/AKfycbx5kL3XZLuL10M4Z8lyKd5kTEH8IQxifsEDkZxfhQkOjZ2fz6pAhSOGCRQd174kCFFZ/exec";
-var ADMIN_PASS = "mreno";
-var RATE_DEFAULT = 500;
+// ══════════════════════════════════════
+// CONFIG & STATE
+// ══════════════════════════════════════
+var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbwJO9_Ftl_2nlyj82AQsEl82JuVzBBftzwNA1Tf1iou9bnB7I_QPtjz0ybCIag9KCko/exec";
+var ADMIN_PASS  = "mreno";
 var ROOMS = [];
-for(var i=1;i<=16;i++) ROOMS.push("C" + (i<10?"0"+i:i));
+for(var i=1;i<=16;i++) ROOMS.push("C"+(i<10?"0"+i:""+i));
 
-// ══════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════
-var currentUser = null; // {jina, chumba, isAdmin}
+var currentUser = null;
 
-function getTenants() {
-  try { return JSON.parse(localStorage.getItem("tenants")||"{}"); } catch(e){ return {}; }
-}
-function saveTenants(t) { localStorage.setItem("tenants", JSON.stringify(t)); }
+function getUrl(){ return localStorage.getItem("sheetsUrl")||DEFAULT_URL; }
+function setUrl(u){ localStorage.setItem("sheetsUrl",u); updateUrlBadge(); }
 
-function getLukuRecords() {
-  try { return JSON.parse(localStorage.getItem("lukuRecs")||"[]"); } catch(e){ return []; }
-}
-function saveLukuRecords(r) { localStorage.setItem("lukuRecs", JSON.stringify(r)); }
+function getTenants(){ try{return JSON.parse(localStorage.getItem("tenants")||"{}");}catch(e){return{};} }
+function saveTenants(t){ localStorage.setItem("tenants",JSON.stringify(t)); }
+function getRecs(){ try{return JSON.parse(localStorage.getItem("lukuRecs")||"[]");}catch(e){return[];} }
+function saveRecs(r){ localStorage.setItem("lukuRecs",JSON.stringify(r)); }
 
-function normalizeRoom(v) {
-  v = String(v).trim().toUpperCase();
-  var n = v.replace(/[^0-9]/g,"");
-  if(!n) return null;
-  if(n.length===1) n="0"+n;
+function normalizeRoom(v){
+  v=String(v||"").trim().toUpperCase();
+  var n=v.replace(/[^0-9]/g,"");
+  if(!n)return null;
+  if(n.length===1)n="0"+n;
   return "C"+n;
 }
-
-function today() {
-  var d = new Date();
+function today(){
+  var d=new Date();
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
 
-// ══════════════════════════════════════════════
-// LOGIN
-// ══════════════════════════════════════════════
-async function login() {
-  var rawC = document.getElementById("loginChumba").value.trim();
-  var jina = document.getElementById("loginJina").value.trim();
-  var errEl = document.getElementById("loginError");
-  errEl.style.display = "none";
-
-  if(!jina){ showLoginError("Tafadhali weka jina au nenosiri."); return; }
-
-  // Admin
-  if(!rawC && jina === ADMIN_PASS) {
-    currentUser = { jina: "Admin", chumba: null, isAdmin: true };
-    startApp();
-    return;
-  }
-  if(rawC && jina === ADMIN_PASS) {
-    currentUser = { jina: "Admin", chumba: normalizeRoom(rawC)||rawC, isAdmin: true };
-    startApp();
-    return;
-  }
-
-  // Jaribu Sheets kwanza, kisha localStorage
-  var chumba = normalizeRoom(rawC);
-  if(!chumba && rawC) { showLoginError("Namba ya chumba si sahihi. Weka 1–16."); return; }
-  if(!chumba) { showLoginError("Weka namba ya chumba au acha wazi kwa Admin."); return; }
-
-  // Check localStorage tenants
-  var tenants = getTenants();
-  if(tenants[chumba]) {
-    if(matchName(tenants[chumba].jina, jina)) {
-      currentUser = { jina: tenants[chumba].jina, chumba: chumba, isAdmin: false };
-      startApp();
-      return;
-    }
-  }
-
-  // Jaribu Sheets
-  try {
-    var data = await fetchSheets("?action=list");
-    if(data && data.data) {
-      // Hifadhi kwenye tenants
-      var t = getTenants();
-      data.data.forEach(function(r){ if(r.chumba) t[r.chumba] = r; });
-      saveTenants(t);
-
-      var record = data.data.find(function(r){ return r.chumba === chumba; });
-      if(record) {
-        if(matchName(record.jina, jina)) {
-          currentUser = { jina: record.jina, chumba: chumba, isAdmin: false };
-          startApp();
-          return;
-        } else {
-          showLoginError("Jina halikubaliani na chumba "+chumba+". Lililowekwa: "+record.jina);
-          return;
-        }
-      } else {
-        showLoginError("Chumba "+chumba+" hakina mpangaji aliyesajiliwa. Wasiliana na Admin.");
-        return;
-      }
-    }
-  } catch(e){}
-
-  // Angalia tena localStorage baada ya sync
-  if(tenants[chumba]) {
-    showLoginError("Jina halikubaliani na chumba "+chumba+". Lililowekwa: "+tenants[chumba].jina);
+// ══════════════════════════════════════
+// URL MANAGEMENT
+// ══════════════════════════════════════
+function updateUrlBadge(){
+  var u=getUrl();
+  var b=document.getElementById("urlStatusBadge");
+  if(u && u.includes("script.google.com")){
+    b.className="url-badge url-ok";
+    b.textContent="✓ Sheets Imeunganishwa";
   } else {
-    showLoginError("Chumba "+chumba+" hakina mpangaji. Wasiliana na Admin asajili kwanza.");
+    b.className="url-badge";
+    b.textContent="🔗 Weka URL ya Sheets";
+  }
+  var inp=document.getElementById("inlineUrl");
+  if(inp) inp.value=u||"";
+  document.getElementById("currentUrlShow").textContent=u||(DEFAULT_URL?"(default)":"(haijawekwa)");
+}
+
+function openSetup(){
+  document.getElementById("setupUrl").value=getUrl()||"";
+  document.getElementById("currentUrlShow").textContent=getUrl()||"Haijawekwa bado";
+  document.getElementById("setupModal").classList.add("open");
+}
+function closeSetup(){ document.getElementById("setupModal").classList.remove("open"); }
+
+function saveUrl(){
+  var u=document.getElementById("setupUrl").value.trim();
+  if(!u||!u.includes("script.google.com")){ alert("URL si sahihi. Lazima iwe ya Google Apps Script."); return; }
+  setUrl(u);
+  closeSetup();
+  showMsg("✓ URL imehifadhiwa! Sasa mfumo unamaanisha Google Sheets yako.","success");
+}
+
+function saveUrlInline(){
+  var u=document.getElementById("inlineUrl").value.trim();
+  if(!u){ alert("Weka URL kwanza."); return; }
+  if(!u.includes("script.google.com")){ alert("URL si sahihi. Lazima iwe ya Google Apps Script."); return; }
+  setUrl(u);
+  var r=document.getElementById("urlTestResult");
+  r.style.color="var(--accent3)";
+  r.textContent="✓ URL imehifadhiwa!";
+}
+
+async function testUrl(){
+  var u=document.getElementById("inlineUrl").value.trim()||getUrl();
+  var r=document.getElementById("urlTestResult");
+  if(!u){ r.textContent="Weka URL kwanza."; return; }
+  r.style.color="var(--muted)"; r.textContent="Inajaribu...";
+  try{
+    var d=await fetchSheets("?action=list",u);
+    if(d && d.status==="ok"){
+      r.style.color="var(--accent3)";
+      r.textContent="✓ Inafanya kazi! Wapangaji: "+(d.data?d.data.length:0);
+    } else {
+      r.style.color="var(--accent2)";
+      r.textContent="⚠ Jibu lisilo sahihi: "+JSON.stringify(d).substring(0,80);
+    }
+  } catch(e){
+    r.style.color="var(--danger)";
+    r.textContent="✗ Haifiki: "+e.message;
   }
 }
 
-function matchName(stored, entered) {
-  var s = stored.toLowerCase().trim();
-  var e = entered.toLowerCase().trim();
-  return s === e || s.startsWith(e) || e.startsWith(s.split(" ")[0]);
-}
-
-function showLoginError(msg) {
-  var el = document.getElementById("loginError");
-  el.textContent = msg;
-  el.style.display = "block";
-}
-
-async function debugSensa() {
-  var out = document.getElementById("debugOut");
-  out.style.display = "block";
-  out.textContent = "Inatuma ombi kwa Sheets...";
-  try {
-    var data = await fetchSheets("?action=list");
-    out.textContent = "✓ Jibu la Sheets:\n" + JSON.stringify(data, null, 2);
-  } catch(e) {
-    out.textContent = "✗ Hitilafu: " + e.message + "\n\nWapangaji kwenye localStorage:\n" + JSON.stringify(getTenants(), null, 2);
-  }
-}
-
-// ══════════════════════════════════════════════
-// FETCH SHEETS
-// ══════════════════════════════════════════════
-function fetchSheets(params) {
+// ══════════════════════════════════════
+// FETCH
+// ══════════════════════════════════════
+function fetchSheets(params, urlOverride){
+  var url=(urlOverride||getUrl())+params;
   return Promise.race([
-    fetch(SHEETS_URL + params).then(function(r){ return r.json(); }),
-    new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 6000); })
+    fetch(url).then(function(r){return r.json();}),
+    new Promise(function(_,rej){setTimeout(function(){rej(new Error("Timeout (6s)"));},6000);})
   ]);
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════
+async function login(){
+  var rawC=document.getElementById("loginChumba").value.trim();
+  var jina=document.getElementById("loginJina").value.trim();
+  var errEl=document.getElementById("loginError");
+  errEl.style.display="none";
+
+  if(!jina){showLoginErr("Weka jina lako au nenosiri.");return;}
+
+  // Admin
+  if(jina===ADMIN_PASS){
+    currentUser={jina:"Admin",chumba:rawC?normalizeRoom(rawC):null,isAdmin:true};
+    startApp(); return;
+  }
+
+  var chumba=normalizeRoom(rawC);
+  if(!chumba){showLoginErr("Weka namba ya chumba (1–16) au acha wazi kwa Admin.");return;}
+
+  // localStorage kwanza
+  var t=getTenants();
+  if(t[chumba]&&matchName(t[chumba].jina,jina)){
+    currentUser={jina:t[chumba].jina,chumba:chumba,isAdmin:false};
+    startApp(); return;
+  }
+
+  // Jaribu Sheets
+  if(getUrl()){
+    try{
+      var d=await fetchSheets("?action=list");
+      if(d&&d.data){
+        var all=getTenants();
+        d.data.forEach(function(r){if(r.chumba)all[r.chumba]=r;});
+        saveTenants(all);
+        var rec=d.data.find(function(r){return r.chumba===chumba;});
+        if(rec){
+          if(matchName(rec.jina,jina)){
+            currentUser={jina:rec.jina,chumba:chumba,isAdmin:false};
+            startApp(); return;
+          } else {
+            showLoginErr("Jina halikubaliani na chumba "+chumba+". Lililowekwa sensa: "+rec.jina);
+            return;
+          }
+        }
+      }
+    }catch(e){}
+  }
+
+  // Angalia tena baada ya sync
+  var t2=getTenants();
+  if(t2[chumba]){
+    if(matchName(t2[chumba].jina,jina)){
+      currentUser={jina:t2[chumba].jina,chumba:chumba,isAdmin:false};
+      startApp(); return;
+    }
+    showLoginErr("Jina halikubaliani. Lililowekwa: "+t2[chumba].jina);
+  } else {
+    showLoginErr("Chumba "+chumba+" hakina mpangaji. Wasiliana na Admin.");
+  }
+}
+
+function matchName(stored,entered){
+  var s=stored.toLowerCase().trim();
+  var e=entered.toLowerCase().trim();
+  return s===e||s.startsWith(e)||e.startsWith(s.split(" ")[0]);
+}
+function showLoginErr(msg){
+  var el=document.getElementById("loginError");
+  el.textContent=msg; el.style.display="block";
+}
+
+// ══════════════════════════════════════
 // START APP
-// ══════════════════════════════════════════════
-function startApp() {
-  document.getElementById("loginPage").style.display = "none";
-  document.getElementById("appPage").style.display = "flex";
-  document.getElementById("userBadgeName").textContent = currentUser.isAdmin ? "⚙ Admin" : "🏠 " + currentUser.jina + " (" + currentUser.chumba + ")";
-
-  if(currentUser.isAdmin) {
-    document.getElementById("adminTabBtn").style.display = "";
-  } else {
-    // Ficha baadhi ya tabs kwa mpangaji
-    document.getElementById("adminTabBtn").style.display = "none";
-  }
-
-  // Set tarehe ya leo
-  document.getElementById("lukuTarehe").value = today();
-  var m = today().substring(0,7);
-  document.getElementById("histMonth").value = m;
-
-  // Chagua chumba otomatiki kwa mpangaji
-  if(currentUser.chumba && !currentUser.isAdmin) {
-    populateLukuChumba(currentUser.chumba);
-  } else {
-    populateLukuChumba(null);
-  }
-
-  document.getElementById("sheetsUrlShow").textContent = SHEETS_URL.substring(0,50)+"...";
+// ══════════════════════════════════════
+function startApp(){
+  document.getElementById("loginPage").style.display="none";
+  document.getElementById("appPage").style.display="flex";
+  document.getElementById("userBadgeName").textContent=
+    currentUser.isAdmin?"⚙ Admin":"🏠 "+currentUser.jina+" ("+currentUser.chumba+")";
+  document.getElementById("adminTab").style.display=currentUser.isAdmin?"":"none";
+  document.getElementById("lTarehe").value=today();
+  document.getElementById("hMonth").value=today().substring(0,7);
+  updateUrlBadge();
+  populateSelects();
   refreshAll();
 }
 
-function logout() {
-  currentUser = null;
-  document.getElementById("loginPage").style.display = "flex";
-  document.getElementById("appPage").style.display = "none";
-  document.getElementById("loginError").style.display = "none";
-  document.getElementById("loginChumba").value = "";
-  document.getElementById("loginJina").value = "";
+function logout(){
+  currentUser=null;
+  document.getElementById("loginPage").style.display="flex";
+  document.getElementById("appPage").style.display="none";
+  document.getElementById("loginError").style.display="none";
+  document.getElementById("loginChumba").value="";
+  document.getElementById("loginJina").value="";
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════
+// POPULATE SELECTS
+// ══════════════════════════════════════
+function populateSelects(){
+  var t=getTenants();
+  var ids=["lChumba","aChumba","hChumba"];
+  ids.forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    var prev=el.value;
+    el.innerHTML=id==="hChumba"
+      ?'<option value="">Vyumba Vyote</option>'
+      :'<option value="">-- Chagua --</option>';
+    ROOMS.forEach(function(c){
+      var opt=new Option(c+(t[c]?" — "+t[c].jina:" (Wazi)"),c);
+      el.appendChild(opt);
+    });
+    if(prev) el.value=prev;
+  });
+  // Mpangaji wa sasa achague chumba chake otomatiki
+  if(currentUser&&!currentUser.isAdmin&&currentUser.chumba){
+    var lc=document.getElementById("lChumba");
+    lc.value=currentUser.chumba;
+    onLukuChange();
+  }
+}
+
+// ══════════════════════════════════════
 // REFRESH
-// ══════════════════════════════════════════════
-function refreshAll() {
+// ══════════════════════════════════════
+function refreshAll(){
   renderMuhtasari();
   renderVyumba();
   renderComparison();
   renderHistory();
   renderAdvice();
   renderAdminTenants();
-  populateHistFilters();
   updateAdminStats();
 }
 
-// ══════════════════════════════════════════════
-// PAGE NAVIGATION
-// ══════════════════════════════════════════════
-function showPage(name, el) {
-  document.querySelectorAll(".page").forEach(function(p){ p.classList.remove("active"); });
-  document.querySelectorAll(".nav-tab").forEach(function(t){ t.classList.remove("active"); });
+// ══════════════════════════════════════
+// PAGE NAV
+// ══════════════════════════════════════
+function showPage(name,el){
+  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});
+  document.querySelectorAll(".nav-tab").forEach(function(t){t.classList.remove("active");});
   document.getElementById("page-"+name).classList.add("active");
-  if(el) el.classList.add("active");
-  if(name==="admin") { renderAdminTenants(); updateAdminStats(); }
-  if(name==="ulinganisho") renderComparison();
-  if(name==="kumbukumbu") renderHistory();
+  if(el)el.classList.add("active");
+  if(name==="admin"){renderAdminTenants();updateAdminStats();document.getElementById("inlineUrl").value=getUrl()||"";}
+  if(name==="ulinganisho")renderComparison();
+  if(name==="kumbukumbu")renderHistory();
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════
 // MUHTASARI
-// ══════════════════════════════════════════════
-function renderMuhtasari() {
-  var tenants = getTenants();
-  var recs = getLukuRecords();
-  var occ = Object.keys(tenants).length;
-  var vacant = 16 - occ;
-  var kwh = 0;
-  recs.filter(function(r){ return r.tarehe === today(); }).forEach(function(r){ kwh += Number(r.kwh)||0; });
-
-  document.getElementById("s-total").textContent = "16";
-  document.getElementById("s-occ").textContent = occ;
-  document.getElementById("s-kwh").textContent = kwh.toFixed(1);
-  document.getElementById("s-vacant").textContent = vacant;
-
-  var grid = document.getElementById("muhtasariRooms");
-  grid.innerHTML = "";
+// ══════════════════════════════════════
+function renderMuhtasari(){
+  var t=getTenants(),recs=getRecs();
+  var occ=Object.keys(t).length;
+  var kwh=0;
+  recs.filter(function(r){return r.tarehe===today();}).forEach(function(r){kwh+=Number(r.kwh)||0;});
+  document.getElementById("s-occ").textContent=occ;
+  document.getElementById("s-kwh").textContent=kwh.toFixed(1);
+  document.getElementById("s-vacant").textContent=16-occ;
+  var g=document.getElementById("muhtasariGrid"); g.innerHTML="";
   ROOMS.forEach(function(c){
-    var t = tenants[c];
-    var div = document.createElement("div");
-    div.className = "room-card " + (t?"occupied":"vacant");
-    div.onclick = function(){ showRoomModal(c); };
-    div.innerHTML = '<div class="room-num">'+c+'</div>'
-      +'<div class="room-tenant">'+(t?t.jina:"— Wazi —")+'</div>'
-      +'<div class="room-kwh">'+(t?(t.vifaa?t.vifaa.substring(0,22)+"...":""):"")+'</div>'
-      +'<span class="room-badge '+(t?"badge-occ":"badge-vac")+'">'+(t?"Imekaliwa":"Wazi")+'</span>';
-    grid.appendChild(div);
+    var tn=t[c];
+    var d=document.createElement("div");
+    d.className="room-card "+(tn?"occupied":"");
+    d.onclick=function(){showRoomModal(c);};
+    d.innerHTML='<div class="room-num">'+c+'</div>'
+      +'<div class="room-tenant">'+(tn?tn.jina:"— Wazi —")+'</div>'
+      +'<div class="room-kwh">'+(tn&&tn.vifaa?tn.vifaa.substring(0,24):"")+'</div>'
+      +'<span class="room-badge '+(tn?"badge-occ":"badge-vac")+'">'+(tn?"Imekaliwa":"Wazi")+'</span>';
+    g.appendChild(d);
   });
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════
 // VYUMBA
-// ══════════════════════════════════════════════
-function renderVyumba() {
-  var tenants = getTenants();
-  var recs = getLukuRecords();
-  var grid = document.getElementById("vyumbaGrid");
-  grid.innerHTML = "";
+// ══════════════════════════════════════
+function renderVyumba(){
+  var t=getTenants(),recs=getRecs();
+  var g=document.getElementById("vyumbaGrid"); g.innerHTML="";
   ROOMS.forEach(function(c){
-    var t = tenants[c];
-    var lastRec = recs.filter(function(r){ return r.chumba===c; }).pop();
-    var div = document.createElement("div");
-    div.className = "room-card " + (t?"occupied":"vacant");
-    div.onclick = function(){ showRoomModal(c); };
-    div.innerHTML = '<div class="room-num">'+c+'</div>'
-      +'<div class="room-tenant">'+(t?t.jina:"— Wazi —")+'</div>'
-      +'<div class="room-kwh">'+(lastRec?"Mwisho: "+lastRec.kwh+" kWh ("+lastRec.tarehe+")":"Hakuna rekodi")+'</div>'
-      +'<span class="room-badge '+(t?"badge-occ":"badge-vac")+'">'+(t?"Imekaliwa":"Wazi")+'</span>';
-    grid.appendChild(div);
+    var tn=t[c];
+    var last=recs.filter(function(r){return r.chumba===c;}).pop();
+    var d=document.createElement("div");
+    d.className="room-card "+(tn?"occupied":"");
+    d.onclick=function(){showRoomModal(c);};
+    d.innerHTML='<div class="room-num">'+c+'</div>'
+      +'<div class="room-tenant">'+(tn?tn.jina:"— Wazi —")+'</div>'
+      +'<div class="room-kwh">'+(last?"Mwisho: "+Number(last.kwh).toFixed(1)+" kWh ("+last.tarehe+")":"Hakuna rekodi")+'</div>'
+      +'<span class="room-badge '+(tn?"badge-occ":"badge-vac")+'">'+(tn?"Imekaliwa":"Wazi")+'</span>';
+    g.appendChild(d);
   });
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════
 // ROOM MODAL
-// ══════════════════════════════════════════════
-function showRoomModal(chumba) {
-  var tenants = getTenants();
-  var recs = getLukuRecords().filter(function(r){ return r.chumba===chumba; });
-  var t = tenants[chumba];
-  document.getElementById("modalTitle").textContent = "⚡ Chumba "+chumba;
-  var html = t
-    ? '<p><b>Mpangaji:</b> '+t.jina+'</p><p style="margin-top:8px;color:var(--muted);"><b>Vifaa:</b> '+(t.vifaa||"—")+'</p>'
-    : '<p style="color:var(--muted);">Chumba hiki bado hakina mpangaji.</p>';
-  if(recs.length>0){
-    var last = recs[recs.length-1];
-    html += '<div class="kwh-display" style="margin-top:16px;">'
-      +'<div style="color:var(--muted);font-size:0.8rem;">Rekodi ya Mwisho ('+last.tarehe+')</div>'
-      +'<div class="kwh-big">'+last.kwh+' kWh</div>'
-      +'<div style="color:var(--muted);font-size:0.8rem;">Tsh '+Number(last.gharama||0).toLocaleString()+'</div>'
-      +'</div>';
-    html += '<p style="margin-top:8px;color:var(--muted);font-size:0.8rem;">Jumla ya rekodi: '+recs.length+'</p>';
+// ══════════════════════════════════════
+function showRoomModal(c){
+  var t=getTenants()[c];
+  var recs=getRecs().filter(function(r){return r.chumba===c;});
+  document.getElementById("modalTitle").textContent="⚡ Chumba "+c;
+  var html=t
+    ?'<p><b>Mpangaji:</b> '+t.jina+'</p><p style="margin-top:7px;color:var(--muted)"><b>Vifaa:</b> '+(t.vifaa||"—")+'</p>'
+    :'<p style="color:var(--muted)">Chumba hiki hakina mpangaji.</p>';
+  if(recs.length){
+    var last=recs[recs.length-1];
+    html+='<div class="kwh-display" style="margin-top:14px;">'
+      +'<div style="color:var(--muted);font-size:.78rem">Rekodi ya Mwisho ('+last.tarehe+')</div>'
+      +'<div class="kwh-big">'+Number(last.kwh).toFixed(1)+' kWh</div>'
+      +'<div style="color:var(--muted);font-size:.78rem">Tsh '+Number(last.gharama||0).toLocaleString()+'</div>'
+      +'</div>'
+      +'<p style="margin-top:6px;color:var(--muted);font-size:.78rem">Jumla rekodi: '+recs.length+'</p>';
   }
-  document.getElementById("modalBody").innerHTML = html;
+  document.getElementById("modalBody").innerHTML=html;
   document.getElementById("roomModal").classList.add("open");
 }
-function closeModal(){ document.getElementById("roomModal").classList.remove("open"); }
+function closeModal(){document.getElementById("roomModal").classList.remove("open");}
 
-// ══════════════════════════════════════════════
-// LUKU FORM
-// ══════════════════════════════════════════════
-function populateLukuChumba(selected) {
-  var tenants = getTenants();
-  var sel = document.getElementById("lukuChumba");
-  var adminSel = document.getElementById("adminChumba");
-  var histSel = document.getElementById("histChumba");
-  sel.innerHTML = '<option value="">-- Chagua --</option>';
-  adminSel.innerHTML = '<option value="">-- Chagua --</option>';
-
-  ROOMS.forEach(function(c){
-    var t = tenants[c];
-    var opt = new Option(c + (t?" — "+t.jina:""), c);
-    if(c===selected) opt.selected = true;
-    sel.appendChild(opt);
-    adminSel.appendChild(new Option(c + (t?" — "+t.jina:" (Wazi)"), c));
-  });
-
-  if(selected) onLukuChumbaChange();
-}
-
-function populateHistFilters() {
-  var tenants = getTenants();
-  var sel = document.getElementById("histChumba");
-  sel.innerHTML = '<option value="">Vyumba Vyote</option>';
-  ROOMS.forEach(function(c){
-    var t = tenants[c];
-    sel.appendChild(new Option(c+(t?" — "+t.jina:""),c));
-  });
-}
-
-function onLukuChumbaChange() {
-  var c = document.getElementById("lukuChumba").value;
-  var tenants = getTenants();
-  var t = tenants[c];
-  document.getElementById("lukuMpangaji").value = t ? t.jina : "";
-  // Jaza LUKU awali kutoka rekodi ya mwisho
-  if(c) {
-    var recs = getLukuRecords().filter(function(r){ return r.chumba===c; });
-    if(recs.length>0) {
-      document.getElementById("lukuAwali").value = recs[recs.length-1].lukuSasa || 0;
-    } else {
-      document.getElementById("lukuAwali").value = t ? (t.kwh||0) : 0;
-    }
+// ══════════════════════════════════════
+// LUKU
+// ══════════════════════════════════════
+function onLukuChange(){
+  var c=document.getElementById("lChumba").value;
+  var t=getTenants()[c];
+  document.getElementById("lMpangaji").value=t?t.jina:"";
+  if(c){
+    var recs=getRecs().filter(function(r){return r.chumba===c;});
+    document.getElementById("lAwali").value=recs.length?recs[recs.length-1].lukuSasa:(t?t.kwh||0:0);
     calcKwh();
   }
 }
-
-function calcKwh() {
-  var a = Number(document.getElementById("lukuAwali").value)||0;
-  var s = Number(document.getElementById("lukuSasa").value)||0;
-  var r = Number(document.getElementById("lukuRate").value)||RATE_DEFAULT;
-  var kwh = Math.max(0, s-a);
-  document.getElementById("kwhResult").textContent = kwh.toFixed(1);
-  document.getElementById("rateShow").textContent = r.toLocaleString();
-  document.getElementById("costResult").textContent = (kwh*r).toLocaleString();
+function calcKwh(){
+  var a=Number(document.getElementById("lAwali").value)||0;
+  var s=Number(document.getElementById("lSasa").value)||0;
+  var r=Number(document.getElementById("lRate").value)||500;
+  var k=Math.max(0,s-a);
+  document.getElementById("kwhRes").textContent=k.toFixed(1);
+  document.getElementById("rateShow").textContent=r.toLocaleString();
+  document.getElementById("costRes").textContent=(k*r).toLocaleString();
 }
-
-function saveLuku() {
-  var chumba = document.getElementById("lukuChumba").value;
-  var tarehe = document.getElementById("lukuTarehe").value;
-  var awali = Number(document.getElementById("lukuAwali").value)||0;
-  var sasa = Number(document.getElementById("lukuSasa").value)||0;
-  var rate = Number(document.getElementById("lukuRate").value)||RATE_DEFAULT;
-  var note = document.getElementById("lukuNote").value;
-  var el = document.getElementById("lukuAlert");
-
-  if(!chumba){ showAlert(el,"Chagua chumba kwanza.","danger"); return; }
-  if(sasa<=0){ showAlert(el,"Weka LUKU sasa (zaidi ya 0).","danger"); return; }
-  if(sasa<awali){ showAlert(el,"LUKU sasa haiwezi kuwa ndogo kuliko LUKU awali.","danger"); return; }
-
-  var kwh = sasa - awali;
-  var recs = getLukuRecords();
-  recs.push({
-    tarehe: tarehe, chumba: chumba,
-    jina: document.getElementById("lukuMpangaji").value,
-    lukuAwali: awali, lukuSasa: sasa,
-    kwh: kwh, gharama: kwh*rate, rate: rate, note: note,
-    id: Date.now()
-  });
-  saveLukuRecords(recs);
-
-  showAlert(el,"✓ LUKU imehifadhiwa! "+chumba+" — "+kwh.toFixed(1)+" kWh — Tsh "+( kwh*rate).toLocaleString(),"success");
-  document.getElementById("lukuSasa").value = "";
-  document.getElementById("kwhResult").textContent = "0";
-  document.getElementById("costResult").textContent = "0";
+function saveLuku(){
+  var c=document.getElementById("lChumba").value;
+  var tar=document.getElementById("lTarehe").value;
+  var aw=Number(document.getElementById("lAwali").value)||0;
+  var sa=Number(document.getElementById("lSasa").value)||0;
+  var ra=Number(document.getElementById("lRate").value)||500;
+  var el=document.getElementById("lukuAlert");
+  if(!c){showAlert(el,"Chagua chumba kwanza.","danger");return;}
+  if(sa<=0){showAlert(el,"Weka LUKU sasa (zaidi ya 0).","danger");return;}
+  if(sa<aw){showAlert(el,"LUKU sasa haiwezi kuwa ndogo kuliko awali.","danger");return;}
+  var kwh=sa-aw;
+  var recs=getRecs();
+  recs.push({tarehe:tar,chumba:c,jina:document.getElementById("lMpangaji").value,
+    lukuAwali:aw,lukuSasa:sa,kwh:kwh,gharama:kwh*ra,rate:ra,
+    note:document.getElementById("lNote").value,id:Date.now()});
+  saveRecs(recs);
+  showAlert(el,"✓ LUKU imehifadhiwa! "+c+" — "+kwh.toFixed(1)+" kWh — Tsh "+(kwh*ra).toLocaleString(),"success");
+  document.getElementById("lSasa").value="";
+  document.getElementById("kwhRes").textContent="0";
+  document.getElementById("costRes").textContent="0";
   refreshAll();
-
-  // Jaribu kutuma Sheets
-  try {
-    fetch(SHEETS_URL, {method:"POST",body:JSON.stringify({
-      action:"LUKU", tarehe:tarehe, chumba:chumba,
-      jina:document.getElementById("lukuMpangaji").value,
-      lukuAwali:awali, lukuSasa:sasa, kwh:kwh, gharama:kwh*rate
-    })});
-  } catch(e){}
-}
-
-// ══════════════════════════════════════════════
-// HISTORY
-// ══════════════════════════════════════════════
-function renderHistory() {
-  var filterC = document.getElementById("histChumba").value;
-  var filterM = document.getElementById("histMonth").value;
-  var recs = getLukuRecords();
-
-  if(filterC) recs = recs.filter(function(r){ return r.chumba===filterC; });
-  if(filterM) recs = recs.filter(function(r){ return r.tarehe && r.tarehe.startsWith(filterM); });
-
-  recs = recs.slice().reverse();
-  var tbody = document.getElementById("histTable");
-  var empty = document.getElementById("histEmpty");
-  tbody.innerHTML = "";
-  if(recs.length===0){ empty.style.display=""; return; }
-  empty.style.display="none";
-
-  recs.forEach(function(r){
-    var tr = document.createElement("tr");
-    tr.innerHTML = '<td>'+r.tarehe+'</td>'
-      +'<td><span class="tag tag-blue">'+r.chumba+'</span></td>'
-      +'<td>'+(r.jina||"—")+'</td>'
-      +'<td>'+r.lukuAwali+'</td>'
-      +'<td>'+r.lukuSasa+'</td>'
-      +'<td><b>'+Number(r.kwh).toFixed(1)+'</b></td>'
-      +'<td style="color:var(--accent2)">Tsh '+Number(r.gharama||0).toLocaleString()+'</td>';
-    tbody.appendChild(tr);
-  });
-}
-
-function exportHistory() {
-  var recs = getLukuRecords();
-  var csv = "Tarehe,Chumba,Mpangaji,LUKU Awali,LUKU Sasa,kWh,Gharama\n";
-  recs.forEach(function(r){
-    csv += [r.tarehe,r.chumba,r.jina,r.lukuAwali,r.lukuSasa,Number(r.kwh).toFixed(1),r.gharama].join(",")+"\n";
-  });
-  var a = document.createElement("a");
-  a.href = "data:text/csv;charset=utf-8,"+encodeURIComponent(csv);
-  a.download = "luku_historia.csv"; a.click();
-}
-
-// ══════════════════════════════════════════════
-// COMPARISON
-// ══════════════════════════════════════════════
-function renderComparison() {
-  var tenants = getTenants();
-  var recs = getLukuRecords();
-  var month = today().substring(0,7);
-  var byRoom = {};
-  ROOMS.forEach(function(c){ byRoom[c]=0; });
-  recs.filter(function(r){ return r.tarehe && r.tarehe.startsWith(month); })
-      .forEach(function(r){ byRoom[r.chumba]=(byRoom[r.chumba]||0)+Number(r.kwh); });
-
-  var vals = Object.values(byRoom);
-  var maxV = Math.max.apply(null,vals)||1;
-
-  var chart = document.getElementById("compChart");
-  chart.innerHTML = "";
-  ROOMS.forEach(function(c){
-    var v = byRoom[c]||0;
-    var pct = (v/maxV)*100;
-    var col = document.createElement("div");
-    col.className = "bar-col";
-    col.innerHTML = '<div class="bar-val">'+(v>0?v.toFixed(0):"")+'</div>'
-      +'<div class="bar" style="height:'+pct+'%;background:'+(v>50?"var(--danger)":v>20?"var(--accent2)":"var(--accent3)") +';" title="'+c+': '+v.toFixed(1)+' kWh"></div>'
-      +'<div class="bar-label">'+c+'</div>';
-    chart.appendChild(col);
-  });
-
-  var tbody = document.getElementById("compTable");
-  tbody.innerHTML = "";
-  ROOMS.forEach(function(c){
-    var t = tenants[c];
-    var kwh = byRoom[c]||0;
-    var gharama = kwh * RATE_DEFAULT;
-    var tr = document.createElement("tr");
-    tr.innerHTML = '<td><span class="tag tag-blue">'+c+'</span></td>'
-      +'<td>'+(t?t.jina:"—")+'</td>'
-      +'<td><b>'+(kwh>0?kwh.toFixed(1):0)+'</b></td>'
-      +'<td style="color:var(--accent2)">'+(gharama>0?"Tsh "+gharama.toLocaleString():"—")+'</td>'
-      +'<td><span class="tag '+(t?"tag-green":"")+'">'+((t&&kwh>0)?"Imeingizwa":t?"Bado":"Wazi")+'</span></td>';
-    tbody.appendChild(tr);
-  });
-}
-
-// ══════════════════════════════════════════════
-// USHAURI
-// ══════════════════════════════════════════════
-var ADVICE = [
-  {t:"Zima taa usipohitaji",b:"Taa zinazowaka muda mrefu zinatumia umeme mwingi. Zima unapotoka kwenye chumba."},
-  {t:"Tumia balbu za LED",b:"Balbu za LED zinatumia hadi 80% ya umeme mdogo kuliko balbu za kawaida (incandescent)."},
-  {t:"Friiji — acha pengo ukutani",b:"Friji inahitaji hewa ya kutosha nyuma yake. Ibana ukutani kunazuia hewa na inafanya kazi zaidi."},
-  {t:"Toa vifaa kwenye socket",b:"Vifaa vingi (TV, charger) vinatumia umeme hata vikizimwa lakini vimebaki kwenye socket. Vuta plug."},
-  {t:"Piga pasi nguo nyingi mara moja",b:"Piga pasi batch moja badala ya mara nyingi. Inapokea joto mara moja peke yake."},
-  {t:"Usifungue friji mara nyingi",b:"Kila ufunguzi wa friji unapoteza baridi — friji inafanya kazi zaidi kurejesha joto."},
-  {t:"Angalia LUKU zako mara kwa mara",b:"Rekodi LUKU kila wiki ili ujue unapotumia umeme zaidi na ufanye mabadiliko mapema."},
-  {t:"Fan badala ya AC",b:"Feni ya ukuta au mezani inatumia hadi 90% ya umeme mdogo kuliko air conditioner."}
-];
-function renderAdvice(){
-  var html="";
-  ADVICE.forEach(function(a){ html+='<div class="advice-item"><div class="advice-title">💡 '+a.t+'</div><div class="advice-body">'+a.b+'</div></div>'; });
-  document.getElementById("adviceList").innerHTML=html;
-}
-
-// ══════════════════════════════════════════════
-// ADMIN — TENANT MANAGEMENT
-// ══════════════════════════════════════════════
-function saveTenant() {
-  var chumba = document.getElementById("adminChumba").value;
-  var jina = document.getElementById("adminJina").value.trim();
-  var vifaa = document.getElementById("adminVifaa").value.trim();
-  var kwh = Number(document.getElementById("adminKwh").value)||0;
-  var el = document.getElementById("adminAlert");
-
-  if(!chumba){ showAlert(el,"Chagua chumba.","danger"); return; }
-  if(!jina){ showAlert(el,"Weka jina la mpangaji.","danger"); return; }
-
-  var t = getTenants();
-  t[chumba] = { jina:jina, chumba:chumba, vifaa:vifaa, kwh:kwh };
-  saveTenants(t);
-
-  showAlert(el,"✓ Mpangaji "+jina+" ("+chumba+") amehifadhiwa.","success");
-  clearAdminForm();
-  renderAdminTenants();
-  updateAdminStats();
-  populateLukuChumba(null);
-  renderMuhtasari();
-  renderVyumba();
-
-  // Sync Sheets
-  try {
-    fetch(SHEETS_URL,{method:"POST",body:JSON.stringify({action:"SENSA",chumba:chumba,jina:jina,vifaa:vifaa,kwh:kwh})});
-  } catch(e){}
-}
-
-function clearAdminForm() {
-  document.getElementById("adminChumba").value="";
-  document.getElementById("adminJina").value="";
-  document.getElementById("adminVifaa").value="";
-  document.getElementById("adminKwh").value="0";
-}
-
-function editTenant(chumba) {
-  var t = getTenants()[chumba];
-  if(!t) return;
-  document.getElementById("adminChumba").value = chumba;
-  document.getElementById("adminJina").value = t.jina||"";
-  document.getElementById("adminVifaa").value = t.vifaa||"";
-  document.getElementById("adminKwh").value = t.kwh||0;
-  showPage("admin", document.getElementById("adminTabBtn"));
-}
-
-function deleteTenant(chumba) {
-  if(!confirm("Una uhakika unataka kufuta mpangaji wa "+chumba+"?")) return;
-  var t = getTenants();
-  delete t[chumba];
-  saveTenants(t);
-  renderAdminTenants();
-  updateAdminStats();
-  populateLukuChumba(null);
-  renderMuhtasari();
-  renderVyumba();
-  // Sync Sheets
-  try {
-    fetch(SHEETS_URL,{method:"POST",body:JSON.stringify({action:"deleteTenant",chumba:chumba})});
-  } catch(e){}
-}
-
-function renderAdminTenants() {
-  var tenants = getTenants();
-  var tbody = document.getElementById("tenantTable");
-  var empty = document.getElementById("tenantEmpty");
-  tbody.innerHTML = "";
-  var keys = Object.keys(tenants);
-  if(keys.length===0){ empty.style.display=""; return; }
-  empty.style.display="none";
-  keys.sort().forEach(function(c){
-    var t = tenants[c];
-    var tr = document.createElement("tr");
-    tr.innerHTML = '<td><span class="tag tag-blue">'+c+'</span></td>'
-      +'<td>'+t.jina+'</td>'
-      +'<td style="color:var(--muted);font-size:0.82rem;">'+(t.vifaa||"—")+'</td>'
-      +'<td>'+( t.kwh||0)+'</td>'
-      +'<td><button class="btn btn-outline btn-sm" onclick="editTenant(\''+c+'\')">✏ Hariri</button> '
-      +'<button class="btn btn-danger btn-sm" onclick="deleteTenant(\''+c+'\')">🗑 Futa</button></td>';
-    tbody.appendChild(tr);
-  });
-}
-
-function updateAdminStats() {
-  document.getElementById("a-occ").textContent = Object.keys(getTenants()).length;
-  document.getElementById("a-recs").textContent = getLukuRecords().length;
-}
-
-async function syncSheets() {
-  var status = document.getElementById("syncStatus");
-  status.textContent = "Inasync...";
-  status.style.color = "var(--muted)";
-  try {
-    var data = await fetchSheets("?action=list");
-    if(data && data.data && data.data.length>0) {
-      var t = getTenants();
-      data.data.forEach(function(r){ if(r.chumba) t[r.chumba] = r; });
-      saveTenants(t);
-      renderAdminTenants();
-      renderMuhtasari();
-      populateLukuChumba(null);
-      status.textContent = "✓ Sync imefanikiwa — "+data.data.length+" wapangaji";
-      status.style.color = "var(--accent3)";
-    } else {
-      status.textContent = "⚠ Sheets haina data ya wapangaji";
-      status.style.color = "var(--accent2)";
-    }
-  } catch(e) {
-    status.textContent = "✗ Sheets haifiki: "+e.message;
-    status.style.color = "var(--danger)";
+  if(getUrl()){
+    try{fetch(getUrl(),{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({action:"LUKU",tarehe:tar,chumba:c,jina:document.getElementById("lMpangaji").value,
+      lukuAwali:aw,lukuSasa:sa,kwh:kwh,gharama:kwh*ra})});}catch(e){}
   }
 }
 
-// ══════════════════════════════════════════════
-// HELPER
-// ══════════════════════════════════════════════
-function showAlert(el, msg, type) {
-  el.className = "alert alert-"+type;
-  el.textContent = msg;
-  el.style.display = "block";
-  setTimeout(function(){ el.style.display="none"; }, 5000);
+// ══════════════════════════════════════
+// HISTORY
+// ══════════════════════════════════════
+function renderHistory(){
+  var fc=document.getElementById("hChumba").value;
+  var fm=document.getElementById("hMonth").value;
+  var recs=getRecs();
+  if(fc)recs=recs.filter(function(r){return r.chumba===fc;});
+  if(fm)recs=recs.filter(function(r){return r.tarehe&&r.tarehe.startsWith(fm);});
+  recs=recs.slice().reverse();
+  var tb=document.getElementById("histTbody");
+  var em=document.getElementById("histEmpty");
+  tb.innerHTML="";
+  if(!recs.length){em.style.display="";return;}
+  em.style.display="none";
+  recs.forEach(function(r){
+    var tr=document.createElement("tr");
+    tr.innerHTML='<td>'+r.tarehe+'</td>'
+      +'<td><span class="tag tag-blue">'+r.chumba+'</span></td>'
+      +'<td>'+(r.jina||"—")+'</td>'
+      +'<td>'+r.lukuAwali+'</td><td>'+r.lukuSasa+'</td>'
+      +'<td><b>'+Number(r.kwh).toFixed(1)+'</b></td>'
+      +'<td style="color:var(--accent2)">Tsh '+Number(r.gharama||0).toLocaleString()+'</td>';
+    tb.appendChild(tr);
+  });
+}
+function exportCSV(){
+  var r=getRecs();
+  var csv="Tarehe,Chumba,Mpangaji,Awali,Sasa,kWh,Gharama\n";
+  r.forEach(function(x){csv+=[x.tarehe,x.chumba,x.jina,x.lukuAwali,x.lukuSasa,Number(x.kwh).toFixed(1),x.gharama].join(",")+"\n";});
+  var a=document.createElement("a");
+  a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(csv);
+  a.download="luku_historia.csv"; a.click();
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════
+// COMPARISON
+// ══════════════════════════════════════
+function renderComparison(){
+  var t=getTenants(),recs=getRecs();
+  var month=today().substring(0,7);
+  var byRoom={};
+  ROOMS.forEach(function(c){byRoom[c]=0;});
+  recs.filter(function(r){return r.tarehe&&r.tarehe.startsWith(month);})
+      .forEach(function(r){byRoom[r.chumba]=(byRoom[r.chumba]||0)+Number(r.kwh);});
+  var maxV=Math.max.apply(null,Object.values(byRoom))||1;
+  var chart=document.getElementById("compChart"); chart.innerHTML="";
+  ROOMS.forEach(function(c){
+    var v=byRoom[c]||0;
+    var pct=(v/maxV)*100;
+    var col=document.createElement("div"); col.className="bar-col";
+    col.innerHTML='<div class="bar-val">'+(v>0?v.toFixed(0):"")+'</div>'
+      +'<div class="bar" style="height:'+pct+'%;background:'+(v>50?"var(--danger)":v>20?"var(--accent2)":"var(--accent3)")+'" title="'+c+': '+v.toFixed(1)+' kWh"></div>'
+      +'<div class="bar-label">'+c+'</div>';
+    chart.appendChild(col);
+  });
+  var tb=document.getElementById("compTbody"); tb.innerHTML="";
+  ROOMS.forEach(function(c){
+    var tn=t[c]; var kwh=byRoom[c]||0; var gh=kwh*500;
+    var tr=document.createElement("tr");
+    tr.innerHTML='<td><span class="tag tag-blue">'+c+'</span></td>'
+      +'<td>'+(tn?tn.jina:"—")+'</td>'
+      +'<td><b>'+kwh.toFixed(1)+'</b></td>'
+      +'<td style="color:var(--accent2)">'+(gh>0?"Tsh "+gh.toLocaleString():"—")+'</td>'
+      +'<td><span class="tag '+(tn?"tag-green":"")+'">'+(tn&&kwh>0?"Imeingizwa":tn?"Bado":"Wazi")+'</span></td>';
+    tb.appendChild(tr);
+  });
+}
+
+// ══════════════════════════════════════
+// USHAURI
+// ══════════════════════════════════════
+var ADVICE=[
+  {t:"Zima taa usipohitaji",b:"Taa zinazowaka muda mrefu zinatumia umeme mwingi. Zima unapotoka kwenye chumba."},
+  {t:"Tumia balbu za LED",b:"Balbu za LED zinatumia hadi 80% ya umeme mdogo kuliko balbu za kawaida."},
+  {t:"Friji — acha pengo ukutani",b:"Friji inahitaji hewa nyuma yake. Ibana ukutani kunazuia hewa na inafanya kazi zaidi."},
+  {t:"Toa vifaa kwenye socket",b:"Vifaa vingi (TV, charger) vinatumia umeme hata vikizimwa lakini vimebaki soketi. Vuta plug."},
+  {t:"Piga pasi nguo nyingi mara moja",b:"Piga pasi batch moja badala ya mara nyingi ili kupunguza muda wa joto."},
+  {t:"Usifungue friji mara nyingi",b:"Kila ufunguzi wa friji unapoteza baridi — friji inafanya kazi zaidi kurejesha joto."},
+  {t:"Rekodi LUKU kila wiki",b:"Angalia LUKU mara kwa mara ili ujue unapotumia umeme zaidi na ufanye mabadiliko mapema."},
+  {t:"Fan badala ya AC",b:"Feni inatumia hadi 90% ya umeme mdogo kuliko air conditioner — tumia kwanza kabla ya AC."}
+];
+function renderAdvice(){
+  document.getElementById("adviceList").innerHTML=ADVICE.map(function(a){
+    return '<div class="advice-item"><div class="advice-title">💡 '+a.t+'</div><div class="advice-body">'+a.b+'</div></div>';
+  }).join("");
+}
+
+// ══════════════════════════════════════
+// ADMIN — TENANTS
+// ══════════════════════════════════════
+function saveTenant(){
+  var c=document.getElementById("aChumba").value;
+  var j=document.getElementById("aJina").value.trim();
+  var v=document.getElementById("aVifaa").value.trim();
+  var k=Number(document.getElementById("aKwh").value)||0;
+  var el=document.getElementById("adminAlert");
+  if(!c){showAlert(el,"Chagua chumba.","danger");return;}
+  if(!j){showAlert(el,"Weka jina la mpangaji.","danger");return;}
+  var t=getTenants();
+  t[c]={jina:j,chumba:c,vifaa:v,kwh:k};
+  saveTenants(t);
+  showAlert(el,"✓ "+j+" ("+c+") amehifadhiwa.","success");
+  clearAdminForm(); populateSelects(); renderAdminTenants(); updateAdminStats(); renderMuhtasari(); renderVyumba();
+  if(getUrl()){
+    try{fetch(getUrl(),{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({action:"SENSA",chumba:c,jina:j,vifaa:v,kwh:k})});}catch(e){}
+  }
+}
+function clearAdminForm(){
+  ["aChumba","aJina","aVifaa"].forEach(function(id){document.getElementById(id).value="";});
+  document.getElementById("aKwh").value="0";
+}
+function editTenant(c){
+  var t=getTenants()[c]; if(!t)return;
+  document.getElementById("aChumba").value=c;
+  document.getElementById("aJina").value=t.jina||"";
+  document.getElementById("aVifaa").value=t.vifaa||"";
+  document.getElementById("aKwh").value=t.kwh||0;
+  showPage("admin",document.getElementById("adminTab"));
+  window.scrollTo(0,0);
+}
+function deleteTenant(c){
+  if(!confirm("Futa mpangaji wa "+c+"?"))return;
+  var t=getTenants(); delete t[c]; saveTenants(t);
+  renderAdminTenants(); updateAdminStats(); populateSelects(); renderMuhtasari(); renderVyumba();
+  if(getUrl()){
+    try{fetch(getUrl(),{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({action:"deleteTenant",chumba:c})});}catch(e){}
+  }
+}
+function renderAdminTenants(){
+  var t=getTenants();
+  var tb=document.getElementById("tenantTbody");
+  var em=document.getElementById("tenantEmpty");
+  tb.innerHTML="";
+  var keys=Object.keys(t).sort();
+  if(!keys.length){em.style.display="";return;}
+  em.style.display="none";
+  keys.forEach(function(c){
+    var tn=t[c];
+    var tr=document.createElement("tr");
+    tr.innerHTML='<td><span class="tag tag-blue">'+c+'</span></td>'
+      +'<td>'+tn.jina+'</td>'
+      +'<td style="color:var(--muted);font-size:.8rem">'+(tn.vifaa||"—")+'</td>'
+      +'<td>'+(tn.kwh||0)+'</td>'
+      +'<td><button class="btn btn-outline btn-sm" onclick="editTenant(\''+c+'\')">✏ Hariri</button> '
+      +'<button class="btn btn-danger btn-sm" onclick="deleteTenant(\''+c+'\')">🗑 Futa</button></td>';
+    tb.appendChild(tr);
+  });
+}
+function updateAdminStats(){
+  document.getElementById("a-occ").textContent=Object.keys(getTenants()).length;
+  document.getElementById("a-recs").textContent=getRecs().length;
+}
+async function syncSheets(){
+  var st=document.getElementById("syncStatus");
+  if(!getUrl()){st.textContent="⚠ Weka URL ya Sheets kwanza.";return;}
+  st.style.color="var(--muted)"; st.textContent="Inasync...";
+  try{
+    var d=await fetchSheets("?action=list");
+    if(d&&d.data&&d.data.length>0){
+      var t=getTenants();
+      d.data.forEach(function(r){if(r.chumba)t[r.chumba]=r;});
+      saveTenants(t);
+      populateSelects(); renderAdminTenants(); renderMuhtasari(); renderVyumba();
+      st.style.color="var(--accent3)"; st.textContent="✓ Sync! Wapangaji: "+d.data.length;
+    } else {
+      st.style.color="var(--accent2)"; st.textContent="⚠ Sheets haina data ya wapangaji.";
+    }
+  }catch(e){st.style.color="var(--danger)"; st.textContent="✗ "+e.message;}
+}
+function clearAllData(){
+  if(!confirm("TAHADHARI: Data yote (wapangaji + LUKU) itafutwa. Endelea?"))return;
+  localStorage.removeItem("tenants"); localStorage.removeItem("lukuRecs");
+  refreshAll(); alert("Data yote imefutwa.");
+}
+function showMsg(msg,type){
+  var d=document.createElement("div");
+  d.className="alert alert-"+type;
+  d.style.cssText="position:fixed;bottom:20px;right:20px;z-index:500;max-width:360px;";
+  d.textContent=msg; document.body.appendChild(d);
+  setTimeout(function(){d.remove();},4000);
+}
+function showAlert(el,msg,type){
+  el.className="alert alert-"+type; el.textContent=msg; el.style.display="block";
+  setTimeout(function(){el.style.display="none";},5000);
+}
+
+// ══════════════════════════════════════
 // INIT
-// ══════════════════════════════════════════════
-window.onload = function() {
-  document.getElementById("loginChumba").addEventListener("keydown",function(e){ if(e.key==="Enter") document.getElementById("loginJina").focus(); });
-  document.getElementById("loginJina").addEventListener("keydown",function(e){ if(e.key==="Enter") login(); });
+// ══════════════════════════════════════
+window.onload=function(){
+  document.getElementById("loginChumba").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("loginJina").focus();});
+  document.getElementById("loginJina").addEventListener("keydown",function(e){if(e.key==="Enter")login();});
 };
 </script>
 </body>
