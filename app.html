@@ -181,7 +181,8 @@
       <input type="text" id="loginJina" placeholder="Andika jina lako" />
     </div>
     <button class="btn-login" onclick="login()">INGIA ⚡</button>
-    <p class="login-hint">Admin: acha chumba wazi, nenosiri: <b>mreno</b></p>
+    <button class="btn-login" style="margin-top:10px;background:#f59e0b;font-size:.95rem;" onclick="loginAdmin()">🔧 INGIA KAMA ADMIN</button>
+    <p class="login-hint">Admin: weka nenosiri kwenye kisanduku cha Jina, kisha bonyeza kitufe cha njano</p>
   </div>
 </div>
 
@@ -543,7 +544,7 @@ async function login(){
   if(!jina){showLoginErr("Weka jina lako au nenosiri.");return;}
 
   // Admin
-  if(jina===ADMIN_PASS){
+  if(jina.toLowerCase().trim()===ADMIN_PASS.toLowerCase()){
     currentUser={jina:"Admin",chumba:rawC?normalizeRoom(rawC):null,isAdmin:true};
     startApp(); return;
   }
@@ -992,6 +993,22 @@ function showAlert(el,msg,type){
 // ══════════════════════════════════════
 // INIT
 // ══════════════════════════════════════
+function loginAdmin(){
+  var pass = document.getElementById("loginJina").value.trim();
+  if(!pass){
+    showLoginErr("Weka nenosiri la admin kwenye kisanduku cha Jina.");
+    document.getElementById("loginJina").focus();
+    return;
+  }
+  if(pass.toLowerCase() !== ADMIN_PASS.toLowerCase()){
+    showLoginErr("Nenosiri la admin si sahihi. Jaribu tena.");
+    document.getElementById("loginJina").value="";
+    document.getElementById("loginJina").focus();
+    return;
+  }
+  currentUser={jina:"Admin",chumba:null,isAdmin:true};
+  startApp();
+}
 window.onload=function(){
   document.getElementById("loginChumba").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("loginJina").focus();});
   document.getElementById("loginJina").addEventListener("keydown",function(e){if(e.key==="Enter")login();});
