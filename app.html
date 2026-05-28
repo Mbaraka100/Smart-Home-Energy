@@ -159,6 +159,298 @@
   .modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px;max-width:460px;width:90%;}
   .modal-title{font-family:'Rajdhani',sans-serif;font-size:1.15rem;color:var(--accent);margin-bottom:18px;}
   .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
+
+  /* PREDICTION ENGINE */
+  .pred-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:24px;}
+  .pred-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s;}
+  .pred-card:hover{transform:translateY(-2px);}
+  .pred-card.alert-red{border-color:var(--danger);box-shadow:0 0 18px rgba(239,68,68,.15);}
+  .pred-card.alert-yellow{border-color:var(--accent2);box-shadow:0 0 18px rgba(245,158,11,.12);}
+  .pred-card.alert-green{border-color:var(--accent3);}
+  .pred-card.no-data{border-color:rgba(30,58,95,.4);opacity:.65;}
+  .pred-room-num{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent);margin-bottom:2px;}
+  .pred-tenant{font-size:.8rem;color:var(--muted);margin-bottom:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pred-days{font-family:'Rajdhani',sans-serif;font-size:2.4rem;font-weight:700;line-height:1;}
+  .pred-days.danger{color:var(--danger);}
+  .pred-days.warn{color:var(--accent2);}
+  .pred-days.safe{color:var(--accent3);}
+  .pred-days-label{font-size:.72rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px;margin-bottom:10px;}
+  .pred-bar-wrap{background:rgba(255,255,255,.06);border-radius:20px;height:8px;margin-bottom:8px;overflow:hidden;}
+  .pred-bar-fill{height:100%;border-radius:20px;transition:width 1s ease;}
+  .pred-stats{display:flex;gap:14px;margin-top:8px;}
+  .pred-stat{flex:1;}
+  .pred-stat-val{font-family:'Rajdhani',sans-serif;font-size:1.05rem;font-weight:700;}
+  .pred-stat-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+  .pred-badge{position:absolute;top:12px;right:12px;padding:3px 9px;border-radius:20px;font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .pred-badge.red{background:rgba(239,68,68,.2);color:#fca5a5;}
+  .pred-badge.yellow{background:rgba(245,158,11,.2);color:#fde68a;}
+  .pred-badge.green{background:rgba(16,185,129,.2);color:#6ee7b7;}
+  .pred-badge.grey{background:rgba(100,116,139,.15);color:var(--muted);}
+  .pred-filter-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
+  .pred-filter-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;}
+  .pred-filter-btn:hover,.pred-filter-btn.active{background:var(--accent);color:#0a0e1a;border-color:var(--accent);}
+  .pred-summary-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px;}
+  .pred-sum-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;text-align:center;}
+  .pred-sum-val{font-family:'Rajdhani',sans-serif;font-size:1.7rem;font-weight:700;}
+  .pred-sum-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+  .pred-no-recs{text-align:center;color:var(--muted);font-size:.82rem;padding:18px 0;font-style:italic;}
+  .pred-trend{font-size:.75rem;margin-top:5px;}
+  .pred-trend.up{color:var(--danger);}
+  .pred-trend.down{color:var(--accent3);}
+  .pred-trend.flat{color:var(--muted);}
+  .pred-month-forecast{background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(16,185,129,.05));border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:.8rem;}
+  .pred-month-forecast .mf-label{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+  .pred-month-forecast .mf-val{font-family:'Rajdhani',sans-serif;font-size:1.1rem;color:var(--accent);}
+  .pred-card-detail{font-size:.75rem;color:var(--muted);margin-top:6px;padding-top:8px;border-top:1px solid rgba(30,58,95,.4);}
+
+  /* ══════════════════════════════════════
+     LUKU NOTIFICATION SYSTEM
+  ══════════════════════════════════════ */
+  #lukuNotifOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  #lukuNotifOverlay.open { display: flex; }
+
+  /* Blur + darken backdrop */
+  #lukuNotifOverlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 8, 20, 0.88);
+    backdrop-filter: blur(6px);
+  }
+
+  .notif-box {
+    position: relative;
+    z-index: 1;
+    border-radius: 20px;
+    padding: 36px 32px 28px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    animation: notifSlideIn .4s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes notifSlideIn {
+    from { transform: translateY(-40px) scale(.94); opacity: 0; }
+    to   { transform: translateY(0)    scale(1);   opacity: 1; }
+  }
+
+  /* DANGER variant */
+  .notif-box.notif-danger {
+    background: linear-gradient(145deg, #1a0a0a, #1f0d0d);
+    border: 2px solid var(--danger);
+    box-shadow: 0 0 60px rgba(239,68,68,.35), 0 0 120px rgba(239,68,68,.1);
+  }
+  .notif-box.notif-danger .notif-icon-ring {
+    background: rgba(239,68,68,.15);
+    border: 2px solid rgba(239,68,68,.4);
+    animation: pulseDanger 1.4s ease-in-out infinite;
+  }
+  @keyframes pulseDanger {
+    0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,.4); }
+    50%      { box-shadow: 0 0 0 18px rgba(239,68,68,.0); }
+  }
+
+  /* WARN variant */
+  .notif-box.notif-warn {
+    background: linear-gradient(145deg, #150f00, #1c1400);
+    border: 2px solid var(--accent2);
+    box-shadow: 0 0 50px rgba(245,158,11,.25), 0 0 100px rgba(245,158,11,.08);
+  }
+  .notif-box.notif-warn .notif-icon-ring {
+    background: rgba(245,158,11,.12);
+    border: 2px solid rgba(245,158,11,.35);
+    animation: pulseWarn 2s ease-in-out infinite;
+  }
+  @keyframes pulseWarn {
+    0%,100% { box-shadow: 0 0 0 0 rgba(245,158,11,.35); }
+    50%      { box-shadow: 0 0 0 14px rgba(245,158,11,.0); }
+  }
+
+  .notif-icon-ring {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.4rem;
+    margin: 0 auto 20px;
+  }
+  .notif-badge-top {
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .notif-danger .notif-badge-top { background: rgba(239,68,68,.2); color: #fca5a5; }
+  .notif-warn   .notif-badge-top { background: rgba(245,158,11,.2); color: #fde68a; }
+
+  .notif-headline {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .notif-danger .notif-headline { color: #fca5a5; }
+  .notif-warn   .notif-headline { color: #fde68a; }
+
+  .notif-sub {
+    color: var(--muted);
+    font-size: .88rem;
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+
+  /* Stats row */
+  .notif-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .notif-stat {
+    border-radius: 10px;
+    padding: 12px 8px;
+  }
+  .notif-danger .notif-stat { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); }
+  .notif-warn   .notif-stat { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); }
+  .notif-stat-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .notif-danger .notif-stat-val { color: #fca5a5; }
+  .notif-warn   .notif-stat-val { color: #fde68a; }
+  .notif-stat-lbl { font-size: .65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 3px; }
+
+  /* Progress bar */
+  .notif-bar-wrap {
+    background: rgba(255,255,255,.06);
+    border-radius: 20px;
+    height: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .notif-bar-fill {
+    height: 100%;
+    border-radius: 20px;
+    transition: width 1.2s ease 0.3s;
+  }
+  .notif-danger .notif-bar-fill { background: linear-gradient(90deg, #ef4444, #fca5a5); }
+  .notif-warn   .notif-bar-fill { background: linear-gradient(90deg, #f59e0b, #fde68a); }
+
+  /* Action buttons */
+  .notif-actions { display: flex; flex-direction: column; gap: 10px; }
+  .notif-btn-main {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+  }
+  .notif-btn-main:hover { opacity: .88; transform: translateY(-1px); }
+  .notif-btn-main:active { transform: translateY(0); }
+  .notif-danger .notif-btn-main { background: var(--danger); color: #fff; }
+  .notif-warn   .notif-btn-main { background: var(--accent2); color: #0a0e1a; }
+
+  .notif-btn-dismiss {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: .78rem;
+    cursor: pointer;
+    padding: 6px;
+    transition: color .2s;
+  }
+  .notif-btn-dismiss:hover { color: var(--text); }
+
+  .notif-snooze-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  .notif-snooze-row input[type=checkbox] { accent-color: var(--muted); cursor: pointer; }
+  .notif-snooze-row label { font-size: .75rem; color: var(--muted); cursor: pointer; }
+
+  /* Timestamp */
+  .notif-timestamp {
+    font-size: .7rem;
+    color: rgba(100,116,139,.5);
+    margin-top: 14px;
+  }
+
+  /* SMART OPTIMIZATION */
+  .room-opt-grid{display:flex;flex-wrap:wrap;gap:8px;}
+  .room-opt-btn{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:.88rem;cursor:pointer;transition:all .2s;}
+  .room-opt-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .room-opt-btn.selected{background:rgba(0,212,255,.1);border-color:var(--accent);color:var(--accent);}
+  .room-opt-btn.has-alert{border-color:var(--danger);color:#fca5a5;}
+  .room-opt-btn.has-warn{border-color:var(--accent2);color:#fde68a;}
+  .opt-profile{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px;}
+  .opt-profile-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+  .opt-profile-name{font-family:'Rajdhani',sans-serif;font-size:1.3rem;color:var(--accent);}
+  .opt-profile-sub{font-size:.8rem;color:var(--muted);margin-top:2px;}
+  .opt-score-ring{text-align:center;}
+  .opt-score-num{font-family:'Rajdhani',sans-serif;font-size:2.5rem;font-weight:700;}
+  .opt-score-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+  .opt-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;}
+  .opt-metric{background:var(--card);border-radius:10px;padding:12px;text-align:center;}
+  .opt-metric-val{font-family:'Rajdhani',sans-serif;font-size:1.4rem;font-weight:700;}
+  .opt-metric-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+  .opt-tips{display:flex;flex-direction:column;gap:10px;}
+  .opt-tip{border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
+  .opt-tip.critical{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);}
+  .opt-tip.warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);}
+  .opt-tip.info{background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);}
+  .opt-tip.good{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);}
+  .opt-tip-icon{font-size:1.4rem;flex-shrink:0;margin-top:1px;}
+  .opt-tip-body{}
+  .opt-tip-title{font-weight:700;font-size:.9rem;margin-bottom:3px;}
+  .opt-tip.critical .opt-tip-title{color:#fca5a5;}
+  .opt-tip.warn .opt-tip-title{color:#fde68a;}
+  .opt-tip.info .opt-tip-title{color:var(--accent);}
+  .opt-tip.good .opt-tip-title{color:var(--accent3);}
+  .opt-tip-desc{font-size:.82rem;color:var(--muted);line-height:1.6;}
+  .opt-tip-saving{font-size:.75rem;margin-top:5px;font-weight:600;}
+  .opt-tip.critical .opt-tip-saving{color:#fca5a5;}
+  .opt-tip.warn .opt-tip-saving{color:#fde68a;}
+  .opt-tip.info .opt-tip-saving{color:var(--accent);}
+  .opt-tip.good .opt-tip-saving{color:var(--accent3);}
+  .opt-section-title{font-family:'Rajdhani',sans-serif;font-size:.9rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin:16px 0 10px;}
+  .opt-comparison{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px;}
+  .opt-comp-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .opt-comp-label{width:80px;font-size:.78rem;color:var(--muted);}
+  .opt-comp-bar-wrap{flex:1;background:rgba(255,255,255,.06);border-radius:20px;height:10px;overflow:hidden;}
+  .opt-comp-bar{height:100%;border-radius:20px;}
+  .opt-comp-val{width:70px;text-align:right;font-family:'Rajdhani',sans-serif;font-size:.9rem;}
+  .anomaly-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:12px;}
+  .anomaly-card.flagged{border-color:var(--danger);}
+  .anomaly-card.minor{border-color:var(--accent2);}
+  .anomaly-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .anomaly-room{font-family:'Rajdhani',sans-serif;font-size:1.1rem;color:var(--accent);}
+  .anomaly-desc{font-size:.83rem;color:var(--muted);line-height:1.6;}
+  .anomaly-stat{font-size:.8rem;margin-top:8px;padding:8px 12px;background:var(--card);border-radius:8px;}
+  .no-data-box{text-align:center;padding:40px 20px;color:var(--muted);}
+  .no-data-box .nd-icon{font-size:2.5rem;margin-bottom:10px;}
+  .no-data-box .nd-title{font-family:'Rajdhani',sans-serif;font-size:1.1rem;color:var(--text);margin-bottom:6px;}
 </style>
 </head>
 <body>
@@ -227,6 +519,7 @@
     <div class="nav-tab" onclick="showPage('ulinganisho',this)">📈 Ulinganisho</div>
     <div class="nav-tab" onclick="showPage('kumbukumbu',this)">📋 Kumbukumbu</div>
     <div class="nav-tab" onclick="showPage('ushauri',this)">💡 Ushauri</div>
+    <div class="nav-tab" style="color:var(--accent3);" onclick="showPage('prediction',this)">🔮 Prediction</div>
     <div class="nav-tab atab" id="adminTab" style="display:none" onclick="showPage('admin',this)">🔧 Admin</div>
   </div>
 
@@ -234,6 +527,8 @@
 
     <!-- MUHTASARI -->
     <div class="page active" id="page-muhtasari">
+      <!-- Prediction Alert Banner -->
+      <div id="predAlertBanner" style="margin-bottom:16px;"></div>
       <div class="stat-grid">
         <div class="stat-card blue"><div class="stat-label">Vyumba Vyote</div><div class="stat-value">16</div><div class="stat-sub">C01 — C16</div></div>
         <div class="stat-card green"><div class="stat-label">Vilivyokaliwa</div><div class="stat-value" id="s-occ">0</div><div class="stat-sub">Wapangaji</div></div>
@@ -338,10 +633,46 @@
       <div id="histEmpty" style="text-align:center;color:var(--muted);padding:40px;display:none;">Hakuna rekodi</div>
     </div>
 
-    <!-- USHAURI -->
+    <!-- USHAURI / SMART OPTIMIZATION -->
     <div class="page" id="page-ushauri">
-      <div class="section-title">VIDOKEZO VYA KUOKOA UMEME</div>
-      <div class="advice-list" id="adviceList"></div>
+      <div class="section-title">🤖 SMART OPTIMIZATION — USHAURI WA AI KWA KILA CHUMBA</div>
+
+      <!-- Mode Switch -->
+      <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center;">
+        <button class="pred-filter-btn active" id="optModeRoom" onclick="setOptMode('room',this)">🏠 Kwa Chumba</button>
+        <button class="pred-filter-btn" id="optModeGlobal" onclick="setOptMode('global',this)">🌐 Vidokezo vya Jumla</button>
+        <button class="pred-filter-btn" id="optModeAnomaly" onclick="setOptMode('anomaly',this)">⚠ Anomaly Detection</button>
+      </div>
+
+      <!-- Room Selector (visible in room mode) -->
+      <div id="optRoomSelector" style="margin-bottom:18px;">
+        <div style="color:var(--muted);font-size:.78rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Chagua Chumba</div>
+        <div class="room-opt-grid" id="optRoomGrid"></div>
+      </div>
+
+      <!-- Content area -->
+      <div id="optContent"></div>
+    </div>
+
+    <!-- PREDICTION ENGINE -->
+    <div class="page" id="page-prediction">
+      <div class="section-title">🔮 AI PREDICTION ENGINE — UCHAMBUZI WA LUKU</div>
+
+      <!-- Summary Bar -->
+      <div class="pred-summary-bar" id="predSummaryBar"></div>
+
+      <!-- Filter Buttons -->
+      <div class="pred-filter-bar">
+        <span style="color:var(--muted);font-size:.8rem;letter-spacing:1px;">CHUJIO:</span>
+        <button class="pred-filter-btn active" onclick="setPredFilter('all',this)">Vyumba Vyote</button>
+        <button class="pred-filter-btn" style="border-color:var(--danger);color:var(--danger);" onclick="setPredFilter('danger',this)">🔴 Hatari (&lt;5 siku)</button>
+        <button class="pred-filter-btn" style="border-color:var(--accent2);color:var(--accent2);" onclick="setPredFilter('warn',this)">🟡 Tahadhari (5–14 siku)</button>
+        <button class="pred-filter-btn" style="border-color:var(--accent3);color:var(--accent3);" onclick="setPredFilter('safe',this)">🟢 Salama (&gt;14 siku)</button>
+        <button class="pred-filter-btn" onclick="setPredFilter('nodata',this)">⚫ Hakuna Data</button>
+      </div>
+
+      <!-- Prediction Cards Grid -->
+      <div class="pred-grid" id="predGrid"></div>
     </div>
 
     <!-- ADMIN -->
@@ -423,6 +754,52 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     LUKU NOTIFICATION OVERLAY
+     ══════════════════════════════════ -->
+<div id="lukuNotifOverlay">
+  <div class="notif-box" id="lukuNotifBox">
+    <div class="notif-icon-ring" id="lukuNotifIcon">⚡</div>
+    <div class="notif-badge-top" id="lukuNotifBadge">ARIFA</div>
+    <div class="notif-headline" id="lukuNotifHeadline">LUKU Inakwisha</div>
+    <div class="notif-sub" id="lukuNotifSub">Tafadhali nunua LUKU mapema ili kuepuka kukaa gizani.</div>
+
+    <div class="notif-stats" id="lukuNotifStats">
+      <div class="notif-stat">
+        <div class="notif-stat-val" id="lukuNotifDays">—</div>
+        <div class="notif-stat-lbl">Siku Zimebaki</div>
+      </div>
+      <div class="notif-stat">
+        <div class="notif-stat-val" id="lukuNotifUnits">—</div>
+        <div class="notif-stat-lbl">LUKU Sasa</div>
+      </div>
+      <div class="notif-stat">
+        <div class="notif-stat-val" id="lukuNotifKwh">—</div>
+        <div class="notif-stat-lbl">kWh/Siku</div>
+      </div>
+    </div>
+
+    <div class="notif-bar-wrap">
+      <div class="notif-bar-fill" id="lukuNotifBar" style="width:0%"></div>
+    </div>
+
+    <div class="notif-actions">
+      <button class="notif-btn-main" id="lukuNotifMainBtn" onclick="closeLukuNotif(false)">
+        ✓ Nimeona — Nitanunua LUKU
+      </button>
+      <div class="notif-snooze-row">
+        <input type="checkbox" id="notifSnoozeCheck" />
+        <label for="notifSnoozeCheck">Usinifikishie tena leo</label>
+      </div>
+      <button class="notif-btn-dismiss" onclick="closeLukuNotif(true)">
+        Funga bila kukumbuka
+      </button>
+    </div>
+
+    <div class="notif-timestamp" id="lukuNotifTime"></div>
   </div>
 </div>
 
@@ -632,6 +1009,8 @@ function startApp(){
   updateUrlBadge();
   populateSelects();
   refreshAll();
+  // Angalia LUKU ya mpangaji na onyesha notification kama inahitajika
+  setTimeout(checkAndShowLukuNotification, 600);
 }
 
 function logout(){
@@ -682,6 +1061,8 @@ function refreshAll(){
   renderAdvice();
   renderAdminTenants();
   updateAdminStats();
+  renderPrediction();
+  renderPredAlertBanner();
 }
 
 // ══════════════════════════════════════
@@ -907,22 +1288,485 @@ function renderComparison(){
 }
 
 // ══════════════════════════════════════
-// USHAURI
+// SMART OPTIMIZATION ENGINE
 // ══════════════════════════════════════
-var ADVICE=[
-  {t:"Zima taa usipohitaji",b:"Taa zinazowaka muda mrefu zinatumia umeme mwingi. Zima unapotoka kwenye chumba."},
-  {t:"Tumia balbu za LED",b:"Balbu za LED zinatumia hadi 80% ya umeme mdogo kuliko balbu za kawaida."},
-  {t:"Friji — acha pengo ukutani",b:"Friji inahitaji hewa nyuma yake. Ibana ukutani kunazuia hewa na inafanya kazi zaidi."},
-  {t:"Toa vifaa kwenye socket",b:"Vifaa vingi (TV, charger) vinatumia umeme hata vikizimwa lakini vimebaki soketi. Vuta plug."},
-  {t:"Piga pasi nguo nyingi mara moja",b:"Piga pasi batch moja badala ya mara nyingi ili kupunguza muda wa joto."},
-  {t:"Usifungue friji mara nyingi",b:"Kila ufunguzi wa friji unapoteza baridi — friji inafanya kazi zaidi kurejesha joto."},
-  {t:"Rekodi LUKU kila wiki",b:"Angalia LUKU mara kwa mara ili ujue unapotumia umeme zaidi na ufanye mabadiliko mapema."},
-  {t:"Fan badala ya AC",b:"Feni inatumia hadi 90% ya umeme mdogo kuliko air conditioner — tumia kwanza kabla ya AC."}
+
+var optMode = "room";
+var optSelectedRoom = null;
+
+// Vidokezo vya jumla (fallback / global mode)
+var GLOBAL_ADVICE = [
+  {icon:"💡", t:"Tumia balbu za LED", b:"Balbu za LED zinatumia hadi 80% ya umeme mdogo kuliko balbu za incandescent. Badilisha balbu zote nyumbani.", saving:"Akiba: ~5–8 kWh/mwezi"},
+  {icon:"🔌", t:"Toa vifaa kwenye socket", b:"TV, charger, na vifaa vingine vinatumia 'standby power' hata vikizimwa. Vuta plug unapotoka.", saving:"Akiba: ~3–6 kWh/mwezi"},
+  {icon:"❄️", t:"Fan kabla ya AC", b:"Feni inatumia hadi 90% ya umeme mdogo kuliko AC. Tumia feni kwanza — AC ni wa mwisho.", saving:"Akiba: ~15–30 kWh/mwezi"},
+  {icon:"🚪", t:"Usifungue friji mara nyingi", b:"Kila ufunguzi wa friji unapoteza baridi. Amua unataka nini kabla ya kufungua.", saving:"Akiba: ~2–4 kWh/mwezi"},
+  {icon:"👕", t:"Piga pasi batch moja", b:"Piga pasi nguo nyingi mara moja badala ya kila siku. Pasi hutumia umeme mwingi kufikia joto.", saving:"Akiba: ~2–5 kWh/mwezi"},
+  {icon:"☀️", t:"Tumia mwanga wa asili", b:"Fungua madirisha asubuhi badala ya kuwasha taa. Mwanga wa jua ni bure na ni mzuri kwa afya.", saving:"Akiba: ~1–3 kWh/mwezi"},
+  {icon:"🔧", t:"Rekodi LUKU kila wiki", b:"Data nyingi inakusaidia kugundua mabadiliko ya matumizi mapema na kufanya mabadiliko kabla ya bili kubwa.", saving:"Faida: Udhibiti bora"},
+  {icon:"🌡️", t:"Weka joto la friji vizuri", b:"Joto la friji lisilo sahihi (baridi sana au joto sana) linatumia umeme zaidi. Bora: 3–5°C ndani, -18°C freezer.", saving:"Akiba: ~3–7 kWh/mwezi"}
 ];
-function renderAdvice(){
-  document.getElementById("adviceList").innerHTML=ADVICE.map(function(a){
-    return '<div class="advice-item"><div class="advice-title">💡 '+a.t+'</div><div class="advice-body">'+a.b+'</div></div>';
-  }).join("");
+
+// Vifaa na matumizi yao ya kawaida (kWh/siku)
+var DEVICE_KWH = {
+  "friji":    {kwh: 1.5,  icon: "❄️",  label: "Friji"},
+  "fridge":   {kwh: 1.5,  icon: "❄️",  label: "Friji"},
+  "tv":       {kwh: 0.5,  icon: "📺",  label: "TV"},
+  "ac":       {kwh: 4.0,  icon: "🌬️", label: "AC"},
+  "fan":      {kwh: 0.3,  icon: "💨",  label: "Feni"},
+  "feni":     {kwh: 0.3,  icon: "💨",  label: "Feni"},
+  "pasi":     {kwh: 0.8,  icon: "👕",  label: "Pasi"},
+  "iron":     {kwh: 0.8,  icon: "👕",  label: "Pasi"},
+  "heater":   {kwh: 2.0,  icon: "🔥",  label: "Heater"},
+  "boiler":   {kwh: 2.5,  icon: "🚿",  label: "Boiler"},
+  "pump":     {kwh: 1.0,  icon: "💧",  label: "Pump"},
+  "kompyuta": {kwh: 0.4,  icon: "💻",  label: "Kompyuta"},
+  "laptop":   {kwh: 0.3,  icon: "💻",  label: "Laptop"},
+  "taa":      {kwh: 0.15, icon: "💡",  label: "Taa"},
+  "bulb":     {kwh: 0.15, icon: "💡",  label: "Taa"},
+  "microwave":{kwh: 0.5,  icon: "🍲",  label: "Microwave"},
+  "jiko":     {kwh: 1.2,  icon: "🍳",  label: "Jiko la umeme"},
+  "washer":   {kwh: 1.5,  icon: "🫧",  label: "Washing machine"}
+};
+
+function parseDevices(vifaaStr) {
+  if (!vifaaStr) return [];
+  var parts = vifaaStr.toLowerCase().split(/[,;\/\s]+/);
+  var found = [];
+  parts.forEach(function(p) {
+    p = p.trim();
+    Object.keys(DEVICE_KWH).forEach(function(key) {
+      if (p.includes(key) && !found.find(function(f){return f.key===key;})) {
+        found.push({ key: key, data: DEVICE_KWH[key] });
+      }
+    });
+  });
+  return found;
+}
+
+function getAvgByRoom() {
+  // Hesabu wastani wa kWh/siku kwa kila chumba
+  var rooms = ROOMS;
+  var result = {};
+  var allAvgs = [];
+  rooms.forEach(function(c) {
+    var p = calcPrediction(c);
+    if (p.hasData) {
+      result[c] = p.avgPerDay;
+      allAvgs.push(p.avgPerDay);
+    }
+  });
+  var median = 0;
+  if (allAvgs.length) {
+    allAvgs.sort(function(a,b){return a-b;});
+    median = allAvgs[Math.floor(allAvgs.length/2)];
+  }
+  return { byRoom: result, median: median, all: allAvgs };
+}
+
+function generateRoomTips(chumba) {
+  var tenant = getTenants()[chumba];
+  var pred = calcPrediction(chumba);
+  var stats = getAvgByRoom();
+  var tips = [];
+
+  if (!pred.hasData) return tips;
+
+  var avg = pred.avgPerDay;
+  var median = stats.median || 1;
+  var devices = tenant ? parseDevices(tenant.vifaa) : [];
+  var hasAC = devices.find(function(d){return d.key==="ac";});
+  var hasFridge = devices.find(function(d){return d.key==="friji"||d.key==="fridge";});
+  var hasHeater = devices.find(function(d){return d.key==="heater"||d.key==="boiler";});
+
+  // 1. Je matumizi yake ni ya juu kuliko wastani?
+  var overRatio = avg / (median || 1);
+  if (overRatio > 1.5) {
+    tips.push({
+      level: "critical",
+      icon: "🚨",
+      title: "Matumizi Yako Ni Ya Juu Sana!",
+      desc: "Unatumia " + avg.toFixed(2) + " kWh/siku — hii ni " + (overRatio*100-100).toFixed(0) + "% zaidi ya wastani wa nyumba (" + median.toFixed(2) + " kWh/siku). Angalia vifaa unavyotumia.",
+      saving: "Unaweza kuokoa Tsh " + Math.round((avg - median) * 30 * 500).toLocaleString() + "/mwezi ukipunguza hadi wastani"
+    });
+  } else if (overRatio > 1.2) {
+    tips.push({
+      level: "warn",
+      icon: "⚠️",
+      title: "Matumizi Kidogo Ya Juu",
+      desc: "Unatumia " + avg.toFixed(2) + " kWh/siku — kidogo zaidi ya wastani (" + median.toFixed(2) + " kWh/siku). Kuna nafasi ya kupunguza.",
+      saving: "Akiba inayowezekana: Tsh " + Math.round((avg - median) * 30 * 500).toLocaleString() + "/mwezi"
+    });
+  } else if (overRatio < 0.7) {
+    tips.push({
+      level: "good",
+      icon: "🏆",
+      title: "Matumizi Mazuri — Unashinda!",
+      desc: "Hongera! Unatumia " + avg.toFixed(2) + " kWh/siku — " + (100 - overRatio*100).toFixed(0) + "% chini ya wastani. Endelea hivyo.",
+      saving: "Unaosha Tsh " + Math.round((median - avg) * 30 * 500).toLocaleString() + " kila mwezi kuliko wengine"
+    });
+  }
+
+  // 2. Mwelekeo wa matumizi
+  if (pred.trend === "up") {
+    tips.push({
+      level: "warn",
+      icon: "📈",
+      title: "Matumizi Yanaongezeka",
+      desc: "Data inaonyesha matumizi yako yanazidi kuwa makubwa kwa muda. Angalia kama umeweka kifaa kipya au umebadilisha tabia ya matumizi.",
+      saving: "Hatua sasa itaepuka bili kubwa mwezi ujao"
+    });
+  } else if (pred.trend === "down") {
+    tips.push({
+      level: "good",
+      icon: "📉",
+      title: "Matumizi Yanashuka — Vizuri!",
+      desc: "Mwelekeo wako ni mzuri — matumizi yanashuka. Hii inamaanisha mabadiliko unayofanya yanafanya kazi.",
+      saving: "Endelea na tabia hii nzuri"
+    });
+  }
+
+  // 3. Ushauri kulingana na vifaa halisi
+  if (hasAC) {
+    tips.push({
+      level: avg > median ? "critical" : "warn",
+      icon: "🌬️",
+      title: "Una AC — Chanzo Kikuu cha Umeme",
+      desc: "AC inatumia ~4 kWh kwa saa. Kama unatumia masaa 6/siku, hiyo ni 24 kWh kwa siku kutoka AC peke yake. Tumia feni kwanza, AC kwa nyakati za joto kali tu.",
+      saving: "Kupunguza AC masaa 2/siku: Akiba ~Tsh 60,000/mwezi"
+    });
+  }
+  if (hasFridge) {
+    tips.push({
+      level: "info",
+      icon: "❄️",
+      title: "Una Friji — Angalia Nafasi Ukutani",
+      desc: "Friji inahitaji nafasi ya cm 10–15 nyuma na pembeni kwa ajili ya hewa. Bila nafasi, motor inafanya kazi zaidi na inatumia umeme zaidi.",
+      saving: "Friji yenye nafasi sahihi: Akiba ~1–2 kWh/siku"
+    });
+  }
+  if (hasHeater) {
+    tips.push({
+      level: "warn",
+      icon: "🔥",
+      title: "Una Heater/Boiler — Tumia Kwa Akili",
+      desc: "Heater na boiler ni miongoni mwa vifaa vinavyotumia umeme mwingi. Washa tu unapohitaji, zima unapomaliza — usiacha ukiwaka bure.",
+      saving: "Kupunguza matumizi ya heater: Akiba ~Tsh 30,000–60,000/mwezi"
+    });
+  }
+
+  // 4. Makadirio ya mwezi
+  var monthForecast = pred.forecastMonthKwh;
+  var monthCost = pred.forecastMonthCost;
+  if (monthCost > 30000) {
+    tips.push({
+      level: "warn",
+      icon: "💰",
+      title: "Bili ya Mwezi Inatarajiwa Kuwa Kubwa",
+      desc: "Kulingana na mwelekeo wako wa sasa, unatarajiwa kutumia " + monthForecast.toFixed(1) + " kWh mwezi huu, sawa na Tsh " + Math.round(monthCost).toLocaleString() + ".",
+      saving: "Punguza matumizi sasa ili kupunguza bili"
+    });
+  }
+
+  // 5. LUKU inaisha
+  if (pred.status === "danger") {
+    tips.push({
+      level: "critical",
+      icon: "⚡",
+      title: "LUKU Inakwisha Haraka — Nunua Leo!",
+      desc: "LUKU yako inatarajiwa kuisha ndani ya siku " + pred.daysLeft + ". Unatumia " + avg.toFixed(2) + " kWh/siku. Nunua LUKU haraka iwezekanavyo.",
+      saving: "Usikae bila umeme — nunua sasa"
+    });
+  } else if (pred.status === "warn") {
+    tips.push({
+      level: "warn",
+      icon: "🔋",
+      title: "Anza Kupanga Kununua LUKU",
+      desc: "LUKU yako itaisha takriban siku " + pred.daysLeft + ". Ni bora kupanga kununua wiki ijayo ili usishindwe.",
+      saving: "Epuka kukosa umeme bila mpango"
+    });
+  }
+
+  // 6. Kama hakuna vifaa vilivyoandikwa
+  if (devices.length === 0 && tenant) {
+    tips.push({
+      level: "info",
+      icon: "📋",
+      title: "Ongeza Orodha ya Vifaa Vyako",
+      desc: "Admin hajaweka orodha ya vifaa kwa chumba chako. Ukiongeza (friji, TV, AC, n.k.), mfumo utaweza kutoa ushauri maalum zaidi.",
+      saving: "Ushauri bora unahitaji data ya vifaa"
+    });
+  }
+
+  // 7. Kama data ni chache
+  if (pred.totalRecs < 3) {
+    tips.push({
+      level: "info",
+      icon: "📊",
+      title: "Ongeza Rekodi Zaidi kwa Usahihi Zaidi",
+      desc: "Sasa una rekodi " + pred.totalRecs + " tu. Rekodi zaidi (angalau 5+) zinasaidia AI kufanya uchambuzi sahihi zaidi wa mwelekeo wako.",
+      saving: "Data nyingi = ushauri bora zaidi"
+    });
+  }
+
+  return tips;
+}
+
+function calcOptScore(chumba) {
+  var pred = calcPrediction(chumba);
+  var stats = getAvgByRoom();
+  if (!pred.hasData) return { score: null, color: "var(--muted)" };
+  var avg = pred.avgPerDay;
+  var median = stats.median || 1;
+  var ratio = avg / median;
+  var score = Math.max(0, Math.min(100, Math.round((2 - ratio) * 50)));
+  var color = score >= 70 ? "var(--accent3)" : score >= 40 ? "var(--accent2)" : "var(--danger)";
+  return { score: score, color: color };
+}
+
+function setOptMode(mode, el) {
+  optMode = mode;
+  document.querySelectorAll(".pred-filter-btn").forEach(function(b){ b.classList.remove("active"); });
+  el.classList.add("active");
+  var sel = document.getElementById("optRoomSelector");
+  sel.style.display = mode === "room" ? "" : "none";
+  renderOptContent();
+}
+
+function selectOptRoom(chumba) {
+  optSelectedRoom = chumba;
+  document.querySelectorAll(".room-opt-btn").forEach(function(b){ b.classList.remove("selected"); });
+  var btn = document.querySelector(".room-opt-btn[data-room='" + chumba + "']");
+  if (btn) btn.classList.add("selected");
+  renderOptContent();
+}
+
+function renderAdvice() {
+  // Refresh room grid
+  renderOptRoomGrid();
+  renderOptContent();
+}
+
+function renderOptRoomGrid() {
+  var grid = document.getElementById("optRoomGrid");
+  if (!grid) return;
+  var rooms = visibleRooms();
+  var tenants = getTenants();
+  grid.innerHTML = "";
+  rooms.forEach(function(c) {
+    var tn = tenants[c];
+    var pred = calcPrediction(c);
+    var btn = document.createElement("button");
+    btn.className = "room-opt-btn" +
+      (optSelectedRoom === c ? " selected" : "") +
+      (!pred.hasData ? "" : pred.status === "danger" ? " has-alert" : pred.status === "warn" ? " has-warn" : "");
+    btn.setAttribute("data-room", c);
+    btn.innerHTML = c + (tn ? "<br><span style='font-size:.68rem;opacity:.7'>" + tn.jina.split(" ")[0] + "</span>" : "");
+    btn.onclick = function(){ selectOptRoom(c); };
+    grid.appendChild(btn);
+  });
+  // Auto-select first if none selected
+  if (!optSelectedRoom && rooms.length) {
+    optSelectedRoom = rooms[0];
+    var first = grid.querySelector(".room-opt-btn");
+    if (first) first.classList.add("selected");
+  }
+}
+
+function renderOptContent() {
+  var el = document.getElementById("optContent");
+  if (!el) return;
+
+  if (optMode === "global") {
+    // Vidokezo vya jumla
+    el.innerHTML = '<div class="opt-section-title">VIDOKEZO VYA JUMLA — NYUMBA NZIMA</div>' +
+      '<div class="opt-tips">' +
+      GLOBAL_ADVICE.map(function(a) {
+        return '<div class="opt-tip info">' +
+          '<div class="opt-tip-icon">' + a.icon + '</div>' +
+          '<div class="opt-tip-body">' +
+            '<div class="opt-tip-title">' + a.t + '</div>' +
+            '<div class="opt-tip-desc">' + a.b + '</div>' +
+            '<div class="opt-tip-saving">' + a.saving + '</div>' +
+          '</div></div>';
+      }).join("") + '</div>';
+    return;
+  }
+
+  if (optMode === "anomaly") {
+    renderAnomalyDetection(el);
+    return;
+  }
+
+  // ROOM MODE
+  var c = optSelectedRoom;
+  if (!c) { el.innerHTML = '<div class="no-data-box"><div class="nd-icon">🏠</div><div class="nd-title">Chagua Chumba Hapo Juu</div></div>'; return; }
+  var tenant = getTenants()[c];
+  var pred = calcPrediction(c);
+  var scoreObj = calcOptScore(c);
+  var stats = getAvgByRoom();
+  var tips = generateRoomTips(c);
+  var devices = tenant ? parseDevices(tenant.vifaa) : [];
+
+  var html = "";
+
+  // Profile card
+  html += '<div class="opt-profile">';
+  html += '<div class="opt-profile-head">';
+  html += '<div>';
+  html += '<div class="opt-profile-name">⚡ Chumba ' + c + '</div>';
+  html += '<div class="opt-profile-sub">' + (tenant ? tenant.jina : "Chumba Wazi") + '</div>';
+  if (tenant && tenant.vifaa) {
+    html += '<div style="margin-top:6px;font-size:.75rem;color:var(--muted);">Vifaa: ' + tenant.vifaa + '</div>';
+  }
+  html += '</div>';
+  if (scoreObj.score !== null) {
+    html += '<div class="opt-score-ring">';
+    html += '<div class="opt-score-num" style="color:' + scoreObj.color + '">' + scoreObj.score + '</div>';
+    html += '<div class="opt-score-lbl">Alama ya<br>Ufanisi</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // Metrics
+  if (pred.hasData) {
+    html += '<div class="opt-metrics">';
+    html += '<div class="opt-metric"><div class="opt-metric-val" style="color:var(--accent)">' + pred.avgPerDay.toFixed(2) + '</div><div class="opt-metric-lbl">kWh/Siku</div></div>';
+    html += '<div class="opt-metric"><div class="opt-metric-val" style="color:var(--accent2)">' + pred.forecastMonthKwh.toFixed(1) + '</div><div class="opt-metric-lbl">kWh/Mwezi (Tarajiwa)</div></div>';
+    html += '<div class="opt-metric"><div class="opt-metric-val" style="color:var(--accent2)">Tsh ' + Math.round(pred.forecastMonthCost).toLocaleString() + '</div><div class="opt-metric-lbl">Bili Tarajiwa</div></div>';
+    html += '<div class="opt-metric"><div class="opt-metric-val" style="color:' + (pred.avgPerDay > stats.median ? "var(--danger)" : "var(--accent3)") + '">' + (pred.avgPerDay > stats.median ? "+" : "") + ((pred.avgPerDay / (stats.median||1) * 100 - 100).toFixed(0)) + '%</div><div class="opt-metric-lbl">vs Wastani Nyumba</div></div>';
+    html += '</div>';
+
+    // Comparison bar chart
+    if (stats.all.length > 1) {
+      var maxV = Math.max.apply(null, stats.all) || 1;
+      html += '<div class="opt-section-title">ULINGANISHO NA VYUMBA VINGINE</div>';
+      html += '<div class="opt-comparison">';
+      var rooms2 = visibleRooms();
+      // Show top 6 rooms only
+      var shown = rooms2.filter(function(r){ return stats.byRoom[r] !== undefined; }).slice(0, 8);
+      shown.forEach(function(r) {
+        var v = stats.byRoom[r] || 0;
+        var pct = (v / maxV) * 100;
+        var col = r === c ? "var(--accent)" : v > stats.median * 1.3 ? "var(--danger)" : "var(--accent3)";
+        var bold = r === c ? "font-weight:700;color:var(--text)" : "";
+        html += '<div class="opt-comp-row">';
+        html += '<div class="opt-comp-label" style="' + bold + '">' + r + (r === c ? " ←" : "") + '</div>';
+        html += '<div class="opt-comp-bar-wrap"><div class="opt-comp-bar" style="width:' + pct + '%;background:' + col + ';"></div></div>';
+        html += '<div class="opt-comp-val" style="' + bold + '">' + v.toFixed(2) + '</div>';
+        html += '</div>';
+      });
+      html += '<div style="font-size:.72rem;color:var(--muted);margin-top:6px;">Wastani nyumba: ' + stats.median.toFixed(2) + ' kWh/siku</div>';
+      html += '</div>';
+    }
+
+    // Device estimate
+    if (devices.length > 0) {
+      var estTotal = devices.reduce(function(s,d){return s + d.data.kwh;}, 0);
+      html += '<div class="opt-section-title">MAKADIRIO YA VIFAA VYAKO</div>';
+      html += '<div class="opt-comparison">';
+      devices.forEach(function(d) {
+        var pct = Math.min(100, (d.data.kwh / (pred.avgPerDay || 1)) * 100);
+        html += '<div class="opt-comp-row">';
+        html += '<div class="opt-comp-label">' + d.data.icon + ' ' + d.data.label + '</div>';
+        html += '<div class="opt-comp-bar-wrap"><div class="opt-comp-bar" style="width:' + pct + '%;background:var(--accent2);"></div></div>';
+        html += '<div class="opt-comp-val" style="color:var(--accent2)">~' + d.data.kwh + '</div>';
+        html += '</div>';
+      });
+      html += '<div style="font-size:.72rem;color:var(--muted);margin-top:6px;">Jumla ya makadirio: ~' + estTotal.toFixed(1) + ' kWh/siku | Halisi: ' + pred.avgPerDay.toFixed(2) + ' kWh/siku</div>';
+      html += '</div>';
+    }
+
+  } else {
+    html += '<div class="no-data-box" style="padding:20px 0"><div class="nd-icon">📊</div><div class="nd-title">Hakuna Data ya Kutosha</div><div style="font-size:.82rem;color:var(--muted)">Ingiza angalau rekodi 2 za LUKU kwa chumba hiki ili kupata ushauri.</div></div>';
+  }
+
+  html += '</div>'; // end opt-profile
+
+  // Tips
+  if (tips.length) {
+    html += '<div class="opt-section-title">USHAURI MAALUM KWA CHUMBA ' + c + ' (' + tips.length + ' ushauri)</div>';
+    html += '<div class="opt-tips">';
+    tips.forEach(function(tip) {
+      html += '<div class="opt-tip ' + tip.level + '">';
+      html += '<div class="opt-tip-icon">' + tip.icon + '</div>';
+      html += '<div class="opt-tip-body">';
+      html += '<div class="opt-tip-title">' + tip.title + '</div>';
+      html += '<div class="opt-tip-desc">' + tip.desc + '</div>';
+      html += '<div class="opt-tip-saving">' + tip.saving + '</div>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+  } else if (pred.hasData) {
+    html += '<div class="no-data-box"><div class="nd-icon">✅</div><div class="nd-title">Hakuna Tatizo Lililoonekana</div><div style="font-size:.82rem;color:var(--muted)">Chumba hiki kinaonekana kufanya vizuri. Endelea hivyo!</div></div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function renderAnomalyDetection(el) {
+  var rooms = visibleRooms();
+  var stats = getAvgByRoom();
+  var tenants = getTenants();
+  var anomalies = [];
+
+  rooms.forEach(function(c) {
+    var pred = calcPrediction(c);
+    if (!pred.hasData || pred.segments.length < 2) return;
+
+    // Tafuta matumizi ya juu ghafla
+    var segs = pred.segments;
+    var avgSeg = segs.reduce(function(s,x){return s+x.kwhPerDay;},0) / segs.length;
+    var lastSeg = segs[segs.length-1];
+    var spike = lastSeg.kwhPerDay / (avgSeg || 1);
+
+    // Linganisha na wastani wa nyumba
+    var vsMedian = pred.avgPerDay / (stats.median || 1);
+
+    if (spike > 1.8) {
+      anomalies.push({
+        chumba: c, tenant: tenants[c],
+        level: "flagged",
+        title: "Mwaka Mkubwa wa Matumizi!",
+        desc: "Rekodi ya mwisho inaonyesha matumizi ya " + lastSeg.kwhPerDay.toFixed(2) + " kWh/siku — hii ni " + (spike*100-100).toFixed(0) + "% zaidi ya wastani wake wa kawaida.",
+        stats: "Wastani wake: " + avgSeg.toFixed(2) + " kWh/siku | Sasa: " + lastSeg.kwhPerDay.toFixed(2) + " kWh/siku"
+      });
+    } else if (vsMedian > 1.6) {
+      anomalies.push({
+        chumba: c, tenant: tenants[c],
+        level: "flagged",
+        title: "Matumizi Ya Juu Sana Ukilinganisha Na Wengine",
+        desc: "Chumba hiki kinatumia " + pred.avgPerDay.toFixed(2) + " kWh/siku — mara " + vsMedian.toFixed(1) + " zaidi ya wastani wa nyumba (" + stats.median.toFixed(2) + " kWh/siku).",
+        stats: "Wastani nyumba: " + stats.median.toFixed(2) + " | Chumba hiki: " + pred.avgPerDay.toFixed(2) + " kWh/siku"
+      });
+    } else if (vsMedian > 1.3 || spike > 1.3) {
+      anomalies.push({
+        chumba: c, tenant: tenants[c],
+        level: "minor",
+        title: "Matumizi Kidogo Ya Juu",
+        desc: "Chumba hiki kinatumia " + pred.avgPerDay.toFixed(2) + " kWh/siku, kidogo zaidi ya wastani wa " + stats.median.toFixed(2) + " kWh/siku.",
+        stats: "Tofauti: +" + ((vsMedian - 1)*100).toFixed(0) + "% vs wastani"
+      });
+    }
+  });
+
+  var html = '<div class="opt-section-title">⚠ ANOMALY DETECTION — VYUMBA VISIVYO VYA KAWAIDA</div>';
+
+  if (!anomalies.length) {
+    html += '<div class="no-data-box"><div class="nd-icon">✅</div><div class="nd-title">Hakuna Anomaly Iliyoonekana</div><div style="font-size:.82rem;color:var(--muted)">Matumizi ya vyumba vyote yanaonekana ya kawaida. AI haikugundua tofauti kubwa.</div></div>';
+  } else {
+    anomalies.forEach(function(a) {
+      html += '<div class="anomaly-card ' + a.level + '">';
+      html += '<div class="anomaly-head">';
+      html += '<div><div class="anomaly-room">⚡ ' + a.chumba + (a.tenant ? " — " + a.tenant.jina : "") + '</div><div style="font-size:.8rem;color:' + (a.level==="flagged"?"var(--danger)":"var(--accent2)") + ';margin-top:2px;">' + (a.level==="flagged"?"🔴 Muhimu":"🟡 Dogo") + '</div></div>';
+      html += '<span class="pred-badge ' + (a.level==="flagged"?"red":"yellow") + '">' + (a.level==="flagged"?"ANOMALY":"TAHADHARI") + '</span>';
+      html += '</div>';
+      html += '<div class="anomaly-desc"><b>' + a.title + '</b><br>' + a.desc + '</div>';
+      html += '<div class="anomaly-stat">' + a.stats + '</div>';
+      html += '</div>';
+    });
+  }
+
+  el.innerHTML = html;
 }
 
 // ══════════════════════════════════════
@@ -1027,8 +1871,349 @@ function showAlert(el,msg,type){
 }
 
 // ══════════════════════════════════════
-// INIT
+// LUKU NOTIFICATION SYSTEM
 // ══════════════════════════════════════
+
+function getNotifSnoozeKey(chumba) {
+  return "lukuNotifSnooze_" + chumba + "_" + today();
+}
+
+function checkAndShowLukuNotification() {
+  // Admin haoni notification hii — ni kwa wapangaji tu
+  if (!currentUser || currentUser.isAdmin) return;
+  var chumba = currentUser.chumba;
+  if (!chumba) return;
+
+  // Angalia kama mpangaji amesema "usinifikishie leo"
+  if (localStorage.getItem(getNotifSnoozeKey(chumba)) === "1") return;
+
+  var pred = calcPrediction(chumba);
+
+  // Onyesha tu kama kuna data na hali ni hatari au tahadhari
+  if (!pred.hasData) return;
+  if (pred.status === "safe") return;
+
+  var isDanger = pred.status === "danger";
+  var box      = document.getElementById("lukuNotifBox");
+  var overlay  = document.getElementById("lukuNotifOverlay");
+
+  // Weka variant class
+  box.className = "notif-box " + (isDanger ? "notif-danger" : "notif-warn");
+
+  // Icon
+  document.getElementById("lukuNotifIcon").textContent = isDanger ? "⚠️" : "🔋";
+
+  // Badge
+  document.getElementById("lukuNotifBadge").textContent =
+    isDanger ? "⚠ HATARI — LUKU INAKWISHA!" : "🟡 TAHADHARI — LUKU INAISHA";
+
+  // Headline
+  var daysText = pred.daysLeft === 0 ? "LUKU IMEKWISHA!" :
+                 pred.daysLeft === 1 ? "Siku 1 Tu Imebaki!" :
+                 "Siku " + pred.daysLeft + " Zimebaki";
+  document.getElementById("lukuNotifHeadline").textContent = daysText;
+
+  // Sub-message kulingana na hali
+  var tenantName = currentUser.jina.split(" ")[0]; // Jina la kwanza tu
+  var subMsg;
+  if (pred.daysLeft === 0) {
+    subMsg = tenantName + ", LUKU yako imekwisha au iko karibu sana na kiwango cha chini. Nunua sasa hivi!";
+  } else if (isDanger) {
+    subMsg = tenantName + ", LUKU yako itakwisha ndani ya siku " + pred.daysLeft + ". Tafadhali nunua haraka ili kuepuka giza.";
+  } else {
+    subMsg = tenantName + ", LUKU yako inaisha ndani ya siku " + pred.daysLeft + ". Panga kununua mapema.";
+  }
+  document.getElementById("lukuNotifSub").textContent = subMsg;
+
+  // Stats
+  document.getElementById("lukuNotifDays").textContent =
+    pred.daysLeft >= 999 ? "∞" : pred.daysLeft;
+  document.getElementById("lukuNotifUnits").textContent =
+    pred.lukuSasa > 0 ? pred.lukuSasa.toFixed(0) : "—";
+  document.getElementById("lukuNotifKwh").textContent =
+    pred.avgPerDay.toFixed(2);
+
+  // Progress bar — inaonyesha ni kiasi gani kimebaki (reversed: nyekundu = kidogo)
+  var barPct = Math.min(100, Math.max(2, pred.pctUsed));
+  // Tumia pct iliyobaki badala ya iliyotumika (reversed for visual clarity)
+  var remainPct = Math.max(2, 100 - barPct);
+  setTimeout(function() {
+    document.getElementById("lukuNotifBar").style.width = remainPct + "%";
+  }, 100);
+
+  // Main button text
+  document.getElementById("lukuNotifMainBtn").textContent =
+    isDanger ? "⚡ Nimeona — Nitanunua LUKU Sasa!" : "✓ Nimeona — Nitanunua Hivi Karibuni";
+
+  // Timestamp
+  var now = new Date();
+  document.getElementById("lukuNotifTime").textContent =
+    "Ilisomwa: " + now.toLocaleDateString("sw-TZ") + " saa " +
+    String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0");
+
+  // Onyesha
+  overlay.classList.add("open");
+
+  // Kwa danger: piga sauti ya onyo (browser beep)
+  if (isDanger) {
+    try {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [0, 300, 600].forEach(function(delay) {
+        setTimeout(function() {
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = "square";
+          osc.frequency.value = 880;
+          gain.gain.setValueAtTime(0.08, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+          osc.start(); osc.stop(ctx.currentTime + 0.18);
+        }, delay);
+      });
+    } catch(e) { /* Audio si lazima */ }
+  }
+}
+
+function closeLukuNotif(skipSnoozeCheck) {
+  var overlay = document.getElementById("lukuNotifOverlay");
+  overlay.classList.remove("open");
+
+  // Kama wamechagua "Usinifikishie leo" au wamebonyeza kitufe kikuu
+  var snoozed = !skipSnoozeCheck ||
+                document.getElementById("notifSnoozeCheck").checked;
+
+  if (snoozed && currentUser && currentUser.chumba) {
+    localStorage.setItem(getNotifSnoozeKey(currentUser.chumba), "1");
+  }
+}
+
+// ══════════════════════════════════════
+// PREDICTION ENGINE
+// ══════════════════════════════════════
+
+var predFilter = "all";
+
+function setPredFilter(f, el) {
+  predFilter = f;
+  document.querySelectorAll(".pred-filter-btn").forEach(function(b){ b.classList.remove("active"); });
+  el.classList.add("active");
+  renderPrediction();
+}
+
+function calcPrediction(chumba) {
+  var recs = getRecs().filter(function(r){ return r.chumba === chumba; })
+    .sort(function(a,b){ return (a.tarehe+a.muda) < (b.tarehe+b.muda) ? -1 : 1; });
+
+  if (recs.length < 2) {
+    return { hasData: false, recs: recs };
+  }
+
+  // Hesabu matumizi kwa kila rekodi (kipindi)
+  var segments = [];
+  for (var i = 1; i < recs.length; i++) {
+    var prev = recs[i-1], curr = recs[i];
+    var d1 = new Date(prev.tarehe), d2 = new Date(curr.tarehe);
+    var days = Math.max(0.5, (d2-d1)/(1000*60*60*24));
+    var kwh = Math.max(0, Number(curr.kwh) || 0);
+    if (kwh > 0 && days > 0) {
+      segments.push({ kwh: kwh, days: days, kwhPerDay: kwh / days, tarehe: curr.tarehe });
+    }
+  }
+
+  if (!segments.length) return { hasData: false, recs: recs };
+
+  // Toa wastani wa weighted (recent zaidi ina uzito mkubwa)
+  var totalWeight = 0, weightedSum = 0;
+  segments.forEach(function(s, i) {
+    var weight = Math.pow(2, i); // siku za hivi karibuni zina uzito zaidi
+    weightedSum += s.kwhPerDay * weight;
+    totalWeight += weight;
+  });
+  var avgPerDay = weightedSum / totalWeight;
+
+  // LUKU iliyobaki
+  var lastRec = recs[recs.length - 1];
+  var lukuSasa = Number(lastRec.lukuSasa) || 0;
+  var lukuThreshold = 20; // unit 20 ndio kiwango cha chini (configurable)
+
+  // Siku zinazobaki kabla ya kukwisha (au threshold)
+  var daysLeft = avgPerDay > 0 ? (lukuSasa - lukuThreshold) / avgPerDay : 999;
+  daysLeft = Math.max(0, Math.round(daysLeft));
+
+  // Mwezi huu — makadirio ya mwisho
+  var today = new Date();
+  var daysInMonth = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
+  var dayOfMonth = today.getDate();
+  var daysLeft_month = daysInMonth - dayOfMonth;
+  var forecastMonthKwh = avgPerDay * daysInMonth;
+  var forecastMonthCost = forecastMonthKwh * (Number(lastRec.rate) || 500);
+
+  // Mwelekeo — linganisha segment ya mwisho na ya kwanza
+  var trend = "flat";
+  if (segments.length >= 2) {
+    var first = segments[0].kwhPerDay;
+    var last2 = segments[segments.length-1].kwhPerDay;
+    if (last2 > first * 1.15) trend = "up";
+    else if (last2 < first * 0.85) trend = "down";
+  }
+
+  // Hali ya onyo
+  var status = daysLeft > 14 ? "safe" : daysLeft > 5 ? "warn" : "danger";
+
+  // Percentage ya LUKU iliyotumika (approximate)
+  var totalKwh = recs.reduce(function(s,r){ return s + (Number(r.kwh)||0); }, 0);
+  var startLuku = Number(recs[0].lukuAwali) || 0;
+  var pctUsed = startLuku > 0 ? Math.min(100, (totalKwh / startLuku) * 100) : 50;
+
+  return {
+    hasData: true,
+    daysLeft: daysLeft,
+    avgPerDay: avgPerDay,
+    status: status,
+    trend: trend,
+    lukuSasa: lukuSasa,
+    forecastMonthKwh: forecastMonthKwh,
+    forecastMonthCost: forecastMonthCost,
+    pctUsed: pctUsed,
+    lastDate: lastRec.tarehe,
+    totalRecs: recs.length,
+    segments: segments
+  };
+}
+
+function renderPrediction() {
+  var tenants = getTenants();
+  var rooms = visibleRooms();
+  var grid = document.getElementById("predGrid");
+  var summaryBar = document.getElementById("predSummaryBar");
+  grid.innerHTML = "";
+
+  // Hesabu stats zote
+  var allPreds = rooms.map(function(c){ return { chumba: c, pred: calcPrediction(c), tenant: tenants[c] }; });
+
+  // Summary counts
+  var nDanger=0, nWarn=0, nSafe=0, nNoData=0, totalKwhToday=0;
+  allPreds.forEach(function(p){
+    if (!p.pred.hasData) { nNoData++; return; }
+    if (p.pred.status === "danger") nDanger++;
+    else if (p.pred.status === "warn") nWarn++;
+    else nSafe++;
+    totalKwhToday += p.pred.avgPerDay || 0;
+  });
+
+  summaryBar.innerHTML =
+    '<div class="pred-sum-card"><div class="pred-sum-val" style="color:var(--danger)">'+nDanger+'</div><div class="pred-sum-lbl">🔴 Hatari</div></div>' +
+    '<div class="pred-sum-card"><div class="pred-sum-val" style="color:var(--accent2)">'+nWarn+'</div><div class="pred-sum-lbl">🟡 Tahadhari</div></div>' +
+    '<div class="pred-sum-card"><div class="pred-sum-val" style="color:var(--accent3)">'+nSafe+'</div><div class="pred-sum-lbl">🟢 Salama</div></div>' +
+    '<div class="pred-sum-card"><div class="pred-sum-val" style="color:var(--muted)">'+nNoData+'</div><div class="pred-sum-lbl">⚫ Hakuna Data</div></div>' +
+    '<div class="pred-sum-card"><div class="pred-sum-val" style="color:var(--accent)">'+totalKwhToday.toFixed(1)+'</div><div class="pred-sum-lbl">kWh/Siku (Jumla)</div></div>';
+
+  // Panga — hatari kwanza
+  var order = { danger: 0, warn: 1, safe: 2 };
+  allPreds.sort(function(a,b){
+    if (!a.pred.hasData && !b.pred.hasData) return 0;
+    if (!a.pred.hasData) return 1;
+    if (!b.pred.hasData) return -1;
+    var oa = order[a.pred.status] !== undefined ? order[a.pred.status] : 3;
+    var ob = order[b.pred.status] !== undefined ? order[b.pred.status] : 3;
+    if (oa !== ob) return oa - ob;
+    return a.pred.daysLeft - b.pred.daysLeft;
+  });
+
+  allPreds.forEach(function(item) {
+    var c = item.chumba, p = item.pred, tn = item.tenant;
+
+    // Chujio
+    if (predFilter !== "all") {
+      if (predFilter === "nodata" && p.hasData) return;
+      if (predFilter === "danger" && (!p.hasData || p.status !== "danger")) return;
+      if (predFilter === "warn"   && (!p.hasData || p.status !== "warn"))   return;
+      if (predFilter === "safe"   && (!p.hasData || p.status !== "safe"))   return;
+    }
+
+    var card = document.createElement("div");
+
+    if (!p.hasData) {
+      card.className = "pred-card no-data";
+      card.innerHTML =
+        '<div class="pred-room-num">'+c+'</div>' +
+        '<div class="pred-tenant">'+(tn ? tn.jina : "— Wazi —")+'</div>' +
+        '<div class="pred-no-recs">'+(p.recs && p.recs.length === 1 ? "Rekodi 1 tu — inahitaji angalau 2" : "Hakuna rekodi za LUKU bado")+'</div>' +
+        '<span class="pred-badge grey">HANA DATA</span>';
+    } else {
+      var statusClass = p.status === "danger" ? "alert-red" : p.status === "warn" ? "alert-yellow" : "alert-green";
+      var daysColor = p.status === "danger" ? "danger" : p.status === "warn" ? "warn" : "safe";
+      var badgeClass = p.status === "danger" ? "red" : p.status === "warn" ? "yellow" : "green";
+      var badgeText = p.status === "danger" ? "⚠ HATARI" : p.status === "warn" ? "TAHADHARI" : "✓ SALAMA";
+
+      var barPct = Math.min(100, Math.max(3, p.pctUsed));
+      var barColor = p.status === "danger" ? "var(--danger)" : p.status === "warn" ? "var(--accent2)" : "var(--accent3)";
+
+      var trendHtml = "";
+      if (p.trend === "up") trendHtml = '<div class="pred-trend up">↑ Matumizi yanaongezeka</div>';
+      else if (p.trend === "down") trendHtml = '<div class="pred-trend down">↓ Matumizi yanashuka</div>';
+      else trendHtml = '<div class="pred-trend flat">→ Matumizi thabiti</div>';
+
+      var daysText = p.daysLeft >= 999 ? "∞" : p.daysLeft;
+      var daysNote = p.daysLeft >= 999 ? "LUKU nyingi sana" :
+                     p.daysLeft === 0 ? "LUKU IMEKWISHA!" :
+                     "Siku "+p.daysLeft+" zimebaki";
+
+      card.className = "pred-card " + statusClass;
+      card.innerHTML =
+        '<span class="pred-badge '+badgeClass+'">'+badgeText+'</span>' +
+        '<div class="pred-room-num">'+c+'</div>' +
+        '<div class="pred-tenant">'+(tn ? tn.jina : "— Wazi —")+'</div>' +
+        '<div class="pred-days '+daysColor+'">'+daysText+'</div>' +
+        '<div class="pred-days-label">'+daysNote+'</div>' +
+        '<div class="pred-bar-wrap"><div class="pred-bar-fill" style="width:'+barPct+'%;background:'+barColor+';"></div></div>' +
+        '<div class="pred-stats">' +
+          '<div class="pred-stat"><div class="pred-stat-val">'+p.avgPerDay.toFixed(2)+'</div><div class="pred-stat-lbl">kWh/Siku</div></div>' +
+          '<div class="pred-stat"><div class="pred-stat-val" style="color:var(--accent)">'+p.lukuSasa.toFixed(0)+'</div><div class="pred-stat-lbl">LUKU Sasa</div></div>' +
+          '<div class="pred-stat"><div class="pred-stat-val" style="color:var(--accent2)">'+p.totalRecs+'</div><div class="pred-stat-lbl">Rekodi</div></div>' +
+        '</div>' +
+        trendHtml +
+        '<div class="pred-month-forecast">' +
+          '<div class="mf-label">Makadirio ya Mwezi Huu</div>' +
+          '<div class="mf-val">'+p.forecastMonthKwh.toFixed(1)+' kWh &nbsp;·&nbsp; Tsh '+Math.round(p.forecastMonthCost).toLocaleString()+'</div>' +
+        '</div>' +
+        '<div class="pred-card-detail">Rekodi ya mwisho: '+p.lastDate+'</div>';
+    }
+
+    grid.appendChild(card);
+  });
+
+  if (!grid.children.length) {
+    grid.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px;grid-column:1/-1;">Hakuna chumba kinachofanana na chujio hili.</div>';
+  }
+}
+
+function renderPredAlertBanner() {
+  var banner = document.getElementById("predAlertBanner");
+  if (!banner) return;
+  var rooms = visibleRooms();
+  var danger = [], warn = [];
+  rooms.forEach(function(c) {
+    var p = calcPrediction(c);
+    var t = getTenants()[c];
+    var label = t ? t.jina + " (" + c + ")" : c;
+    if (p.hasData && p.status === "danger") danger.push({label: label, days: p.daysLeft});
+    else if (p.hasData && p.status === "warn") warn.push({label: label, days: p.daysLeft});
+  });
+  var html = "";
+  if (danger.length) {
+    var names = danger.map(function(d){ return "<b>"+d.label+"</b> (siku "+d.days+")"; }).join(", ");
+    html += '<div style="background:rgba(239,68,68,.14);border:1px solid var(--danger);border-radius:10px;padding:12px 16px;margin-bottom:8px;font-size:.85rem;color:#fca5a5;">' +
+      '⚠ <b>HATARI — LUKU Inakwisha:</b> ' + names + '</div>';
+  }
+  if (warn.length) {
+    var wnames = warn.map(function(d){ return "<b>"+d.label+"</b> (siku "+d.days+")"; }).join(", ");
+    html += '<div style="background:rgba(245,158,11,.1);border:1px solid var(--accent2);border-radius:10px;padding:12px 16px;font-size:.85rem;color:#fde68a;">' +
+      '🟡 <b>TAHADHARI — LUKU Inaisha:</b> ' + wnames + '</div>';
+  }
+  banner.innerHTML = html;
+}
+
 function loginAdmin(){
   var pass = document.getElementById("loginJina").value.trim();
   if(!pass){
