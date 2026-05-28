@@ -12,8 +12,8 @@
     --accent:#00d4ff;--accent2:#f59e0b;--accent3:#10b981;--danger:#ef4444;
     --text:#e2e8f0;--muted:#64748b;--card:#0f1929;
   }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'Noto Sans',sans-serif;min-height:100vh;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans',sans-serif;min-height:100vh;-webkit-text-size-adjust:100%;}
 
   /* LOGIN */
   #loginPage{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 60% 40%,#0d2137 0%,#0a0e1a 70%);}
@@ -133,7 +133,123 @@
 
   /* ADMIN */
   .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-  @media(max-width:700px){.admin-grid,.form-row{grid-template-columns:1fr;}}
+
+  /* ══════════════════════════════════════
+     MOBILE UX — Responsive kamili
+  ══════════════════════════════════════ */
+
+  /* Tablet */
+  @media(max-width:700px){
+    .admin-grid,.form-row{grid-template-columns:1fr;}
+  }
+
+  /* Mobile */
+  @media(max-width:480px){
+
+    /* Topbar — punguza nafasi */
+    .topbar{padding:0 12px;height:52px;}
+    .topbar-brand{font-size:1rem;letter-spacing:1px;}
+    .user-badge{padding:4px 10px;font-size:.78rem;gap:6px;}
+
+    /* TABS — scroll laini, tab kubwa kwa kidole */
+    .nav-tabs{padding:0 8px;gap:0;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;}
+    .nav-tab{padding:14px 12px;font-size:.82rem;letter-spacing:.5px;scroll-snap-align:start;flex-shrink:0;}
+
+    /* Content padding ndogo */
+    .content{padding:14px 12px;}
+
+    /* Stat cards — 2 kwa safu */
+    .stat-grid{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+    .stat-card{padding:13px 14px;}
+    .stat-value{font-size:1.6rem;}
+    .stat-label{font-size:.68rem;}
+
+    /* Room grid — 2 kwa safu */
+    .room-grid{grid-template-columns:1fr 1fr;gap:8px;}
+    .room-card{padding:12px 10px;}
+    .room-num{font-size:1.1rem;}
+    .room-tenant{font-size:.78rem;}
+    .room-kwh{font-size:.7rem;}
+
+    /* Forms — inputs KUBWA kwa vidole (min 48px) */
+    .form-card{padding:16px 14px;max-width:100%;}
+    .ff{margin-bottom:14px;}
+    .ff label{font-size:.72rem;margin-bottom:6px;}
+    .ff input,
+    .ff select,
+    .fg input,
+    .fg select,
+    .setup-input,
+    .hist-filters select,
+    .hist-filters input{
+      padding:14px 14px;
+      font-size:1rem;
+      min-height:48px;
+      border-radius:10px;
+    }
+    .form-row{grid-template-columns:1fr;}
+
+    /* Buttons — KUBWA kwa vidole */
+    .btn{padding:14px 20px;font-size:.92rem;min-height:48px;}
+    .btn-sm{padding:12px 16px;font-size:.82rem;min-height:44px;}
+    .btn-login{padding:16px;font-size:1rem;min-height:52px;}
+
+    /* Login box */
+    .login-box{padding:32px 20px;margin:16px;}
+
+    /* Admin panels — stacked */
+    .admin-grid{grid-template-columns:1fr;gap:14px;}
+    .admin-panel{padding:16px 14px;}
+
+    /* Jedwali — scroll */
+    .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    table{min-width:460px;}
+    th,td{padding:10px 10px;font-size:.8rem;}
+
+    /* Modal */
+    .modal{padding:20px 16px;margin:16px;}
+
+    /* Prediction cards — full width */
+    .pred-grid{grid-template-columns:1fr;}
+    .pred-card{padding:16px;}
+
+    /* Hist filters — wrap vizuri */
+    .hist-filters{flex-direction:column;gap:8px;}
+    .hist-filters select,
+    .hist-filters input{width:100%;}
+
+    /* Section title */
+    .section-title{font-size:.95rem;letter-spacing:1px;}
+
+    /* KWH display */
+    .kwh-display{padding:12px;}
+    .kwh-big{font-size:1.8rem;}
+
+    /* Admin password form */
+    #pwdCurrent,#pwdNew,#pwdConfirm{font-size:1rem;padding:14px;}
+
+    /* Inline URL input ya admin */
+    #inlineUrl{font-size:.85rem;padding:12px 13px;min-height:48px;}
+
+    /* Opt room grid buttons */
+    .room-opt-btn{padding:10px 12px;font-size:.8rem;min-height:44px;}
+
+    /* Notif overlay */
+    .notif-box{padding:28px 20px 22px;}
+    .notif-headline{font-size:1.4rem;}
+
+    /* Prediction summary bar */
+    .pred-summary-bar{grid-template-columns:1fr 1fr;}
+    .pred-sum-val{font-size:1.4rem;}
+  }
+
+  /* Simu ndogo sana (320px) */
+  @media(max-width:360px){
+    .stat-grid{grid-template-columns:1fr;}
+    .room-grid{grid-template-columns:1fr 1fr;}
+    .nav-tab{padding:13px 10px;font-size:.78rem;}
+    .topbar-brand{font-size:.9rem;}
+  }
   .admin-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px;}
   .admin-sub{font-family:'Rajdhani',sans-serif;color:var(--accent2);font-size:.95rem;letter-spacing:1px;margin-bottom:16px;}
   .tenant-wrap{max-height:380px;overflow-y:auto;}
@@ -466,8 +582,8 @@
     </div>
     <div class="login-error" id="loginError"></div>
     <div class="fg">
-      <label>Weka Namba ya Chumba (1–16)</label>
-      <input type="text" id="loginChumba" placeholder="Mfano: 1 au C01" />
+      <label>Weka Namba ya Chumba</label>
+            <input type="text" id="loginChumba" placeholder="Mfano: 1, C01, C17, C25..." />
     </div>
     <div class="fg">
       <label>Jina Lako / Nenosiri la Admin</label>
@@ -501,9 +617,10 @@
 <!-- ═══ APP ═══ -->
 <div id="appPage">
   <div class="topbar">
-    <div style="display:flex;align-items:center;">
+    <div style="display:flex;align-items:center;gap:8px;">
       <div class="topbar-brand">⚡ SMART ENERGY</div>
       <div class="url-badge" id="urlStatusBadge" onclick="openSetup()">🔗 Weka URL</div>
+      <div id="backupBadge" style="display:inline-flex;align-items:center;border:1px solid;border-radius:20px;padding:4px 10px;font-size:.72rem;cursor:pointer;transition:all .2s;" onclick="showPage('admin',document.getElementById('adminTab'))">☁ Backup</div>
     </div>
     <div class="user-badge">
       <span id="userBadgeName"></span>
@@ -530,7 +647,7 @@
       <!-- Prediction Alert Banner -->
       <div id="predAlertBanner" style="margin-bottom:16px;"></div>
       <div class="stat-grid">
-        <div class="stat-card blue"><div class="stat-label">Vyumba Vyote</div><div class="stat-value">16</div><div class="stat-sub">C01 — C16</div></div>
+        <div class="stat-card blue"><div class="stat-label">Vyumba Vyote</div><div class="stat-value" id="s-total">—</div><div class="stat-sub" id="s-total-sub">Inapakia...</div></div>
         <div class="stat-card green"><div class="stat-label">Vilivyokaliwa</div><div class="stat-value" id="s-occ">0</div><div class="stat-sub">Wapangaji</div></div>
         <div class="stat-card yellow"><div class="stat-label">kWh Leo</div><div class="stat-value" id="s-kwh">0</div><div class="stat-sub">Jumla ya leo</div></div>
         <div class="stat-card yellow"><div class="stat-label">kWh Mwezi</div><div class="stat-value" id="s-month-kwh">0</div><div class="stat-sub">Jumla ya mwezi</div></div>
@@ -596,7 +713,7 @@
 
     <!-- VYUMBA -->
     <div class="page" id="page-vyumba">
-      <div class="section-title">HALI YA VYUMBA VYOTE (C01–C16)</div>
+      <div class="section-title" id="vyumbaPageTitle">HALI YA VYUMBA VYOTE</div>
       <div class="room-grid" id="vyumbaGrid"></div>
     </div>
 
@@ -698,7 +815,12 @@
           <div id="adminAlert"></div>
           <div class="ff">
             <label>Chumba</label>
-            <select id="aChumba"><option value="">-- Chagua --</option></select>
+            <select id="aChumba" onchange="onAdminChumbaChange()"><option value="">-- Chagua --</option></select>
+          </div>
+          <div class="ff" id="newChumbaWrap" style="display:none;">
+            <label>Andika Namba ya Chumba Kipya</label>
+            <input type="text" id="aNewChumba" placeholder="Mfano: C17, C20, A1, B02..." style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()" />
+            <div style="font-size:.75rem;color:var(--muted);margin-top:5px;">💡 Unaweza kuandika namba yoyote — hakuna kikomo!</div>
           </div>
           <div class="ff">
             <label>Jina la Mpangaji</label>
@@ -741,6 +863,41 @@
         </div>
       </div>
 
+      <!-- BACKUP & RESTORE -->
+      <div style="margin-top:22px;margin-bottom:4px;">
+        <div class="section-title">☁ BACKUP &amp; RESTORE — HIFADHI DATA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="admin-grid">
+
+          <!-- Auto Backup (Sheets) -->
+          <div class="admin-panel" style="border-color:rgba(0,212,255,.3);">
+            <div class="admin-sub" style="color:var(--accent);">☁ GOOGLE SHEETS (Otomatiki)</div>
+            <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+              Kila unapohifadhi data (LUKU au mpangaji), backup inatumwa Sheets otomatiki baada ya sekunde 3.
+              Pia inajisasisha kila dakika 5 ukiwa logged in.
+            </div>
+            <div id="backupStatus" style="font-size:.8rem;color:var(--muted);margin-bottom:12px;min-height:18px;"></div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn btn-primary btn-sm" onclick="runAutoBackup('manual')" style="width:100%;">⬆ Hifadhi Sheets Sasa</button>
+              <button class="btn btn-outline btn-sm" onclick="restoreFromSheets()" style="width:100%;">⬇ Rejesha Kutoka Sheets</button>
+            </div>
+          </div>
+
+          <!-- Local JSON Backup -->
+          <div class="admin-panel" style="border-color:rgba(16,185,129,.3);">
+            <div class="admin-sub" style="color:var(--accent3);">💾 FAILI LA JSON (Mwenyewe)</div>
+            <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+              Pakua backup kamili ya data kama faili la JSON kwenye simu au PC yako.
+              Inafaa kama unapobadilisha browser au huna Sheets.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn btn-success btn-sm" onclick="exportBackupJSON()" style="width:100%;">📥 Pakua Backup JSON</button>
+              <button class="btn btn-outline btn-sm" onclick="importBackupJSON()" style="width:100%;">📤 Pakia Backup JSON</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       <!-- JEDWALI LA WAPANGAJI -->
       <div style="margin-top:22px;">
         <div class="section-title">WAPANGAJI WOTE</div>
@@ -751,6 +908,38 @@
           </table>
         </div>
         <div id="tenantEmpty" style="text-align:center;color:var(--muted);padding:28px;display:none;">Hakuna wapangaji bado. Sajili hapo juu.</div>
+      </div>
+
+      <!-- BADILISHA NENOSIRI LA ADMIN -->
+      <div style="margin-top:28px;">
+        <div class="section-title">🔑 BADILISHA NENOSIRI LA ADMIN</div>
+        <div class="form-card" style="max-width:480px;">
+          <div id="passwdAlert"></div>
+          <div class="ff">
+            <label>Nenosiri la Sasa</label>
+            <input type="password" id="pwdCurrent" placeholder="Weka nenosiri la sasa" autocomplete="current-password" />
+          </div>
+          <div class="ff">
+            <label>Nenosiri Jipya</label>
+            <input type="password" id="pwdNew" placeholder="Nenosiri jipya (angalau herufi 6)" autocomplete="new-password" oninput="checkPwdStrength(this.value)" />
+            <!-- NGUVU YA NENOSIRI -->
+            <div style="margin-top:8px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Nguvu</span>
+                <span id="pwdStrengthLabel" style="font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);">—</span>
+              </div>
+              <div style="background:rgba(255,255,255,.06);border-radius:20px;height:6px;overflow:hidden;">
+                <div id="pwdStrengthBar" style="height:100%;border-radius:20px;width:0%;transition:width .4s ease,background .4s ease;"></div>
+              </div>
+              <div id="pwdStrengthTips" style="font-size:.72rem;color:var(--muted);margin-top:6px;line-height:1.5;"></div>
+            </div>
+          </div>
+          <div class="ff">
+            <label>Thibitisha Nenosiri Jipya</label>
+            <input type="password" id="pwdConfirm" placeholder="Rudia nenosiri jipya" autocomplete="new-password" />
+          </div>
+          <button class="btn btn-warn" onclick="changeAdminPassword()">🔑 Badilisha Nenosiri</button>
+        </div>
       </div>
     </div>
 
@@ -817,9 +1006,99 @@
 // CONFIG & STATE
 // ══════════════════════════════════════
 var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbwJO9_Ftl_2nlyj82AQsEl82JuVzBBftzwNA1Tf1iou9bnB7I_QPtjz0ybCIag9KCko/exec";
-var ADMIN_PASS  = "mreno";
-var ROOMS = [];
-for(var i=1;i<=16;i++) ROOMS.push("C"+(i<10?"0"+i:""+i));
+
+// ══════════════════════════════════════
+// USALAMA — SHA-256 + LOCKOUT
+// ══════════════════════════════════════
+// Nenosiri la default ni "mreno" (hash ya SHA-256)
+var DEFAULT_ADMIN_HASH = "70f97f723772dfc51ad5fa7389b6073afe314852e1f6ec05073e40c367be44b1";
+
+async function sha256(msg) {
+  var enc = new TextEncoder();
+  var buf = await crypto.subtle.digest("SHA-256", enc.encode(msg));
+  return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
+}
+
+function getAdminHash() {
+  return localStorage.getItem("adminPassHash") || DEFAULT_ADMIN_HASH;
+}
+
+function setAdminHash(h) {
+  localStorage.setItem("adminPassHash", h);
+}
+
+// Lockout — majaribio mabaya
+var MAX_ATTEMPTS = 5;
+var LOCKOUT_MS   = 1 * 60 * 1000; // dakika 1
+
+function getLoginState() {
+  try { return JSON.parse(localStorage.getItem("loginState") || "{}"); } catch(e) { return {}; }
+}
+function saveLoginState(s) { localStorage.setItem("loginState", JSON.stringify(s)); }
+
+function isLockedOut() {
+  var s = getLoginState();
+  if (s.lockedUntil && Date.now() < s.lockedUntil) return true;
+  if (s.lockedUntil && Date.now() >= s.lockedUntil) {
+    // Fungua tena baada ya muda
+    saveLoginState({ attempts: 0, lockedUntil: null });
+  }
+  return false;
+}
+
+function recordFailedAttempt() {
+  var s = getLoginState();
+  s.attempts = (s.attempts || 0) + 1;
+  if (s.attempts >= MAX_ATTEMPTS) {
+    s.lockedUntil = Date.now() + LOCKOUT_MS;
+    s.attempts = 0;
+  }
+  saveLoginState(s);
+  return s;
+}
+
+function resetAttempts() {
+  saveLoginState({ attempts: 0, lockedUntil: null });
+}
+
+function lockoutTimeLeft() {
+  var s = getLoginState();
+  if (!s.lockedUntil) return 0;
+  return Math.max(0, Math.ceil((s.lockedUntil - Date.now()) / 1000));
+}
+
+function attemptsLeft() {
+  var s = getLoginState();
+  return MAX_ATTEMPTS - (s.attempts || 0);
+}
+
+// DYNAMIC ROOMS — inasomwa kutoka kwa wapangaji + rekodi za LUKU
+// Hakuna kikomo cha idadi ya vyumba
+function getDynamicRooms(){
+  var set = {};
+  // Vyumba vyenye wapangaji
+  var tenants = getTenants();
+  Object.keys(tenants).forEach(function(c){ if(c) set[c]=true; });
+  // Vyumba vilivyoingia rekodi za LUKU (hata bila mpangaji)
+  var recs = getRecs();
+  recs.forEach(function(r){ if(r.chumba) set[r.chumba]=true; });
+  var arr = Object.keys(set);
+  // Panga: nambari kwanza (C01,C02...) kisha alfabeti
+  arr.sort(function(a,b){
+    var na = parseInt(a.replace(/[^0-9]/g,"")) || 0;
+    var nb = parseInt(b.replace(/[^0-9]/g,"")) || 0;
+    if(na !== nb) return na - nb;
+    return a.localeCompare(b);
+  });
+  return arr;
+}
+
+// Compatibility alias — sehemu zingine zinatumia ROOMS moja kwa moja
+// Sasa ni getter inayorejesha dynamic list
+Object.defineProperty(window, "ROOMS", {
+  get: function(){ return getDynamicRooms(); },
+  configurable: true
+});
 
 var currentUser = null;
 
@@ -827,9 +1106,221 @@ function getUrl(){ return localStorage.getItem("sheetsUrl")||DEFAULT_URL; }
 function setUrl(u){ localStorage.setItem("sheetsUrl",u); updateUrlBadge(); }
 
 function getTenants(){ try{return JSON.parse(localStorage.getItem("tenants")||"{}");}catch(e){return{};} }
-function saveTenants(t){ localStorage.setItem("tenants",JSON.stringify(t)); }
+function saveTenants(t){ localStorage.setItem("tenants",JSON.stringify(t)); scheduleAutoBackup(); }
 function getRecs(){ try{return JSON.parse(localStorage.getItem("lukuRecs")||"[]");}catch(e){return[];} }
-function saveRecs(r){ localStorage.setItem("lukuRecs",JSON.stringify(r)); }
+function saveRecs(r){ localStorage.setItem("lukuRecs",JSON.stringify(r)); scheduleAutoBackup(); }
+
+// ══════════════════════════════════════
+// BACKUP SYSTEM
+// ══════════════════════════════════════
+
+var _backupTimer = null;
+var _backupBusy  = false;
+
+// Angalia muda wa backup ya mwisho
+function getLastBackupTime(){
+  return localStorage.getItem("lastBackupTime") || null;
+}
+function setLastBackupTime(){
+  var now = new Date().toISOString();
+  localStorage.setItem("lastBackupTime", now);
+  return now;
+}
+function getLastBackupStatus(){
+  return localStorage.getItem("lastBackupStatus") || "unknown";
+}
+function setLastBackupStatus(s){
+  localStorage.setItem("lastBackupStatus", s);
+}
+
+// Panga backup baada ya sekunde 3 (debounce — hifadhi mara nyingi, backup mara moja)
+function scheduleAutoBackup(){
+  if(_backupTimer) clearTimeout(_backupTimer);
+  _backupTimer = setTimeout(function(){ runAutoBackup("auto"); }, 3000);
+}
+
+// Backup kuu — tuma data yote kwa Sheets
+async function runAutoBackup(reason){
+  if(_backupBusy) return;
+  var url = getUrl();
+  if(!url || !url.includes("script.google.com")){
+    setLastBackupStatus("no-url");
+    updateBackupBadge();
+    return;
+  }
+
+  _backupBusy = true;
+  setLastBackupStatus("syncing");
+  updateBackupBadge();
+
+  var payload = {
+    action: "BACKUP_FULL",
+    reason: reason || "auto",
+    timestamp: new Date().toISOString(),
+    tenants: getTenants(),
+    lukuRecs: getRecs()
+  };
+
+  try {
+    var res = await Promise.race([
+      fetch(url, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(payload)
+      }).then(function(r){ return r.json(); }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 10000); })
+    ]);
+
+    if(res && (res.status === "ok" || res.result === "success")){
+      setLastBackupTime();
+      setLastBackupStatus("ok");
+    } else {
+      setLastBackupStatus("error");
+    }
+  } catch(e) {
+    setLastBackupStatus("error");
+  }
+
+  _backupBusy = false;
+  updateBackupBadge();
+}
+
+// Rejesha data kutoka Sheets (restore)
+async function restoreFromSheets(){
+  var url = getUrl();
+  if(!url || !url.includes("script.google.com")){
+    alert("⚠ Weka URL ya Google Sheets kwanza.");
+    return;
+  }
+  var el = document.getElementById("backupStatus");
+  if(el){ el.textContent = "⏳ Inarejesha data..."; el.style.color="var(--muted)"; }
+
+  try {
+    var res = await Promise.race([
+      fetch(url + "?action=RESTORE_FULL").then(function(r){ return r.json(); }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 12000); })
+    ]);
+
+    if(res && res.tenants && res.lukuRecs){
+      var tCount = Object.keys(res.tenants).length;
+      var rCount = res.lukuRecs.length;
+      if(!confirm("✅ Imepatikana:\n• Wapangaji: "+tCount+"\n• Rekodi za LUKU: "+rCount+"\n\nUnataka kurejesha? Data ya sasa itabadilishwa.")){
+        if(el){ el.textContent = "Kurejesha kumesimamishwa."; }
+        return;
+      }
+      saveTenants(res.tenants);
+      saveRecs(res.lukuRecs);
+      populateSelects(); refreshAll();
+      setLastBackupTime();
+      setLastBackupStatus("ok");
+      if(el){ el.textContent = "✅ Data imerejeshwa! Wapangaji: "+tCount+", Rekodi: "+rCount; el.style.color="var(--accent3)"; }
+    } else {
+      if(el){ el.textContent = "⚠ Sheets haina data ya backup. Jibu: "+JSON.stringify(res).substring(0,60); el.style.color="var(--accent2)"; }
+    }
+  } catch(e){
+    if(el){ el.textContent = "✗ Imeshindwa: "+e.message; el.style.color="var(--danger)"; }
+  }
+}
+
+// Export JSON — backup ya mwenyewe (file)
+function exportBackupJSON(){
+  var data = {
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    tenants: getTenants(),
+    lukuRecs: getRecs()
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "smart_energy_backup_" + today() + ".json";
+  a.click();
+  showMsg("✅ Backup imehifadhiwa kwenye simu/PC yako.", "success");
+}
+
+// Import JSON — rejesha kutoka file
+function importBackupJSON(){
+  var inp = document.createElement("input");
+  inp.type = "file"; inp.accept = ".json";
+  inp.onchange = function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      try {
+        var data = JSON.parse(ev.target.result);
+        if(!data.tenants || !data.lukuRecs){
+          alert("❌ Faili si sahihi — hii si backup ya Smart Energy.");
+          return;
+        }
+        var tCount = Object.keys(data.tenants).length;
+        var rCount = data.lukuRecs.length;
+        if(!confirm("📂 Backup iliyopatikana:\n• Imehifadhiwa: "+(data.exportedAt||"haijulikani")+"\n• Wapangaji: "+tCount+"\n• Rekodi: "+rCount+"\n\nUnataka kurejesha? Data ya sasa itabadilishwa.")){
+          return;
+        }
+        saveTenants(data.tenants);
+        saveRecs(data.lukuRecs);
+        populateSelects(); refreshAll();
+        showMsg("✅ Data imerejeshwa! Wapangaji: "+tCount+", Rekodi: "+rCount, "success");
+      } catch(err){
+        alert("❌ Imeshindwa kusoma faili: "+err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  inp.click();
+}
+
+// Badge ya hali ya backup kwenye topbar
+function updateBackupBadge(){
+  var badge = document.getElementById("backupBadge");
+  if(!badge) return;
+  var status = getLastBackupStatus();
+  var lastTime = getLastBackupTime();
+  var timeStr = "";
+  if(lastTime){
+    var d = new Date(lastTime);
+    timeStr = " · " + String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+  }
+  if(status === "ok"){
+    badge.style.background="rgba(16,185,129,.15)";
+    badge.style.borderColor="var(--accent3)";
+    badge.style.color="var(--accent3)";
+    badge.textContent = "☁ Backed up"+timeStr;
+  } else if(status === "syncing"){
+    badge.style.background="rgba(0,212,255,.1)";
+    badge.style.borderColor="var(--accent)";
+    badge.style.color="var(--accent)";
+    badge.textContent = "⏳ Inahifadhi...";
+  } else if(status === "error"){
+    badge.style.background="rgba(239,68,68,.12)";
+    badge.style.borderColor="var(--danger)";
+    badge.style.color="#fca5a5";
+    badge.textContent = "⚠ Backup imeshindwa";
+  } else if(status === "no-url"){
+    badge.style.background="rgba(245,158,11,.1)";
+    badge.style.borderColor="var(--accent2)";
+    badge.style.color="var(--accent2)";
+    badge.textContent = "☁ Sheets haijawekwa";
+  } else {
+    badge.style.background="rgba(100,116,139,.1)";
+    badge.style.borderColor="var(--muted)";
+    badge.style.color="var(--muted)";
+    badge.textContent = "☁ Backup";
+  }
+}
+
+// Backup ya periodic kila dakika 5 ukiwa logged in
+var _periodicTimer = null;
+function startPeriodicBackup(){
+  stopPeriodicBackup();
+  _periodicTimer = setInterval(function(){
+    runAutoBackup("periodic");
+  }, 5 * 60 * 1000); // kila dakika 5
+}
+function stopPeriodicBackup(){
+  if(_periodicTimer){ clearInterval(_periodicTimer); _periodicTimer = null; }
+}
 function nowTime(){ var d=new Date(); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
 function visibleRooms(){ return currentUser&&currentUser.isAdmin?ROOMS:(currentUser&&currentUser.chumba?[currentUser.chumba]:[]); }
 function visibleRecs(){ var recs=getRecs(); return currentUser&&currentUser.isAdmin?recs:recs.filter(function(r){return currentUser&&r.chumba===currentUser.chumba;}); }
@@ -922,7 +1413,7 @@ function fetchSheets(params, urlOverride){
 }
 
 // ══════════════════════════════════════
-// LOGIN
+// LOGIN (SHA-256 + LOCKOUT)
 // ══════════════════════════════════════
 async function login(){
   var rawC=document.getElementById("loginChumba").value.trim();
@@ -932,18 +1423,40 @@ async function login(){
 
   if(!jina){showLoginErr("Weka jina lako au nenosiri.");return;}
 
-  // Admin
-  if(jina.toLowerCase().trim()===ADMIN_PASS.toLowerCase()){
+  // Angalia kama imefungwa
+  if(isLockedOut()){
+    var secs=lockoutTimeLeft();
+    showLoginErr("🔒 Akaunti imefungwa kwa muda. Jaribu tena baada ya sekunde "+secs+".");
+    startLockoutCountdown();
+    return;
+  }
+
+  // Admin — hash na ulinganishe
+  var inputHash = await sha256(jina.trim());
+  if(inputHash === getAdminHash()){
+    resetAttempts();
     currentUser={jina:"Admin",chumba:rawC?normalizeRoom(rawC):null,isAdmin:true};
     startApp(); return;
   }
 
   var chumba=normalizeRoom(rawC);
-  if(!chumba){showLoginErr("Weka namba ya chumba (1–16) au acha wazi kwa Admin.");return;}
+  if(!chumba){
+    // Jaribio baya la admin — rekodi
+    var s=recordFailedAttempt();
+    if(isLockedOut()){
+      showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
+      startLockoutCountdown();
+    } else {
+      showLoginErr("❌ Taarifa si sahihi. Majaribio "+attemptsLeft()+" yaliyobaki.");
+    }
+    return;
+  }
 
+  // Mpangaji — jina halihitaji hash
   // localStorage kwanza
   var t=getTenants();
   if(t[chumba]&&matchName(t[chumba].jina,jina)){
+    resetAttempts();
     currentUser={jina:t[chumba].jina,chumba:chumba,isAdmin:false};
     startApp(); return;
   }
@@ -959,10 +1472,17 @@ async function login(){
         var rec=d.data.find(function(r){return r.chumba===chumba;});
         if(rec){
           if(matchName(rec.jina,jina)){
+            resetAttempts();
             currentUser={jina:rec.jina,chumba:chumba,isAdmin:false};
             startApp(); return;
           } else {
-            showLoginErr("Jina halikubaliani na chumba "+chumba+". Lililowekwa sensa: "+rec.jina);
+            var s2=recordFailedAttempt();
+            if(isLockedOut()){
+              showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
+              startLockoutCountdown();
+            } else {
+              showLoginErr("❌ Taarifa si sahihi. Majaribio "+attemptsLeft()+" yaliyobaki.");
+            }
             return;
           }
         }
@@ -974,12 +1494,19 @@ async function login(){
   var t2=getTenants();
   if(t2[chumba]){
     if(matchName(t2[chumba].jina,jina)){
+      resetAttempts();
       currentUser={jina:t2[chumba].jina,chumba:chumba,isAdmin:false};
       startApp(); return;
     }
-    showLoginErr("Jina halikubaliani. Lililowekwa: "+t2[chumba].jina);
+    var s3=recordFailedAttempt();
+    if(isLockedOut()){
+      showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
+      startLockoutCountdown();
+    } else {
+      showLoginErr("❌ Taarifa si sahihi. Majaribio "+attemptsLeft()+" yaliyobaki.");
+    }
   } else {
-    showLoginErr("Chumba "+chumba+" hakina mpangaji. Wasiliana na Admin.");
+    showLoginErr("❌ Taarifa si sahihi. Wasiliana na Admin.");
   }
 }
 
@@ -1007,13 +1534,19 @@ function startApp(){
   document.getElementById("lMuda").value=nowTime();
   document.getElementById("hMonth").value=today().substring(0,7);
   updateUrlBadge();
+  updateBackupBadge();
   populateSelects();
   refreshAll();
-  // Angalia LUKU ya mpangaji na onyesha notification kama inahitajika
+  if(currentUser.isAdmin){
+    startPeriodicBackup();
+    // Backup mara moja ukiingia (inaonyesha hali ya connection)
+    setTimeout(function(){ runAutoBackup("login"); }, 2000);
+  }
   setTimeout(checkAndShowLukuNotification, 600);
 }
 
 function logout(){
+  stopPeriodicBackup();
   currentUser=null;
   document.getElementById("loginPage").style.display="flex";
   document.getElementById("appPage").style.display="none";
@@ -1027,20 +1560,39 @@ function logout(){
 // ══════════════════════════════════════
 function populateSelects(){
   var t=getTenants();
-  var ids=["lChumba","aChumba","hChumba"];
-  ids.forEach(function(id){
+  var dynamicRooms = getDynamicRooms();
+
+  // lChumba na hChumba — vyumba vilivyopo tu
+  ["lChumba","hChumba"].forEach(function(id){
     var el=document.getElementById(id);
     if(!el)return;
     var prev=el.value;
     el.innerHTML=id==="hChumba"
       ?'<option value="">Vyumba Vyote</option>'
       :'<option value="">-- Chagua --</option>';
-    ROOMS.forEach(function(c){
+    dynamicRooms.forEach(function(c){
       var opt=new Option(c+(t[c]?" — "+t[c].jina:" (Wazi)"),c);
       el.appendChild(opt);
     });
     if(prev) el.value=prev;
   });
+
+  // aChumba — onyesha vyumba vilivyopo + chaguo la kuandika chumba kipya
+  var ac=document.getElementById("aChumba");
+  if(ac){
+    var prevA=ac.value;
+    ac.innerHTML='<option value="">-- Chagua au andika kipya --</option>';
+    dynamicRooms.forEach(function(c){
+      var opt=new Option(c+(t[c]?" — "+t[c].jina:" (Wazi)"),c);
+      ac.appendChild(opt);
+    });
+    // Chaguo la kuongeza chumba kipya
+    var newOpt=new Option("➕ Ongeza chumba kipya...","__new__");
+    newOpt.style.color="var(--accent2)";
+    ac.appendChild(newOpt);
+    if(prevA && prevA!=="__new__") ac.value=prevA;
+  }
+
   if(currentUser&&!currentUser.isAdmin&&currentUser.chumba){
     var hc=document.getElementById("hChumba");
     if(hc){hc.value=currentUser.chumba; hc.disabled=true;}
@@ -1082,7 +1634,20 @@ function showPage(name,el){
 // ══════════════════════════════════════
 // MUHTASARI
 // ══════════════════════════════════════
+function updateTotalRoomsCard(){
+  var rooms = getDynamicRooms();
+  var el = document.getElementById("s-total");
+  var sub = document.getElementById("s-total-sub");
+  if(el) el.textContent = rooms.length || 0;
+  if(sub){
+    if(rooms.length === 0) sub.textContent = "Hakuna chumba bado";
+    else if(rooms.length === 1) sub.textContent = rooms[0];
+    else sub.textContent = rooms[0]+" — "+rooms[rooms.length-1];
+  }
+}
+
 function renderMuhtasari(){
+  updateTotalRoomsCard();
   var t=getTenants(),recs=visibleRecs();
   var rooms=visibleRooms();
   var month=today().substring(0,7);
@@ -1119,8 +1684,14 @@ function renderMuhtasari(){
 // ══════════════════════════════════════
 function renderVyumba(){
   var t=getTenants(),recs=visibleRecs();
+  var rooms=visibleRooms();
   var g=document.getElementById("vyumbaGrid"); g.innerHTML="";
-  visibleRooms().forEach(function(c){
+  var titleEl=document.getElementById("vyumbaPageTitle");
+  if(titleEl){
+    if(rooms.length===0) titleEl.textContent="HALI YA VYUMBA VYOTE";
+    else titleEl.textContent="HALI YA VYUMBA VYOTE ("+rooms.length+" "+( rooms.length===1?"chumba":"vyumba")+")";
+  }
+  rooms.forEach(function(c){
     var tn=t[c];
     var last=recs.filter(function(r){return r.chumba===c;}).pop();
     var d=document.createElement("div");
@@ -1345,7 +1916,7 @@ function parseDevices(vifaaStr) {
 
 function getAvgByRoom() {
   // Hesabu wastani wa kWh/siku kwa kila chumba
-  var rooms = ROOMS;
+  var rooms = getDynamicRooms();
   var result = {};
   var allAvgs = [];
   rooms.forEach(function(c) {
@@ -1773,26 +2344,50 @@ function renderAnomalyDetection(el) {
 // ADMIN — TENANTS
 // ══════════════════════════════════════
 function saveTenant(){
-  var c=document.getElementById("aChumba").value;
+  var cSelect=document.getElementById("aChumba").value;
+  var cNew=document.getElementById("aNewChumba");
+  var c = cSelect==="__new__" ? (cNew?cNew.value.trim().toUpperCase():"") : cSelect;
   var j=document.getElementById("aJina").value.trim();
   var v=document.getElementById("aVifaa").value.trim();
   var k=Number(document.getElementById("aKwh").value)||0;
   var el=document.getElementById("adminAlert");
-  if(!c){showAlert(el,"Chagua chumba.","danger");return;}
+  if(!c){showAlert(el,"Chagua chumba au andika chumba kipya.","danger");return;}
+  // Safisha namba: "5" → "C05", "C5" → "C05"
+  if(/^[0-9]+$/.test(c)){var n=c; if(n.length===1)n="0"+n; c="C"+n;}
+  else if(/^C[0-9]$/.test(c)){c="C0"+c[1];}
   if(!j){showAlert(el,"Weka jina la mpangaji.","danger");return;}
   var t=getTenants();
   t[c]={jina:j,chumba:c,vifaa:v,kwh:k};
   saveTenants(t);
-  showAlert(el,"✓ "+j+" ("+c+") amehifadhiwa.","success");
-  clearAdminForm(); populateSelects(); renderAdminTenants(); updateAdminStats(); renderMuhtasari(); renderVyumba();
+  showAlert(el,"✓ "+j+" ("+c+") amehifadhiwa. Mfumo umesasishwa kiotomatiki.","success");
+  clearAdminForm(); populateSelects(); renderAdminTenants(); updateAdminStats();
+  refreshAll(); // Refresh dashibodi yote
+  // Sasisha stat card ya jumla ya vyumba
+  updateTotalRoomsCard();
   if(getUrl()){
     try{fetch(getUrl(),{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({action:"SENSA",chumba:c,jina:j,vifaa:v,kwh:k})});}catch(e){}
   }
 }
+function onAdminChumbaChange(){
+  var val=document.getElementById("aChumba").value;
+  var wrap=document.getElementById("newChumbaWrap");
+  if(val==="__new__"){
+    wrap.style.display="";
+    document.getElementById("aNewChumba").focus();
+  } else {
+    wrap.style.display="none";
+  }
+}
 function clearAdminForm(){
-  ["aChumba","aJina","aVifaa"].forEach(function(id){document.getElementById(id).value="";});
+  document.getElementById("aChumba").value="";
+  document.getElementById("aJina").value="";
+  document.getElementById("aVifaa").value="";
   document.getElementById("aKwh").value="0";
+  var nw=document.getElementById("aNewChumba");
+  if(nw) nw.value="";
+  var wrap=document.getElementById("newChumbaWrap");
+  if(wrap) wrap.style.display="none";
 }
 function editTenant(c){
   var t=getTenants()[c]; if(!t)return;
@@ -1806,7 +2401,8 @@ function editTenant(c){
 function deleteTenant(c){
   if(!confirm("Futa mpangaji wa "+c+"?"))return;
   var t=getTenants(); delete t[c]; saveTenants(t);
-  renderAdminTenants(); updateAdminStats(); populateSelects(); renderMuhtasari(); renderVyumba();
+  renderAdminTenants(); updateAdminStats(); populateSelects();
+  refreshAll(); // Itasasisha kadi yote + idadi ya vyumba
   if(getUrl()){
     try{fetch(getUrl(),{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({action:"deleteTenant",chumba:c})});}catch(e){}
@@ -1846,7 +2442,7 @@ async function syncSheets(){
       var t=getTenants();
       d.data.forEach(function(r){if(r.chumba)t[r.chumba]=r;});
       saveTenants(t);
-      populateSelects(); renderAdminTenants(); renderMuhtasari(); renderVyumba();
+      populateSelects(); renderAdminTenants(); refreshAll();
       st.style.color="var(--accent3)"; st.textContent="✓ Sync! Wapangaji: "+d.data.length;
     } else {
       st.style.color="var(--accent2)"; st.textContent="⚠ Sheets haina data ya wapangaji.";
@@ -2000,6 +2596,49 @@ function setPredFilter(f, el) {
   renderPrediction();
 }
 
+// ══════════════════════════════════════
+// MISIMU YA TANZANIA (Dar es Salaam)
+// ══════════════════════════════════════
+// Kila mwezi una "mzigo" wa AC/joto:
+//   1.0 = wastani, >1.0 = joto zaidi (AC nyingi), <1.0 = baridi zaidi (AC kidogo)
+//
+// Msimu wa Tanzania (pwani):
+//   Kiangazi kikuu  Jun–Sep  → baridi/kavu    → AC kidogo   (~0.82)
+//   Masika          Mar–May  → joto+mvua      → AC wastani  (~1.05)
+//   Vuli            Oct–Dec  → joto kali      → AC nyingi   (~1.18)
+//   Kipindi kati    Jan–Feb  → joto wastani   → AC wastani  (~1.00)
+var SEASON_FACTORS = [
+  1.00,  // Jan
+  1.00,  // Feb
+  1.05,  // Mar — Masika inaanza
+  1.08,  // Apr — kilele cha Masika
+  1.05,  // May — mwisho wa Masika
+  0.88,  // Jun — Kiangazi kinaanza
+  0.82,  // Jul — baridi zaidi
+  0.82,  // Aug — baridi zaidi
+  0.88,  // Sep — Kiangazi kinaisha
+  1.12,  // Oct — Vuli inaanza, joto linaingia
+  1.18,  // Nov — kilele cha Vuli (joto kali + unyevu)
+  1.15   // Dec — bado joto
+];
+
+// Jina la msimu kwa mwezi (0-based)
+function getSeasonName(month) {
+  if (month >= 5 && month <= 8)  return { name: "Kiangazi ☁", color: "#60a5fa", note: "Baridi — AC kidogo" };
+  if (month >= 2 && month <= 4)  return { name: "Masika 🌧",  color: "#34d399", note: "Mvua — wastani" };
+  if (month >= 9 && month <= 11) return { name: "Vuli 🌤",    color: "#f59e0b", note: "Joto kali — AC nyingi" };
+  return                                 { name: "Kati ☀",    color: "#a78bfa", note: "Joto wastani" };
+}
+
+// Badilisha wastani wa rekodi (iliyopita) kuwa ya mwezi huu kwa kutumia ratio ya misimu
+function applySeasonalAdjustment(avgPerDay, fromMonth, toMonth) {
+  var factorFrom = SEASON_FACTORS[fromMonth];
+  var factorTo   = SEASON_FACTORS[toMonth];
+  if (!factorFrom || factorFrom === 0) return avgPerDay;
+  // Gawanya na msimu wa data iliyopo, zidisha na msimu wa sasa/unaokuja
+  return avgPerDay * (factorTo / factorFrom);
+}
+
 function calcPrediction(chumba) {
   var recs = getRecs().filter(function(r){ return r.chumba === chumba; })
     .sort(function(a,b){ return (a.tarehe+a.muda) < (b.tarehe+b.muda) ? -1 : 1; });
@@ -2025,30 +2664,51 @@ function calcPrediction(chumba) {
   // Toa wastani wa weighted (recent zaidi ina uzito mkubwa)
   var totalWeight = 0, weightedSum = 0;
   segments.forEach(function(s, i) {
-    var weight = Math.pow(2, i); // siku za hivi karibuni zina uzito zaidi
+    var weight = Math.pow(2, i);
     weightedSum += s.kwhPerDay * weight;
     totalWeight += weight;
   });
   var avgPerDay = weightedSum / totalWeight;
 
-  // LUKU iliyobaki
-  var lastRec = recs[recs.length - 1];
-  var lukuSasa = Number(lastRec.lukuSasa) || 0;
-  var lukuThreshold = 20; // unit 20 ndio kiwango cha chini (configurable)
+  // ── MAREKEBISHO YA MSIMU ──
+  var today       = new Date();
+  var currentMonth = today.getMonth(); // 0-based
 
-  // Siku zinazobaki kabla ya kukwisha (au threshold)
-  var daysLeft = avgPerDay > 0 ? (lukuSasa - lukuThreshold) / avgPerDay : 999;
-  daysLeft = Math.max(0, Math.round(daysLeft));
+  // Gundua mwezi wa wastani wa data (mwezi wa rekodi za mwisho 2)
+  var lastRec     = recs[recs.length - 1];
+  var dataMonth   = new Date(lastRec.tarehe).getMonth();
 
-  // Mwezi huu — makadirio ya mwisho
-  var today = new Date();
-  var daysInMonth = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
-  var dayOfMonth = today.getDate();
-  var daysLeft_month = daysInMonth - dayOfMonth;
-  var forecastMonthKwh = avgPerDay * daysInMonth;
-  var forecastMonthCost = forecastMonthKwh * (Number(lastRec.rate) || 500);
+  // Tumia adjustment ikiwa data imetoka msimu tofauti na sasa
+  var seasonFactor = SEASON_FACTORS[currentMonth] / SEASON_FACTORS[dataMonth];
+  // Punguza athari yake kwa 60% — rekodi za hivi karibuni tayari zinaonyesha mwelekeo wa sasa
+  var blendFactor  = 1 + (seasonFactor - 1) * 0.6;
+  var avgPerDayAdj = avgPerDay * blendFactor;
 
-  // Mwelekeo — linganisha segment ya mwisho na ya kwanza
+  var seasonNow    = getSeasonName(currentMonth);
+  var seasonData   = getSeasonName(dataMonth);
+  var seasonChanged = currentMonth !== dataMonth;
+
+  // LUKU iliyobaki — tumia avgPerDayAdj kwa usahihi zaidi
+  var lukuSasa      = Number(lastRec.lukuSasa) || 0;
+  var lukuThreshold = 20;
+
+  var daysLeft = avgPerDayAdj > 0 ? (lukuSasa - lukuThreshold) / avgPerDayAdj : 999;
+  daysLeft     = Math.max(0, Math.round(daysLeft));
+
+  // Makadirio ya mwezi huu — tumia avgPerDayAdj
+  var daysInMonth      = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
+  var forecastMonthKwh = avgPerDayAdj * daysInMonth;
+  var forecastMonthCost= forecastMonthKwh * (Number(lastRec.rate) || 500);
+
+  // Makadirio ya mwezi UJAO — tumia factor ya mwezi ujao
+  var nextMonth        = (currentMonth + 1) % 12;
+  var nextMonthDays    = new Date(today.getFullYear(), nextMonth+1, 0).getDate();
+  var avgNextMonth     = applySeasonalAdjustment(avgPerDay, dataMonth, nextMonth);
+  var avgNextAdj       = avgNextMonth * (1 + (SEASON_FACTORS[nextMonth]/SEASON_FACTORS[dataMonth] - 1) * 0.6);
+  var forecastNextKwh  = avgNextAdj * nextMonthDays;
+  var forecastNextCost = forecastNextKwh * (Number(lastRec.rate) || 500);
+
+  // Mwelekeo
   var trend = "flat";
   if (segments.length >= 2) {
     var first = segments[0].kwhPerDay;
@@ -2060,20 +2720,31 @@ function calcPrediction(chumba) {
   // Hali ya onyo
   var status = daysLeft > 14 ? "safe" : daysLeft > 5 ? "warn" : "danger";
 
-  // Percentage ya LUKU iliyotumika (approximate)
+  // Percentage ya LUKU iliyotumika
   var totalKwh = recs.reduce(function(s,r){ return s + (Number(r.kwh)||0); }, 0);
   var startLuku = Number(recs[0].lukuAwali) || 0;
-  var pctUsed = startLuku > 0 ? Math.min(100, (totalKwh / startLuku) * 100) : 50;
+  var pctUsed  = startLuku > 0 ? Math.min(100, (totalKwh / startLuku) * 100) : 50;
 
   return {
     hasData: true,
     daysLeft: daysLeft,
-    avgPerDay: avgPerDay,
+    avgPerDay: avgPerDay,          // raw (bila marekebisho)
+    avgPerDayAdj: avgPerDayAdj,    // adjusted kwa msimu
+    seasonFactor: seasonFactor,
+    blendFactor: blendFactor,
+    seasonNow: seasonNow,
+    seasonData: seasonData,
+    seasonChanged: seasonChanged,
+    currentMonth: currentMonth,
+    dataMonth: dataMonth,
     status: status,
     trend: trend,
     lukuSasa: lukuSasa,
     forecastMonthKwh: forecastMonthKwh,
     forecastMonthCost: forecastMonthCost,
+    forecastNextKwh: forecastNextKwh,
+    forecastNextCost: forecastNextCost,
+    nextMonth: nextMonth,
     pctUsed: pctUsed,
     lastDate: lastRec.tarehe,
     totalRecs: recs.length,
@@ -2101,12 +2772,15 @@ function renderPrediction() {
     totalKwhToday += p.pred.avgPerDay || 0;
   });
 
+  // Onyesha msimu wa sasa kwenye summary bar
+  var nowSeason = getSeasonName(new Date().getMonth());
   summaryBar.innerHTML =
     '<div class="pred-sum-card"><div class="pred-sum-val" style="color:var(--danger)">'+nDanger+'</div><div class="pred-sum-lbl">🔴 Hatari</div></div>' +
     '<div class="pred-sum-card"><div class="pred-sum-val" style="color:var(--accent2)">'+nWarn+'</div><div class="pred-sum-lbl">🟡 Tahadhari</div></div>' +
     '<div class="pred-sum-card"><div class="pred-sum-val" style="color:var(--accent3)">'+nSafe+'</div><div class="pred-sum-lbl">🟢 Salama</div></div>' +
     '<div class="pred-sum-card"><div class="pred-sum-val" style="color:var(--muted)">'+nNoData+'</div><div class="pred-sum-lbl">⚫ Hakuna Data</div></div>' +
-    '<div class="pred-sum-card"><div class="pred-sum-val" style="color:var(--accent)">'+totalKwhToday.toFixed(1)+'</div><div class="pred-sum-lbl">kWh/Siku (Jumla)</div></div>';
+    '<div class="pred-sum-card"><div class="pred-sum-val" style="color:var(--accent)">'+totalKwhToday.toFixed(1)+'</div><div class="pred-sum-lbl">kWh/Siku (Jumla)</div></div>' +
+    '<div class="pred-sum-card" style="border-color:'+nowSeason.color+';background:rgba(255,255,255,.03)"><div class="pred-sum-val" style="color:'+nowSeason.color+';font-size:1.1rem;">'+nowSeason.name+'</div><div class="pred-sum-lbl">'+nowSeason.note+'</div></div>';
 
   // Panga — hatari kwanza
   var order = { danger: 0, warn: 1, safe: 2 };
@@ -2159,6 +2833,40 @@ function renderPrediction() {
                      p.daysLeft === 0 ? "LUKU IMEKWISHA!" :
                      "Siku "+p.daysLeft+" zimebaki";
 
+      // Seasonal badge — onyesha tu kama msimu umebadilika
+      var seasonHtml = "";
+      if (p.seasonChanged) {
+        var adjPct = Math.round(Math.abs(p.blendFactor - 1) * 100);
+        var adjDir = p.blendFactor > 1 ? "▲ +" : "▼ −";
+        var adjColor = p.blendFactor > 1 ? "var(--accent2)" : "#60a5fa";
+        seasonHtml =
+          '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:.74rem;">' +
+            '<span style="color:'+p.seasonNow.color+';font-weight:700;">'+p.seasonNow.name+'</span>' +
+            '<span style="color:var(--muted);margin:0 5px;">·</span>' +
+            '<span style="color:'+adjColor+';font-weight:700;">'+adjDir+adjPct+'% marekebisho ya msimu</span>' +
+            '<div style="color:var(--muted);margin-top:2px;">Data: '+p.seasonData.name+' → Sasa: '+p.seasonNow.name+'</div>' +
+          '</div>';
+      } else {
+        seasonHtml =
+          '<div style="margin-top:8px;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.03);font-size:.74rem;color:var(--muted);">' +
+            p.seasonNow.name + ' &nbsp;·&nbsp; ' + p.seasonNow.note +
+          '</div>';
+      }
+
+      // Onyesha kWh iliyorekebishwa (adj) pamoja na raw
+      var kwhDisplay = p.avgPerDayAdj.toFixed(2);
+      var kwhSub = p.seasonChanged
+        ? '<div style="font-size:.65rem;color:var(--muted);">raw: '+p.avgPerDay.toFixed(2)+'</div>'
+        : '';
+
+      // Mwezi ujao
+      var monthNames = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Ago","Sep","Okt","Nov","Des"];
+      var nextMonthHtml =
+        '<div style="margin-top:6px;padding:8px 12px;background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);border-radius:8px;">' +
+          '<div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">'+monthNames[p.nextMonth]+' (Makadirio)</div>' +
+          '<div style="font-family:\'Rajdhani\',sans-serif;font-size:.95rem;color:#a78bfa;">'+p.forecastNextKwh.toFixed(1)+' kWh &nbsp;·&nbsp; Tsh '+Math.round(p.forecastNextCost).toLocaleString()+'</div>' +
+        '</div>';
+
       card.className = "pred-card " + statusClass;
       card.innerHTML =
         '<span class="pred-badge '+badgeClass+'">'+badgeText+'</span>' +
@@ -2168,15 +2876,17 @@ function renderPrediction() {
         '<div class="pred-days-label">'+daysNote+'</div>' +
         '<div class="pred-bar-wrap"><div class="pred-bar-fill" style="width:'+barPct+'%;background:'+barColor+';"></div></div>' +
         '<div class="pred-stats">' +
-          '<div class="pred-stat"><div class="pred-stat-val">'+p.avgPerDay.toFixed(2)+'</div><div class="pred-stat-lbl">kWh/Siku</div></div>' +
+          '<div class="pred-stat"><div class="pred-stat-val">'+kwhDisplay+'</div>'+kwhSub+'<div class="pred-stat-lbl">kWh/Siku</div></div>' +
           '<div class="pred-stat"><div class="pred-stat-val" style="color:var(--accent)">'+p.lukuSasa.toFixed(0)+'</div><div class="pred-stat-lbl">LUKU Sasa</div></div>' +
           '<div class="pred-stat"><div class="pred-stat-val" style="color:var(--accent2)">'+p.totalRecs+'</div><div class="pred-stat-lbl">Rekodi</div></div>' +
         '</div>' +
         trendHtml +
+        seasonHtml +
         '<div class="pred-month-forecast">' +
           '<div class="mf-label">Makadirio ya Mwezi Huu</div>' +
           '<div class="mf-val">'+p.forecastMonthKwh.toFixed(1)+' kWh &nbsp;·&nbsp; Tsh '+Math.round(p.forecastMonthCost).toLocaleString()+'</div>' +
         '</div>' +
+        nextMonthHtml +
         '<div class="pred-card-detail">Rekodi ya mwisho: '+p.lastDate+'</div>';
     }
 
@@ -2214,26 +2924,137 @@ function renderPredAlertBanner() {
   banner.innerHTML = html;
 }
 
-function loginAdmin(){
+// ══════════════════════════════════════
+// LOCKOUT COUNTDOWN (sekunde)
+// ══════════════════════════════════════
+var _lockoutTimer = null;
+function startLockoutCountdown(){
+  if(_lockoutTimer) clearInterval(_lockoutTimer);
+  _lockoutTimer = setInterval(function(){
+    if(!isLockedOut()){
+      clearInterval(_lockoutTimer);
+      _lockoutTimer = null;
+      document.getElementById("loginError").style.display="none";
+      return;
+    }
+    var secs = lockoutTimeLeft();
+    showLoginErr("🔒 Akaunti imefungwa. Jaribu tena baada ya sekunde "+secs+".");
+  }, 1000);
+}
+
+async function loginAdmin(){
+  if(isLockedOut()){
+    var secs=lockoutTimeLeft();
+    showLoginErr("🔒 Akaunti imefungwa. Jaribu tena baada ya sekunde "+secs+".");
+    startLockoutCountdown();
+    return;
+  }
   var pass = document.getElementById("loginJina").value.trim();
   if(!pass){
     showLoginErr("Weka nenosiri la admin kwenye kisanduku cha Jina.");
     document.getElementById("loginJina").focus();
     return;
   }
-  if(pass.toLowerCase() !== ADMIN_PASS.toLowerCase()){
-    showLoginErr("Nenosiri la admin si sahihi. Jaribu tena.");
+  var h = await sha256(pass);
+  if(h !== getAdminHash()){
+    var s=recordFailedAttempt();
+    if(isLockedOut()){
+      showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
+      startLockoutCountdown();
+    } else {
+      showLoginErr("❌ Nenosiri si sahihi. Majaribio "+attemptsLeft()+" yaliyobaki.");
+    }
     document.getElementById("loginJina").value="";
     document.getElementById("loginJina").focus();
     return;
   }
+  resetAttempts();
   currentUser={jina:"Admin",chumba:null,isAdmin:true};
   startApp();
 }
 window.onload=function(){
   document.getElementById("loginChumba").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("loginJina").focus();});
   document.getElementById("loginJina").addEventListener("keydown",function(e){if(e.key==="Enter")login();});
+  // Onyesha ujumbe wa lockout kama ipo
+  if(isLockedOut()){
+    var secs=lockoutTimeLeft();
+    showLoginErr("🔒 Akaunti imefungwa. Jaribu tena baada ya sekunde "+secs+".");
+    startLockoutCountdown();
+  }
 };
+
+// ══════════════════════════════════════
+// NGUVU YA NENOSIRI
+// ══════════════════════════════════════
+function checkPwdStrength(val) {
+  var bar   = document.getElementById("pwdStrengthBar");
+  var label = document.getElementById("pwdStrengthLabel");
+  var tips  = document.getElementById("pwdStrengthTips");
+  if (!bar) return;
+
+  if (!val) {
+    bar.style.width="0%"; bar.style.background="transparent";
+    label.textContent="—"; label.style.color="var(--muted)";
+    tips.textContent=""; return;
+  }
+
+  var score=0, hint=[];
+  if (val.length >= 8)  score+=1; else hint.push("Angalau herufi 8");
+  if (val.length >= 12) score+=1; else if(val.length>=8) hint.push("Herufi 12+ ni bora");
+  if (/[A-Z]/.test(val)) score+=1; else hint.push("Herufi kubwa (A-Z)");
+  if (/[a-z]/.test(val)) score+=1; else hint.push("Herufi ndogo (a-z)");
+  if (/[0-9]/.test(val)) score+=1; else hint.push("Nambari (0-9)");
+  if (/[^A-Za-z0-9]/.test(val)) score+=1; else hint.push("Alama (!@#$%...)");
+
+  var pct,color,txt;
+  if      (score<=1){pct="16%"; color="#ef4444"; txt="DHAIFU SANA";}
+  else if (score<=2){pct="33%"; color="#f97316"; txt="DHAIFU";}
+  else if (score<=3){pct="50%"; color="#f59e0b"; txt="WASTANI";}
+  else if (score<=4){pct="70%"; color="#84cc16"; txt="NZURI";}
+  else if (score<=5){pct="88%"; color="#22c55e"; txt="IMARA";}
+  else              {pct="100%";color="#10b981"; txt="BORA KABISA 🔒";}
+
+  bar.style.width=pct; bar.style.background=color;
+  label.textContent=txt; label.style.color=color;
+  tips.innerHTML=hint.length?"💡 "+hint.slice(0,2).join(" · "):"✓ Nenosiri zuri sana!";
+}
+
+// ══════════════════════════════════════
+// BADILISHA NENOSIRI LA ADMIN
+// ══════════════════════════════════════
+async function changeAdminPassword(){
+  var cur  = document.getElementById("pwdCurrent").value.trim();
+  var nw   = document.getElementById("pwdNew").value;
+  var conf = document.getElementById("pwdConfirm").value;
+  var alertEl = document.getElementById("passwdAlert");
+
+  function pwdMsg(msg,type){
+    alertEl.innerHTML='<div class="alert alert-'+(type==="ok"?"success":"danger")+'">'+msg+'</div>';
+    setTimeout(function(){alertEl.innerHTML="";},5000);
+  }
+
+  if(!cur||!nw||!conf){pwdMsg("Jaza sehemu zote tatu.","err");return;}
+  if(nw.length<6){pwdMsg("Nenosiri jipya lazima liwe na herufi angalau 6.","err");return;}
+  if(nw!==conf){pwdMsg("Nenosiri jipya na uthibitisho havifanani.","err");return;}
+
+  var curHash=await sha256(cur);
+  if(curHash!==getAdminHash()){
+    pwdMsg("❌ Nenosiri la sasa si sahihi.","err");
+    document.getElementById("pwdCurrent").value="";
+    document.getElementById("pwdCurrent").focus();
+    return;
+  }
+
+  var newHash=await sha256(nw);
+  setAdminHash(newHash);
+
+  document.getElementById("pwdCurrent").value="";
+  document.getElementById("pwdNew").value="";
+  document.getElementById("pwdConfirm").value="";
+  checkPwdStrength("");
+
+  pwdMsg("✅ Nenosiri limebadilishwa! Tafadhali likumbuke vizuri.","ok");
+}
 </script>
 </body>
 </html>
