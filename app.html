@@ -1347,7 +1347,19 @@ function getUrl(){ return localStorage.getItem("sheetsUrl")||DEFAULT_URL; }
 function setUrl(u){ localStorage.setItem("sheetsUrl",u); updateUrlBadge(); }
 
 function getTenants(){ try{return JSON.parse(localStorage.getItem("tenants")||"{}");}catch(e){return{};} }
-function saveTenants(t){ localStorage.setItem("tenants",JSON.stringify(t)); scheduleAutoBackup(); }
+function saveTenants(t){
+  localStorage.setItem("tenants",JSON.stringify(t));
+  scheduleAutoBackup();
+  // Arifu Sensa (tab nyingine au dirisha moja) kuhusu mabadiliko
+  try{
+    if(window._sensaChannel) window._sensaChannel.postMessage({type:"tenants_changed"});
+  } catch(e){}
+}
+
+// BroadcastChannel — Sensa itasikiliza hii iwe kwenye tab ipi ipi
+try{
+  window._sensaChannel = new BroadcastChannel("smart_energy_sync");
+} catch(e){ window._sensaChannel = null; }
 function getRecs(){ try{return JSON.parse(localStorage.getItem("lukuRecs")||"[]");}catch(e){return[];} }
 function saveRecs(r){ localStorage.setItem("lukuRecs",JSON.stringify(r)); scheduleAutoBackup(); }
 
@@ -2696,6 +2708,16 @@ function editTenant(c){
 function deleteTenant(c){
   if(!confirm("Futa mpangaji wa "+c+"?"))return;
   var t=getTenants(); delete t[c]; saveTenants(t);
+
+  // ── Futa pia kwenye sensaEntries (Sensa ya Vifaa) ──
+  try{
+    var sensa = JSON.parse(localStorage.getItem("sensaEntries") || "[]");
+    var filtered = sensa.filter(function(e){
+      return (e.chumba||"").toString().toUpperCase() !== c.toString().toUpperCase();
+    });
+    localStorage.setItem("sensaEntries", JSON.stringify(filtered));
+  } catch(e2){}
+
   renderAdminTenants(); updateAdminStats(); populateSelects();
   refreshAll(); // Itasasisha kadi yote + idadi ya vyumba
   if(getUrl()){
