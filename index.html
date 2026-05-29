@@ -150,6 +150,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
   </div>
   <p style="font-size:11px;color:var(--text-3);margin-top:8px">Weka URL ile ile ya Google Sheets inayotumika kwenye App yako kuu ya Smart Energy.</p>
 
+
   <!-- Room Configuration -->
   <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
     <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:10px">🏠 Sanidi Vyumba</div>
@@ -383,6 +384,38 @@ function buildOpts(){
 var OPTS = buildOpts();
 
 // ══════════════════════════════════════
+// VIFAA HELPERS — kubali string na array
+// ══════════════════════════════════════
+function hasVifaa(v){
+  if(!v) return false;
+  if(Array.isArray(v)) return v.length > 0;
+  // String: "Taa LED, Friji" au "Taa LED (9W) x1 — 4.0h/siku"
+  var s = String(v).trim();
+  return s.length > 0 && s !== "0" && s !== "[]" && s !== "{}";
+}
+
+function toVifaaArray(v){
+  if(!v) return [];
+  if(Array.isArray(v)) return v;
+  // String → array ya objects rahisi kwa display
+  var s = String(v).trim();
+  if(!s || s === "0") return [];
+  // Gawanya kwa "|" (format ya GAS 2.2) au "," (format ya zamani)
+  var sep = s.indexOf(" | ") >= 0 ? " | " : ",";
+  return s.split(sep).map(function(part){
+    return { jina: part.trim(), idadi: 1, watts: 0, hrs: 0, siku: 30 };
+  }).filter(function(x){ return x.jina; });
+}
+
+function vifaaStringToTags(v){
+  if(!v) return "";
+  var arr = toVifaaArray(v);
+  return arr.map(function(x){
+    return '<span class="tag">' + safeText(String(x.jina).split("(")[0].trim()) + "</span>";
+  }).join("");
+}
+
+// ══════════════════════════════════════
 // STATE
 // ══════════════════════════════════════
 var entries = [];
@@ -395,14 +428,14 @@ var allRooms = []; // vyumba vyote kutoka sheets
 // Mifano: "C01"→"01", "C1"→"01", "1"→"01", "12"→"12"
 // ══════════════════════════════════════
 function normalizeRoom(code){
+  // Futa KABISA herufi zote (C, c, A, nk.) — acha namba tu, zero-pad mbili
   if(!code) return "";
-  var s = String(code).trim().toUpperCase();
-  // Futa herufi zote za mwanzo (C, A, B, nk.) — hifadhi namba tu
-  var num = s.replace(/^[A-Z]+/, "");
-  if(!num) return s; // kama hakuna namba, rudisha kama ilivyo
-  // Zero-pad hadi tarakimu mbili
+  var s = String(code).trim();
+  // Futa herufi zote — mbele, nyuma, popote kati
+  var num = s.replace(/[^0-9]/g, "");
+  if(!num) return "";
   var n = parseInt(num, 10);
-  if(isNaN(n)) return s;
+  if(isNaN(n) || n <= 0) return "";
   return n < 10 ? "0" + n : String(n);
 }
 
@@ -530,9 +563,10 @@ function applyRoomConfig(){
   buildManualRooms();
   localStorage.setItem(ROOM_CONFIG_KEY, JSON.stringify(roomConfig));
 
-  // Merge manual rooms into allRooms
-  var combined = normalizeRooms([...manualRooms, ...allRooms]);
-  allRooms = combined;
+  // Jenga upya allRooms — manual rooms ndio msingi, ongeza vyumba vya sensa zilizopo
+  // Usizidishe allRooms ya zamani (inaweza kuwa na C01, C1, nk.)
+  var sensaRooms = entries.map(function(e){ return normalizeRoom(e.chumba); }).filter(Boolean);
+  allRooms = normalizeRooms([...manualRooms, ...sensaRooms]);
   totalRooms = manualRooms.length; // total = configured rooms
 
   buildRoomGrid();
@@ -556,7 +590,7 @@ function buildRoomGrid(){
   allRooms.forEach(function(code){
     var entry = entries.find(function(e){ return e.chumba === code; });
     // "taken" maana yake chumba kina mpangaji NA kina rekodi za vifaa (sensa imekamilika)
-    var hasSensa = entry && Array.isArray(entry.vifaa) && entry.vifaa.length > 0;
+    var hasSensa = entry && hasVifaa(entry.vifaa);
     var div = document.createElement("div");
     div.className = "c-pill" + (hasSensa ? " taken" : "") + (selectedRoom === code ? " selected" : "");
     div.textContent = code;
@@ -717,7 +751,7 @@ function goPage(n){
 // ══════════════════════════════════════
 // SUBMIT — sends to Sheets + syncs local app
 // ══════════════════════════════════════
-async function submitForm(){
+function submitForm(){
   var jina = document.getElementById("f-jina").value.trim();
   var chumba = document.getElementById("f-chumba").value;
   if(!jina){ showToast("Tafadhali weka jina lako"); return; }
@@ -748,69 +782,52 @@ async function submitForm(){
   };
 
   var btn = document.getElementById("submitBtn");
-  btn.innerHTML = "⏳ Inatuma...";
+  btn.innerHTML = "⏳ Inahifadhi...";
   btn.disabled = true;
 
+  // ── HATUA 1: Hifadhi kwenye localStorage KWANZA (hakuna CORS, daima inafanya kazi) ──
   try{
-    // 1. Tuma kwenda Google Sheets (Sensa script)
-    await fetch(getUrl(), {
-      method: "POST",
-      mode: "no-cors",
-      headers: {"Content-Type": "text/plain;charset=utf-8"},
-      body: JSON.stringify(sensaEntry)
-    });
-
-    // 2. Hifadhi kwenye localStorage ya App kuu (tenants)
-    // Muundo unaofaa na App kuu: {jina, chumba, vifaa (string), kwh}
-    var appTenantKey = "tenants";
-    var tenants = {};
-    try{ tenants = JSON.parse(localStorage.getItem(appTenantKey) || "{}"); } catch(e){}
-    tenants[chumba] = {
-      jina: jina,
-      chumba: chumba,
-      vifaa: vifaaStr,   // string inayofaa parseDevices() ya app kuu
-      kwh: kwhTotal,
-      simu: sensaEntry.simu,
-      hali: sensaEntry.hali
-    };
-    localStorage.setItem(appTenantKey, JSON.stringify(tenants));
-
-    // 3. Pia tuma action=SENSA kwenye app script kwa sync
-    try{
-      fetch(getUrl(), {
-        method: "POST",
-        mode: "no-cors",
-        headers: {"Content-Type": "text/plain;charset=utf-8"},
-        body: JSON.stringify({
-          action: "SENSA",
-          chumba: chumba,
-          jina: jina,
-          vifaa: vifaaStr,
-          kwh: kwhTotal
-        })
-      });
-    } catch(e2){}
-
-    // 4. Sasisha entries na render
+    // a) Hifadhi sensa entry
     var idx = entries.findIndex(function(e){ return e.chumba === chumba; });
     if(idx >= 0) entries[idx] = sensaEntry;
     else entries.push(sensaEntry);
+    localStorage.setItem("sensaEntries", JSON.stringify(entries));
 
-    // Hifadhi sensa zote kwenye localStorage ili zisipotee
-    try{ localStorage.setItem("sensaEntries", JSON.stringify(entries)); } catch(e){}
+    // b) Hifadhi kwenye "tenants" ya App kuu
+    var appTenantKey = "tenants";
+    var tenants = {};
+    try{ tenants = JSON.parse(localStorage.getItem(appTenantKey) || "{}"); } catch(e2){}
+    tenants[chumba] = {
+      jina: jina, chumba: chumba, vifaa: vifaaStr,
+      kwh: kwhTotal, simu: sensaEntry.simu, hali: sensaEntry.hali
+    };
+    localStorage.setItem(appTenantKey, JSON.stringify(tenants));
+  } catch(lsErr){
+    console.log("localStorage error:", lsErr);
+  }
 
-    renderEntries();
-    clearForm();
-    goPage(1);
-    showToast("✅ " + chumba + " — " + jina + " imetumwa!", true);
-    setTimeout(loadRoomsFromSheets, 1500);
+  // ── HATUA 2: Render mara moja — mpangaji anaona matokeo bila kusubiri mtandao ──
+  renderEntries();
+  clearForm();
+  goPage(1);
+  showToast("\u2705 " + chumba + " \u2014 " + jina + " imehifadhiwa!", true);
+  btn.innerHTML = "\u2713 Wasilisha Fomu";
+  btn.disabled = false;
 
-  } catch(err){
-    console.log(err);
-    showToast("❌ Tatizo la mtandao. Angalia internet.");
-  } finally{
-    btn.innerHTML = "✓ Wasilisha Fomu";
-    btn.disabled = false;
+  // ── HATUA 3: Tuma kwenda Google Sheets kwa background (fire-and-forget) ──
+  var url = getUrl();
+  if(url){
+    fetch(url, {
+      method: "POST", mode: "no-cors",
+      headers: {"Content-Type": "text/plain;charset=utf-8"},
+      body: JSON.stringify(sensaEntry)
+    }).catch(function(e){ console.log("Sheets POST bg:", e.message); });
+
+    fetch(url, {
+      method: "POST", mode: "no-cors",
+      headers: {"Content-Type": "text/plain;charset=utf-8"},
+      body: JSON.stringify({ action:"SENSA", chumba:chumba, jina:jina, vifaa:vifaaStr, kwh:kwhTotal })
+    }).catch(function(e){ console.log("Sheets SENSA bg:", e.message); });
   }
 }
 
@@ -841,7 +858,7 @@ function safeText(x){
 function renderEntries(){
   var sec = document.getElementById("entries-section");
   var withSensa = entries.filter(function(e){
-    return Array.isArray(e.vifaa) && e.vifaa.length > 0;
+    return hasVifaa(e.vifaa);
   });
   var count = withSensa.length;
   var total = Math.max(totalRooms, count);
@@ -858,13 +875,17 @@ function renderEntries(){
 
   sec.style.display = "block";
   document.getElementById("entries-list").innerHTML = withSensa.map(function(e){
-    var vifaa = Array.isArray(e.vifaa) ? e.vifaa : [];
-    var kwh = vifaa.reduce(function(s,v){
-      return s + ((Number(v.watts)||0)*(Number(v.idadi)||1)*(Number(v.hrs)||0)*(Number(v.siku)||30)/1000);
-    }, 0);
-    var tags = vifaa.map(function(v){
-      return '<span class="tag">' + safeText(String(v.jina||"").split("/")[0].trim()) + " ×" + safeText(v.idadi||1) + "</span>";
-    }).join("");
+    var vifaa = toVifaaArray(e.vifaa);
+    var kwh = vifaa.length
+      ? vifaa.reduce(function(s,v){
+          return s + ((Number(v.watts)||0)*(Number(v.idadi)||1)*(Number(v.hrs)||0)*(Number(v.siku)||30)/1000);
+        }, 0)
+      : (parseFloat(e.kwh) || 0);
+    var tags = vifaa.length
+      ? vifaa.map(function(v){
+          return '<span class="tag">' + safeText(String(v.jina||v||"").split("/")[0].trim()) + " ×" + safeText(v.idadi||1) + "</span>";
+        }).join("")
+      : vifaaStringToTags(e.vifaa);
 
     return '<div class="entry-card">' +
       '<div class="entry-top">' +
@@ -886,7 +907,7 @@ function downloadCSV(){
   if(!entries.length){ showToast("Hakuna data bado"); return; }
   var rows = [["Chumba","Jina","Simu","Tarehe","Hali","Watu","Saa/Siku","Kifaa","Idadi","Watts","Masaa/Siku","Siku/Mwezi","kWh/Mwezi","Vingine","Wakati"]];
   entries.forEach(function(e){
-    var vifaa = Array.isArray(e.vifaa) ? e.vifaa : [];
+    var vifaa = toVifaaArray(e.vifaa);
     if(!vifaa.length){
       rows.push([e.chumba,e.jina,e.simu||"",e.tarehe||"",e.hali||"",e.watu||"",e.saa||"","","","","","","",e.vingine||"",e.wakati||""]);
       return;
@@ -917,39 +938,154 @@ function showToast(msg, green){
 }
 
 // ══════════════════════════════════════
-// INIT — Manual rooms kwanza, sheets ni ziada
+// CLEAN LEGACY — futa C-prefix kutoka localStorage
+// ══════════════════════════════════════
+function _cleanLegacyCPrefixFromStorage(){
+  // sensaEntries
+  try{
+    var se = JSON.parse(localStorage.getItem("sensaEntries") || "[]");
+    if(Array.isArray(se)){
+      var changed = false;
+      se.forEach(function(e){
+        var clean = normalizeRoom(e.chumba);
+        if(clean && clean !== e.chumba){ e.chumba = clean; changed = true; }
+      });
+      // Ondoa nakala (baada ya normalize)
+      var seen = {};
+      se = se.filter(function(e){
+        if(seen[e.chumba]) return false;
+        seen[e.chumba] = true; return true;
+      });
+      if(changed) localStorage.setItem("sensaEntries", JSON.stringify(se));
+    }
+  } catch(e){ console.log("clean sensaEntries:", e); }
+
+  // tenants
+  try{
+    var tenants = JSON.parse(localStorage.getItem("tenants") || "{}");
+    var newTenants = {};
+    var changed2 = false;
+    Object.keys(tenants).forEach(function(k){
+      var clean = normalizeRoom(k);
+      if(!clean) return;
+      if(clean !== k) changed2 = true;
+      // Ikiwa tayari kuna clean key, usifute data yake
+      if(!newTenants[clean]) newTenants[clean] = tenants[k];
+      newTenants[clean].chumba = clean;
+    });
+    if(changed2) localStorage.setItem("tenants", JSON.stringify(newTenants));
+  } catch(e){ console.log("clean tenants:", e); }
+}
+
+// ══════════════════════════════════════
+// INIT — localStorage kwanza (haraka, bila CORS), JSONP kwa nyuma
 // ══════════════════════════════════════
 (function init(){
-  // 1. Jenga vyumba vya manual mara moja — bila kusubiri mtandao
+  // 1. Jenga vyumba vya manual mara moja
   if(manualRooms.length){
     allRooms = [...manualRooms];
     totalRooms = manualRooms.length;
-    buildRoomGrid();
-    renderEntries();
   }
 
-  // 2. Jaribu sheets kwa background — ikiwa itafaulu, ongeza wapangaji waliosajiliwa
+  // 2. Soma wapangaji waliosajiliwa kutoka localStorage ya App kuu (hakuna CORS)
+  // Kwanza futa data ya zamani yenye C-prefix kutoka localStorage
+  _cleanLegacyCPrefixFromStorage();
+  loadRoomsFromLocalStorage();
+
+  // 3. Jaribu JSONP kwa background — ikiwa Script inaruhusu
   loadRoomsFromSheets();
 })();
 
+// ── Chanzo 1: localStorage (haraka, daima inafanya kazi) ──────────────────────
+function loadRoomsFromLocalStorage(){
+  try{
+    // Soma "tenants" iliyohifadhiwa na App kuu
+    var tenants = JSON.parse(localStorage.getItem("tenants") || "{}");
+    Object.keys(tenants).forEach(function(room){
+      var t = tenants[room];
+      var code = normalizeRoom(room);
+      if(!code) return;
+      // Tumia rekodi hii kama entry ya sensa (ona iwa vifaa hayapo, tutaweka []
+      var localIdx = entries.findIndex(function(e){ return e.chumba === code; });
+      var se = {
+        jina: t.jina || "",
+        chumba: code,
+        vifaa: t.vifaa || [],  // string au array — hasVifaa() itashughulikia
+        hali: t.hali || "",
+        kwh: t.kwh || 0
+      };
+      if(localIdx >= 0){
+        // Sisahau sensa zilizokwisha jaza
+        if(!entries[localIdx].vifaa || entries[localIdx].vifaa.length === 0){
+          entries[localIdx] = se;
+        }
+      } else {
+        entries.push(se);
+      }
+    });
+
+    // Pia soma "sensaEntries" zilizohifadhiwa na Sensa yenyewe
+    var saved = JSON.parse(localStorage.getItem("sensaEntries") || "[]");
+    if(Array.isArray(saved)){
+      saved.forEach(function(se){
+        var code = normalizeRoom(se.chumba);
+        if(!code) return;
+        var localIdx = entries.findIndex(function(e){ return e.chumba === code; });
+        if(localIdx >= 0){
+          // Sensa kamili inashinda rekodi ya tenants
+          if(hasVifaa(se.vifaa)){
+            entries[localIdx] = se;
+          }
+        } else {
+          entries.push(se);
+        }
+      });
+    }
+  } catch(e){
+    console.log("localStorage read error:", e);
+  }
+
+  // Jenga orodha ya vyumba yote (manual + kutoka tenants/sensa)
+  var localRooms = entries.map(function(e){ return e.chumba; }).filter(Boolean);
+  allRooms = normalizeRooms([...manualRooms, ...localRooms]);
+  totalRooms = manualRooms.length || allRooms.length;
+
+  buildRoomGrid();
+  renderEntries();
+
+  // Weka badge kama "Imeunganika" — localStorage daima inafanya kazi
+  document.getElementById("urlStatusBadge").textContent = "✓ localStorage OK";
+  document.getElementById("urlStatusBadge").className = "url-status ok";
+}
+
+// ── Chanzo 2: JSONP — Google Apps Script (background, optional) ───────────────
+// Ili hii ifanye kazi, Script yako lazima iongeze msururu huu kwenye GAS:
+//   if(e.parameter.callback){ return ContentService.createTextOutput(
+//     e.parameter.callback + "(" + JSON.stringify(output) + ")")
+//     .setMimeType(ContentService.MimeType.JAVASCRIPT); }
 function loadRoomsFromSheets(){
   var url = getUrl();
   if(!url) return;
 
-  document.getElementById("urlStatusBadge").textContent = "⏳ Inapakia...";
-  document.getElementById("urlStatusBadge").className = "url-status";
-
-  // Tumia JSONP — inafanya kazi file://, http://, na bila CORS issues
-  var cbName = "sensaCb_" + Date.now();
+  var cbName = "_sensa_cb_" + Date.now();
   var done = false;
 
-  window[cbName] = function(res){
-    done = true;
-    clearTimeout(timer);
-    var sc = document.getElementById(cbName + "_sc");
-    if(sc) sc.remove();
-    delete window[cbName];
+  var timer = setTimeout(function(){
+    if(!done){ done = true; cleanup(); }
+    // Silence — localStorage tayari imefanya kazi
+  }, 8000);
 
+  function cleanup(){
+    clearTimeout(timer);
+    try{ delete window[cbName]; } catch(e){}
+    var s = document.getElementById("_jsonp_sensa");
+    if(s) s.remove();
+  }
+
+  window[cbName] = function(res){
+    if(done) return;
+    done = true;
+    cleanup();
     try{
       var data = res.data || (Array.isArray(res) ? res : []);
       var sheetsEntries = data.filter(function(r){ return r.chumba || r.Chumba; }).map(function(r){
@@ -977,44 +1113,23 @@ function loadRoomsFromSheets(){
       allRooms = normalizeRooms([...manualRooms, ...sheetsRooms, ...localRooms]);
       totalRooms = manualRooms.length || allRooms.length;
 
-      document.getElementById("urlStatusBadge").textContent = "✓ Imeunganika";
+      document.getElementById("urlStatusBadge").textContent = "✓ Sheets + localStorage";
       document.getElementById("urlStatusBadge").className = "url-status ok";
 
       buildRoomGrid();
       renderEntries();
     } catch(e){
       console.log("JSONP parse error:", e);
-      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
-      document.getElementById("urlStatusBadge").className = "url-status ok";
     }
   };
 
-  var timer = setTimeout(function(){
-    if(!done){
-      delete window[cbName];
-      var sc = document.getElementById(cbName + "_sc");
-      if(sc) sc.remove();
-      console.log("Sheets timeout — offline mode");
-      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
-      document.getElementById("urlStatusBadge").className = "url-status ok";
-    }
-  }, 8000);
-
-  var sc = document.createElement("script");
-  sc.id = cbName + "_sc";
-  sc.src = url + "?action=list&callback=" + cbName + "&t=" + Date.now();
-  sc.onerror = function(){
-    if(!done){
-      done = true;
-      clearTimeout(timer);
-      delete window[cbName];
-      sc.remove();
-      console.log("Sheets script error — offline mode");
-      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
-      document.getElementById("urlStatusBadge").className = "url-status ok";
-    }
-  };
-  document.head.appendChild(sc);
+  // Ongeza script tag ya JSONP
+  var fetchUrl = url + (url.indexOf("?") >= 0 ? "&" : "?") + "action=list&callback=" + cbName + "&t=" + Date.now();
+  var s = document.createElement("script");
+  s.id = "_jsonp_sensa";
+  s.src = fetchUrl;
+  s.onerror = function(){ if(!done){ done = true; cleanup(); } };
+  document.head.appendChild(s);
 }
 </script>
 </body>
