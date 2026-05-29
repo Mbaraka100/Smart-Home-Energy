@@ -145,7 +145,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
     <span class="url-status" id="urlStatusBadge">⏳ Inapakia...</span>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
-    <input type="url" id="sheetsUrlInput" placeholder="https://script.google.com/macros/s/..." style="font-size:13px;padding:10px 12px;flex:1">
+    <input type="url" id="sheetsUrlInput" placeholder="https://script.google.com/macros/s/AKfycbxpW_MYtOhyyz2sdM6yP4h9X6g5vem_ewKGU6_DdI7iD7IW1AVQe7jWmejLqSVRbczu/exec" style="font-size:13px;padding:10px 12px;flex:1">
     <button onclick="saveAndReload()" style="padding:10px 16px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Hifadhi</button>
   </div>
   <p style="font-size:11px;color:var(--text-3);margin-top:8px">Weka URL ile ile ya Google Sheets inayotumika kwenye App yako kuu ya Smart Energy.</p>
@@ -312,7 +312,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
 // URL — inayotumika na App kuu
 // ══════════════════════════════════════
 var STORAGE_KEY = "smartEnergySheetUrl";
-var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbx08swb2HtoblcMLOhB84QYcqmXSxg2ilDvMPsoPjuyP-EdzNc71xmJNB2t4I1TcgJ7/exec";
+var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxpW_MYtOhyyz2sdM6yP4h9X6g5vem_ewKGU6_DdI7iD7IW1AVQe7jWmejLqSVRbczu/execycbx08swb2HtoblcMLOhB84QYcqmXSxg2ilDvMPsoPjuyP-EdzNc71xmJNB2t4I1TcgJ7/exec";
 // Pia angalia URL iliyohifadhiwa na app kuu (sheetsUrl key)
 function getUrl(){
   return localStorage.getItem("sheetsUrl") ||
