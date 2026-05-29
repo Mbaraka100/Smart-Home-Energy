@@ -150,13 +150,41 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
   </div>
   <p style="font-size:11px;color:var(--text-3);margin-top:8px">Weka URL ile ile ya Google Sheets inayotumika kwenye App yako kuu ya Smart Energy.</p>
 
-  <!-- Room Configuration -->
+  <!-- Room Configuration — ADMIN TU -->
   <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
-    <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:10px">🏠 Sanidi Vyumba</div>
-    <div id="room-groups-wrap"></div>
-    <button onclick="addRoomGroup()" style="width:100%;padding:10px;background:none;border:2px dashed var(--border);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--green);cursor:pointer;margin-top:6px">＋ Ongeza Kundi la Vyumba</button>
-    <button onclick="applyRoomConfig()" style="width:100%;margin-top:8px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✓ Tumia Mpangilio wa Vyumba</button>
-    <p style="font-size:11px;color:var(--text-3);margin-top:6px">Mfano: Prefix "A", Idadi 10 → A1, A2, ... A10</p>
+    <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:10px">🏠 Sanidi Vyumba
+      <span style="font-size:10px;font-weight:600;background:#fff3cd;color:#92400e;padding:2px 8px;border-radius:20px;margin-left:6px;">🔒 ADMIN</span>
+    </div>
+
+    <!-- Locked view — inaonekana kwa wote -->
+    <div id="roomConfigLocked">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="password" id="adminPinInput" placeholder="Weka PIN ya Admin..." maxlength="20"
+          style="flex:1;padding:10px 12px;font-size:13px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;background:var(--surface);color:var(--text-1);"
+          onkeydown="if(event.key==='Enter') checkAdminPin()">
+        <button onclick="checkAdminPin()"
+          style="padding:10px 16px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">
+          Ingia
+        </button>
+      </div>
+      <p id="adminPinErr" style="font-size:11px;color:#dc2626;margin-top:6px;display:none;">❌ PIN si sahihi. Jaribu tena.</p>
+      <p style="font-size:11px;color:var(--text-3);margin-top:6px;">Sehemu hii ni kwa Admin peke yake. Weka PIN ili usanidi vyumba.</p>
+    </div>
+
+    <!-- Unlocked view — inaonekana baada ya PIN sahihi -->
+    <div id="roomConfigUnlocked" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:11px;color:var(--green);font-weight:700;">✅ Umeingia kama Admin</span>
+        <button onclick="lockRoomConfig()"
+          style="font-size:11px;padding:4px 10px;background:none;border:1px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-3);font-family:'Plus Jakarta Sans',sans-serif;">
+          🔒 Funga
+        </button>
+      </div>
+      <div id="room-groups-wrap"></div>
+      <button onclick="addRoomGroup()" style="width:100%;padding:10px;background:none;border:2px dashed var(--border);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--green);cursor:pointer;margin-top:6px">＋ Ongeza Kundi la Vyumba</button>
+      <button onclick="applyRoomConfig()" style="width:100%;margin-top:8px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✓ Tumia Mpangilio wa Vyumba</button>
+      <p style="font-size:11px;color:var(--text-3);margin-top:6px">Mfano: Prefix "A", Idadi 10 → A1, A2, ... A10</p>
+    </div>
   </div>
 </div>
 
@@ -311,7 +339,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
 // URL — inayotumika na App kuu
 // ══════════════════════════════════════
 var STORAGE_KEY = "smartEnergySheetUrl";
-var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbx5MGriLmoWx92EQVgQ2F1h61-Vt-_XpuiEaUcZMS15Bnvn2SwCROxjrVinDe1I0pdY/exec";
+var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbzD6350LueahbgWq25RZnJM48DygwBIPWnAVHehlmWeWYHCb0MHzImRSe3RGypHJUS7/exec";
 // Pia angalia URL iliyohifadhiwa na app kuu (sheetsUrl key)
 function getUrl(){
   return localStorage.getItem("sheetsUrl") ||
@@ -400,7 +428,39 @@ var totalRooms = 0;
 })();
 
 // ══════════════════════════════════════
+// ══════════════════════════════════════
+// ADMIN PIN — Kulinda Sanidi Vyumba
+// Badilisha PIN hapa 👇
+// ══════════════════════════════════════
+var ADMIN_PIN = "mreno"; // ← Badilisha PIN yako hapa
+
+function checkAdminPin(){
+  var inp = document.getElementById("adminPinInput");
+  var err = document.getElementById("adminPinErr");
+  if(!inp) return;
+  if(inp.value.trim() === ADMIN_PIN){
+    document.getElementById("roomConfigLocked").style.display   = "none";
+    document.getElementById("roomConfigUnlocked").style.display = "block";
+    inp.value = "";
+    err.style.display = "none";
+    renderRoomGroups(); // onyesha vyumba vilivyopo
+  } else {
+    err.style.display = "block";
+    inp.value = "";
+    inp.focus();
+    setTimeout(function(){ err.style.display="none"; }, 3000);
+  }
+}
+
+function lockRoomConfig(){
+  document.getElementById("roomConfigLocked").style.display   = "block";
+  document.getElementById("roomConfigUnlocked").style.display = "none";
+  document.getElementById("adminPinInput").value = "";
+}
+
+// ══════════════════════════════════════
 // ROOM CONFIG — Prefix + Idadi
+// ══════════════════════════════════════
 // ══════════════════════════════════════
 var roomConfig = []; // [{prefix:"A", count:10}, ...]
 var ROOM_CONFIG_KEY = "sensaRoomConfig";
