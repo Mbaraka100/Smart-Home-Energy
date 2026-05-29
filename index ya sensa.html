@@ -183,7 +183,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
       <div id="room-groups-wrap"></div>
       <button onclick="addRoomGroup()" style="width:100%;padding:10px;background:none;border:2px dashed var(--border);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--green);cursor:pointer;margin-top:6px">＋ Ongeza Kundi la Vyumba</button>
       <button onclick="applyRoomConfig()" style="width:100%;margin-top:8px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✓ Tumia Mpangilio wa Vyumba</button>
-      <p style="font-size:11px;color:var(--text-3);margin-top:6px">Mfano: Prefix "A", Idadi 10 → A1, A2, ... A10</p>
+      <p style="font-size:11px;color:var(--text-3);margin-top:6px">Mfano: Idadi 16 → 01, 02...16  |  Prefix "B", Idadi 5 → B01, B02...B05</p>
     </div>
   </div>
 </div>
@@ -339,7 +339,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
 // URL — inayotumika na App kuu
 // ══════════════════════════════════════
 var STORAGE_KEY = "smartEnergySheetUrl";
-var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbzD6350LueahbgWq25RZnJM48DygwBIPWnAVHehlmWeWYHCb0MHzImRSe3RGypHJUS7/exec";
+var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbwHQ6VZA_2q607OB6EVX9VRd0c_dY029toGSuVciW-IPK8kkokXeQa2Up_IypwxILwb/exec";
 // Pia angalia URL iliyohifadhiwa na app kuu (sheetsUrl key)
 function getUrl(){
   return localStorage.getItem("sheetsUrl") ||
@@ -428,6 +428,15 @@ var totalRooms = 0;
 })();
 
 // ══════════════════════════════════════
+// ══════════════════════════════════════
+// NORMALIZE CHUMBA — Namba tu (01, 02 ... 10, 11)
+// ══════════════════════════════════════
+function normalizeRoom(val){
+  val = String(val||"").trim().replace(/[^0-9]/g,"");
+  if(!val) return "";
+  return val.length === 1 ? "0"+val : val;
+}
+
 // ══════════════════════════════════════
 // ADMIN PIN — Kulinda Sanidi Vyumba
 // Badilisha PIN hapa 👇
@@ -537,9 +546,10 @@ function updateGroup(id, key, val){
 function buildManualRooms(){
   var rooms = [];
   roomConfig.forEach(function(g){
-    if(!g.prefix || !g.count) return;
+    if(!g.count) return; // prefix si lazima tena
     for(var i = 1; i <= g.count; i++){
-      rooms.push(g.prefix + i);
+      // Kama prefix ipo tumia, kama la tumia namba tu (01, 02...)
+      rooms.push(g.prefix ? g.prefix + normalizeRoom(i) : normalizeRoom(i));
     }
   });
   manualRooms = rooms;
@@ -747,7 +757,7 @@ function goPage(n){
 // ══════════════════════════════════════
 async function submitForm(){
   var jina = document.getElementById("f-jina").value.trim();
-  var chumba = document.getElementById("f-chumba").value;
+  var chumba = normalizeRoom(document.getElementById("f-chumba").value);
   if(!jina){ showToast("Tafadhali weka jina lako"); return; }
   if(!chumba){ showToast("Tafadhali chagua chumba"); return; }
 
@@ -783,10 +793,10 @@ async function submitForm(){
     // 1. Tuma kwenda Google Sheets (Sensa script)
     await fetch(getUrl(), {
       method: "POST",
-      mode: "no-cors",
-      headers: {"Content-Type": "text/plain;charset=utf-8"},
+      redirect: "follow",
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(sensaEntry)
-    });
+    }).then(function(r){ return r.text(); }).catch(function(){});
 
     // 2. Hifadhi kwenye localStorage ya App kuu (tenants)
     // Muundo unaofaa na App kuu: {jina, chumba, vifaa (string), kwh}
