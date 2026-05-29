@@ -654,7 +654,7 @@
     <div class="setup-title">🔗 Weka URL ya Google Apps Script</div>
     <div class="setup-desc">
       Baada ya deploy kwenye Google Apps Script, copy URL yako na paste hapa.<br>
-      Mfano: <code style="color:var(--accent);font-size:.8rem;">https://script.google.com/macros/s/XXXXXX.../exec</code>
+      Mfano: <code style="color:var(--accent);font-size:.8rem;">https://script.google.com/macros/s/AKfycbxpW_MYtOhyyz2sdM6yP4h9X6g5vem_ewKGU6_DdI7iD7IW1AVQe7jWmejLqSVRbczu/exec
     </div>
     <input class="setup-input" id="setupUrl" type="text" placeholder="https://script.google.com/macros/s/.../exec" />
     <div style="color:var(--muted);font-size:.78rem;margin-bottom:14px;">
@@ -1418,11 +1418,10 @@ async function runAutoBackup(reason){
     var res = await Promise.race([
       fetch(url, {
         method: "POST",
-        redirect: "follow",
-        headers: {"Content-Type":"application/json"},
+        mode: "no-cors",
+        headers: {"Content-Type":"text/plain"},
         body: JSON.stringify(payload)
-      }).then(function(r){ return r.text(); })
-        .then(function(txt){ try{ return JSON.parse(txt); } catch(e){ throw new Error("Jibu si JSON"); } }),
+      }).then(function(){ return {status:"ok",result:"success"}; }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 10000); })
     ]);
 
@@ -2029,7 +2028,7 @@ function saveLuku(){
   renderLukuLastInfo();
   refreshAll();
   if(getUrl()){
-    try{fetch(getUrl(),{method:"POST",redirect:"follow",headers:{"Content-Type":"application/json"},
+    try{fetch(getUrl(),{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
       body:JSON.stringify({action:"GLOBAL_LUKU",tarehe:tar,muda:muda,
       lukuAwali:aw,lukuMpya:mpya,lukuSasa:total,kwh:total,gharama:kiasi,kiasi:kiasi,note:note})});}catch(e){}
   }
@@ -2672,7 +2671,7 @@ function saveTenant(){
   // Sasisha stat card ya jumla ya vyumba
   updateTotalRoomsCard();
   if(getUrl()){
-    try{fetch(getUrl(),{method:"POST",redirect:"follow",headers:{"Content-Type":"application/json"},
+    try{fetch(getUrl(),{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
       body:JSON.stringify({action:"SENSA",chumba:c,jina:j,vifaa:v,kwh:k})});}catch(e){}
   }
 }
@@ -2721,7 +2720,7 @@ function deleteTenant(c){
   renderAdminTenants(); updateAdminStats(); populateSelects();
   refreshAll(); // Itasasisha kadi yote + idadi ya vyumba
   if(getUrl()){
-    try{fetch(getUrl(),{method:"POST",redirect:"follow",headers:{"Content-Type":"application/json"},
+    try{fetch(getUrl(),{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
       body:JSON.stringify({action:"deleteTenant",chumba:c})});}catch(e){}
   }
 }
@@ -3265,11 +3264,11 @@ async function login(){
     return;
   }
 
-  var jinaRaw  = document.getElementById("loginJina").value.trim();
+  var jinaRaw   = document.getElementById("loginJina").value.trim();
   var chumbaRaw = document.getElementById("loginChumba").value.trim();
 
   // Kama ni admin — mwelekeze kwa loginAdmin
-  if(chumbaRaw.toUpperCase() === "ADMIN" || chumbaRaw === "") {
+  if(chumbaRaw.toUpperCase() === "ADMIN"){
     await loginAdmin();
     return;
   }
@@ -3285,16 +3284,36 @@ async function login(){
     return;
   }
 
-  // Normalize — "C01", "c1", "1", "01" → "01"
   var chumba = normalizeRoom(chumbaRaw) || chumbaRaw.trim().toUpperCase();
   var jina   = jinaRaw;
 
-  // Angalia kama chumba lipo kwenye mfumo
-  var tenants = getTenants();
+  showLoginErr("⏳ Inakagua...");
 
-  // Linganisha baada ya normalize pande zote mbili
+  // ── SYNC KUTOKA SHEETS KWANZA ──
+  // Hii inahakikisha data mpya inafika kwenye simu
+  if(getUrl()){
+    try{
+      var d = await Promise.race([
+        fetchSheets("?action=list"),
+        new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("timeout")); }, 8000); })
+      ]);
+      if(d && d.data && d.data.length > 0){
+        var all = getTenants();
+        d.data.forEach(function(r){
+          if(r.chumba){
+            var nc = normalizeRoom(r.chumba) || r.chumba;
+            all[nc] = { jina: r.jina||"", chumba: nc, vifaa: r.vifaa||"", simu: r.simu||"" };
+          }
+        });
+        saveTenants(all);
+      }
+    } catch(e){ /* Sheets haipatikani — endelea na localStorage */ }
+  }
+
+  // ── ANGALIA TENANTS ──
+  var tenants = getTenants();
   var matchKey = null;
-  var allKeys = Object.keys(tenants);
+  var allKeys  = Object.keys(tenants);
   for(var i=0; i<allKeys.length; i++){
     var normKey = normalizeRoom(allKeys[i]) || allKeys[i].toUpperCase();
     if(normKey === chumba || allKeys[i].toUpperCase() === chumba){
@@ -3303,51 +3322,32 @@ async function login(){
     }
   }
 
-  // Kama chumba hakipatikani kabisa
+  // Chumba hakipatikani
   if(!matchKey){
-    var recs = getRecs();
-    var hasRec = recs.some(function(r){
-      return r.chumba && (normalizeRoom(r.chumba) === chumba || r.chumba.toUpperCase() === chumba);
-    });
-    if(!hasRec){
-      var s = recordFailedAttempt();
-      if(isLockedOut()){
-        showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
-        startLockoutCountdown();
-      } else {
-        showLoginErr("❌ Chumba '"+chumba+"' halijaandikishwa. Majaribio "+attemptsLeft()+" yaliyobaki.");
-      }
-      document.getElementById("loginChumba").value="";
-      document.getElementById("loginChumba").focus();
-      return;
+    var s = recordFailedAttempt();
+    if(isLockedOut()){
+      showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
+      startLockoutCountdown();
+    } else {
+      showLoginErr("❌ Chumba '"+chumba+"' halijaandikishwa. Majaribio "+attemptsLeft()+" yaliyobaki.");
     }
-    // Chumba lipo lakini halikuwa na mpangaji — ruhusu kuingia kwa jina lolote
-    resetAttempts();
-    currentUser = { jina: jina, chumba: chumba, isAdmin: false };
-    startApp();
+    document.getElementById("loginChumba").value="";
+    document.getElementById("loginChumba").focus();
     return;
   }
 
   // Chumba lipo — angalia jina
-  var tenant = tenants[matchKey];
+  var tenant    = tenants[matchKey];
   var jinaSaved = (tenant && tenant.jina) ? tenant.jina.trim().toLowerCase() : "";
   var jinaInput = jina.toLowerCase();
 
-  if(!jinaSaved){
-    // Chumba lipo bila jina — ruhusu kuingia
-    resetAttempts();
-    currentUser = { jina: jina, chumba: matchKey, isAdmin: false };
-    startApp();
-    return;
-  }
-
-  if(jinaInput !== jinaSaved){
+  if(jinaSaved && jinaInput !== jinaSaved){
     var s2 = recordFailedAttempt();
     if(isLockedOut()){
       showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
       startLockoutCountdown();
     } else {
-      showLoginErr("❌ Jina si sahihi kwa chumba "+matchKey+". Majaribio "+attemptsLeft()+" yaliyobaki.");
+      showLoginErr("❌ Jina si sahihi. Majaribio "+attemptsLeft()+" yaliyobaki.");
     }
     document.getElementById("loginJina").value="";
     document.getElementById("loginJina").focus();
@@ -3356,7 +3356,7 @@ async function login(){
 
   // ✅ Imefanikiwa
   resetAttempts();
-  currentUser = { jina: tenant.jina, chumba: matchKey, isAdmin: false };
+  currentUser = { jina: tenant.jina||jina, chumba: matchKey, isAdmin: false };
   startApp();
 }
 
