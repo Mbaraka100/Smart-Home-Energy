@@ -150,41 +150,13 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
   </div>
   <p style="font-size:11px;color:var(--text-3);margin-top:8px">Weka URL ile ile ya Google Sheets inayotumika kwenye App yako kuu ya Smart Energy.</p>
 
-  <!-- Room Configuration — ADMIN TU -->
+  <!-- Room Configuration -->
   <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
-    <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:10px">🏠 Sanidi Vyumba
-      <span style="font-size:10px;font-weight:600;background:#fff3cd;color:#92400e;padding:2px 8px;border-radius:20px;margin-left:6px;">🔒 ADMIN</span>
-    </div>
-
-    <!-- Locked view — inaonekana kwa wote -->
-    <div id="roomConfigLocked">
-      <div style="display:flex;gap:8px;align-items:center;">
-        <input type="password" id="adminPinInput" placeholder="Weka PIN ya Admin..." maxlength="20"
-          style="flex:1;padding:10px 12px;font-size:13px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;background:var(--surface);color:var(--text-1);"
-          onkeydown="if(event.key==='Enter') checkAdminPin()">
-        <button onclick="checkAdminPin()"
-          style="padding:10px 16px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">
-          Ingia
-        </button>
-      </div>
-      <p id="adminPinErr" style="font-size:11px;color:#dc2626;margin-top:6px;display:none;">❌ PIN si sahihi. Jaribu tena.</p>
-      <p style="font-size:11px;color:var(--text-3);margin-top:6px;">Sehemu hii ni kwa Admin peke yake. Weka PIN ili usanidi vyumba.</p>
-    </div>
-
-    <!-- Unlocked view — inaonekana baada ya PIN sahihi -->
-    <div id="roomConfigUnlocked" style="display:none;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span style="font-size:11px;color:var(--green);font-weight:700;">✅ Umeingia kama Admin</span>
-        <button onclick="lockRoomConfig()"
-          style="font-size:11px;padding:4px 10px;background:none;border:1px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-3);font-family:'Plus Jakarta Sans',sans-serif;">
-          🔒 Funga
-        </button>
-      </div>
-      <div id="room-groups-wrap"></div>
-      <button onclick="addRoomGroup()" style="width:100%;padding:10px;background:none;border:2px dashed var(--border);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--green);cursor:pointer;margin-top:6px">＋ Ongeza Kundi la Vyumba</button>
-      <button onclick="applyRoomConfig()" style="width:100%;margin-top:8px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✓ Tumia Mpangilio wa Vyumba</button>
-      <p style="font-size:11px;color:var(--text-3);margin-top:6px">Mfano: Idadi 16 → 01, 02...16  |  Prefix "B", Idadi 5 → B01, B02...B05</p>
-    </div>
+    <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:10px">🏠 Sanidi Vyumba</div>
+    <div id="room-groups-wrap"></div>
+    <button onclick="addRoomGroup()" style="width:100%;padding:10px;background:none;border:2px dashed var(--border);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--green);cursor:pointer;margin-top:6px">＋ Ongeza Kundi la Vyumba</button>
+    <button onclick="applyRoomConfig()" style="width:100%;margin-top:8px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✓ Tumia Mpangilio wa Vyumba</button>
+    <p style="font-size:11px;color:var(--text-3);margin-top:6px">Mfano: Prefix "A", Idadi 10 → A1, A2, ... A10</p>
   </div>
 </div>
 
@@ -339,7 +311,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
 // URL — inayotumika na App kuu
 // ══════════════════════════════════════
 var STORAGE_KEY = "smartEnergySheetUrl";
-var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxs2d6GystxdghpsNKm5X0LWL0vZj-a-Kr6yNdUHShyNy1hnNjhhGfBF-LcYdmYEyGh/exec";
+var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbx5MGriLmoWx92EQVgQ2F1h61-Vt-_XpuiEaUcZMS15Bnvn2SwCROxjrVinDe1I0pdY/exec";
 // Pia angalia URL iliyohifadhiwa na app kuu (sheetsUrl key)
 function getUrl(){
   return localStorage.getItem("sheetsUrl") ||
@@ -417,6 +389,35 @@ var entries = [];
 var selectedRoom = '';
 var kifaaCount = 0;
 var allRooms = []; // vyumba vyote kutoka sheets
+
+// ══════════════════════════════════════
+// NORMALIZE ROOM — Futa "C", weka zero-padding mbili
+// Mifano: "C01"→"01", "C1"→"01", "1"→"01", "12"→"12"
+// ══════════════════════════════════════
+function normalizeRoom(code){
+  if(!code) return "";
+  var s = String(code).trim().toUpperCase();
+  // Futa herufi zote za mwanzo (C, A, B, nk.) — hifadhi namba tu
+  var num = s.replace(/^[A-Z]+/, "");
+  if(!num) return s; // kama hakuna namba, rudisha kama ilivyo
+  // Zero-pad hadi tarakimu mbili
+  var n = parseInt(num, 10);
+  if(isNaN(n)) return s;
+  return n < 10 ? "0" + n : String(n);
+}
+
+function normalizeRooms(arr){
+  // Normalize kila chumba na ondoa rudia
+  var seen = {};
+  var result = [];
+  arr.forEach(function(c){
+    var n = normalizeRoom(c);
+    if(n && !seen[n]){ seen[n] = true; result.push(n); }
+  });
+  // Panga kwa namba
+  result.sort(function(a, b){ return parseInt(a,10) - parseInt(b,10); });
+  return result;
+}
 var totalRooms = 0;
 
 // Rejesha sensa zilizohifadhiwa ndani ya browser
@@ -428,48 +429,7 @@ var totalRooms = 0;
 })();
 
 // ══════════════════════════════════════
-// ══════════════════════════════════════
-// NORMALIZE CHUMBA — Namba tu (01, 02 ... 10, 11)
-// ══════════════════════════════════════
-function normalizeRoom(val){
-  val = String(val||"").trim().replace(/[^0-9]/g,"");
-  if(!val) return "";
-  return val.length === 1 ? "0"+val : val;
-}
-
-// ══════════════════════════════════════
-// ADMIN PIN — Kulinda Sanidi Vyumba
-// Badilisha PIN hapa 👇
-// ══════════════════════════════════════
-var ADMIN_PIN = "mreno"; // ← Badilisha PIN yako hapa
-
-function checkAdminPin(){
-  var inp = document.getElementById("adminPinInput");
-  var err = document.getElementById("adminPinErr");
-  if(!inp) return;
-  if(inp.value.trim() === ADMIN_PIN){
-    document.getElementById("roomConfigLocked").style.display   = "none";
-    document.getElementById("roomConfigUnlocked").style.display = "block";
-    inp.value = "";
-    err.style.display = "none";
-    renderRoomGroups(); // onyesha vyumba vilivyopo
-  } else {
-    err.style.display = "block";
-    inp.value = "";
-    inp.focus();
-    setTimeout(function(){ err.style.display="none"; }, 3000);
-  }
-}
-
-function lockRoomConfig(){
-  document.getElementById("roomConfigLocked").style.display   = "block";
-  document.getElementById("roomConfigUnlocked").style.display = "none";
-  document.getElementById("adminPinInput").value = "";
-}
-
-// ══════════════════════════════════════
 // ROOM CONFIG — Prefix + Idadi
-// ══════════════════════════════════════
 // ══════════════════════════════════════
 var roomConfig = []; // [{prefix:"A", count:10}, ...]
 var ROOM_CONFIG_KEY = "sensaRoomConfig";
@@ -511,7 +471,7 @@ function renderRoomGroups(){
     var pInp = document.createElement("input");
     pInp.type = "text";
     pInp.value = g.prefix || "";
-    pInp.placeholder = "Prefix (A, B, Ghorofa1...)";
+    pInp.placeholder = "Prefix (haihitajiki — namba tu)";
     pInp.dataset.idx = idx;
     pInp.dataset.key = "prefix";
     pInp.style.cssText = "flex:1;font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);font-family:inherit;outline:none";
@@ -546,14 +506,16 @@ function updateGroup(id, key, val){
 function buildManualRooms(){
   var rooms = [];
   roomConfig.forEach(function(g){
-    if(!g.count) return; // prefix si lazima tena
+    if(!g.count) return;
     for(var i = 1; i <= g.count; i++){
-      // Kama prefix ipo tumia, kama la tumia namba tu (01, 02...)
-      rooms.push(g.prefix ? g.prefix + normalizeRoom(i) : normalizeRoom(i));
+      // Ignore prefix — tumia namba tu, zero-padded
+      var n = i < 10 ? "0" + i : String(i);
+      rooms.push(n);
     }
   });
-  manualRooms = rooms;
-  return rooms;
+  // Ondoa rudia na panga
+  manualRooms = normalizeRooms(rooms);
+  return manualRooms;
 }
 
 function applyRoomConfig(){
@@ -569,7 +531,7 @@ function applyRoomConfig(){
   localStorage.setItem(ROOM_CONFIG_KEY, JSON.stringify(roomConfig));
 
   // Merge manual rooms into allRooms
-  var combined = [...new Set([...manualRooms, ...allRooms])];
+  var combined = normalizeRooms([...manualRooms, ...allRooms]);
   allRooms = combined;
   totalRooms = manualRooms.length; // total = configured rooms
 
@@ -620,8 +582,8 @@ function selectRoom(code, el, taken){
     showToast('Chumba hiki sensa yake imekamilika tayari.');
     return;
   }
-  selectedRoom = code;
-  document.getElementById("f-chumba").value = code;
+  selectedRoom = normalizeRoom(code);
+  document.getElementById("f-chumba").value = selectedRoom;
   document.querySelectorAll(".c-pill").forEach(function(p){ p.classList.remove("selected"); });
   el.classList.add("selected");
 }
@@ -757,7 +719,7 @@ function goPage(n){
 // ══════════════════════════════════════
 async function submitForm(){
   var jina = document.getElementById("f-jina").value.trim();
-  var chumba = normalizeRoom(document.getElementById("f-chumba").value);
+  var chumba = document.getElementById("f-chumba").value;
   if(!jina){ showToast("Tafadhali weka jina lako"); return; }
   if(!chumba){ showToast("Tafadhali chagua chumba"); return; }
 
@@ -793,10 +755,10 @@ async function submitForm(){
     // 1. Tuma kwenda Google Sheets (Sensa script)
     await fetch(getUrl(), {
       method: "POST",
-      redirect: "follow",
-      headers: {"Content-Type": "application/json"},
+      mode: "no-cors",
+      headers: {"Content-Type": "text/plain;charset=utf-8"},
       body: JSON.stringify(sensaEntry)
-    }).then(function(r){ return r.text(); }).catch(function(){});
+    });
 
     // 2. Hifadhi kwenye localStorage ya App kuu (tenants)
     // Muundo unaofaa na App kuu: {jina, chumba, vifaa (string), kwh}
@@ -970,59 +932,89 @@ function showToast(msg, green){
   loadRoomsFromSheets();
 })();
 
-async function loadRoomsFromSheets(){
+function loadRoomsFromSheets(){
   var url = getUrl();
-  if(!url){ buildRoomGrid(); renderEntries(); return; }
+  if(!url) return;
 
-  var badge = document.getElementById("urlStatusBadge");
-  badge.textContent = "⏳ Inapakia...";
-  badge.className = "url-status";
+  document.getElementById("urlStatusBadge").textContent = "⏳ Inapakia...";
+  document.getElementById("urlStatusBadge").className = "url-status";
 
-  try{
-    var res = await Promise.race([
-      fetch(url + "?action=list", {method:"GET", redirect:"follow"})
-        .then(function(r){ return r.text(); })
-        .then(function(txt){
-          try{ return JSON.parse(txt); }
-          catch(e){ throw new Error("Jibu si JSON: "+txt.substring(0,60)); }
-        }),
-      new Promise(function(_,rej){
-        setTimeout(function(){ rej(new Error("Timeout")); }, 10000);
-      })
-    ]);
+  // Tumia JSONP — inafanya kazi file://, http://, na bila CORS issues
+  var cbName = "sensaCb_" + Date.now();
+  var done = false;
 
-    if(res && res.data){
-      var data = res.data;
-      var sheetsRooms = [];
-      data.forEach(function(r){
-        var ch = normalizeRoom(r.chumba || r.Chumba || "");
-        if(!ch) return;
-        sheetsRooms.push(ch);
-        var localIdx = entries.findIndex(function(e){ return e.chumba === ch; });
-        var se = { jina: r.jina||r.Jina||"", chumba: ch, vifaa: [], hali: r.hali||"" };
+  window[cbName] = function(res){
+    done = true;
+    clearTimeout(timer);
+    var sc = document.getElementById(cbName + "_sc");
+    if(sc) sc.remove();
+    delete window[cbName];
+
+    try{
+      var data = res.data || (Array.isArray(res) ? res : []);
+      var sheetsEntries = data.filter(function(r){ return r.chumba || r.Chumba; }).map(function(r){
+        return {
+          jina: r.jina || r.Jina || "",
+          chumba: normalizeRoom(r.chumba || r.Chumba || ""),
+          vifaa: Array.isArray(r.vifaa) ? r.vifaa : [],
+          hali: r.hali || ""
+        };
+      });
+
+      sheetsEntries.forEach(function(se){
+        var localIdx = entries.findIndex(function(e){ return e.chumba === se.chumba; });
         if(localIdx >= 0){
-          if(!entries[localIdx].vifaa || entries[localIdx].vifaa.length === 0)
+          if(!entries[localIdx].vifaa || entries[localIdx].vifaa.length === 0){
             entries[localIdx] = se;
+          }
         } else {
           entries.push(se);
         }
       });
-      allRooms = [...new Set([...manualRooms, ...sheetsRooms])];
-      totalRooms = manualRooms.length || allRooms.length;
-      badge.textContent = "✓ Imeunganika";
-      badge.className = "url-status ok";
-    } else {
-      badge.textContent = "⚡ Offline mode";
-      badge.className = "url-status ok";
-    }
-  } catch(e){
-    console.log("Sheets error:", e.message);
-    badge.textContent = "⚡ Offline mode";
-    badge.className = "url-status ok";
-  }
 
-  buildRoomGrid();
-  renderEntries();
+      var sheetsRooms = sheetsEntries.map(function(e){ return e.chumba; }).filter(Boolean);
+      var localRooms = entries.map(function(e){ return e.chumba; }).filter(Boolean);
+      allRooms = normalizeRooms([...manualRooms, ...sheetsRooms, ...localRooms]);
+      totalRooms = manualRooms.length || allRooms.length;
+
+      document.getElementById("urlStatusBadge").textContent = "✓ Imeunganika";
+      document.getElementById("urlStatusBadge").className = "url-status ok";
+
+      buildRoomGrid();
+      renderEntries();
+    } catch(e){
+      console.log("JSONP parse error:", e);
+      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
+      document.getElementById("urlStatusBadge").className = "url-status ok";
+    }
+  };
+
+  var timer = setTimeout(function(){
+    if(!done){
+      delete window[cbName];
+      var sc = document.getElementById(cbName + "_sc");
+      if(sc) sc.remove();
+      console.log("Sheets timeout — offline mode");
+      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
+      document.getElementById("urlStatusBadge").className = "url-status ok";
+    }
+  }, 8000);
+
+  var sc = document.createElement("script");
+  sc.id = cbName + "_sc";
+  sc.src = url + "?action=list&callback=" + cbName + "&t=" + Date.now();
+  sc.onerror = function(){
+    if(!done){
+      done = true;
+      clearTimeout(timer);
+      delete window[cbName];
+      sc.remove();
+      console.log("Sheets script error — offline mode");
+      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
+      document.getElementById("urlStatusBadge").className = "url-status ok";
+    }
+  };
+  document.head.appendChild(sc);
 }
 </script>
 </body>
