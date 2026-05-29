@@ -1228,7 +1228,7 @@
 // ══════════════════════════════════════
 // CONFIG & STATE
 // ══════════════════════════════════════
-var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxs2d6GystxdghpsNKm5X0LWL0vZj-a-Kr6yNdUHShyNy1hnNjhhGfBF-LcYdmYEyGh/exec";
+var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbx08swb2HtoblcMLOhB84QYcqmXSxg2ilDvMPsoPjuyP-EdzNc71xmJNB2t4I1TcgJ7/exec";
 // ── HELPER SALAMA — huzuia "Cannot set properties of null" ──
 function $set(id, val){
   var el = document.getElementById(id);
@@ -3243,49 +3243,50 @@ async function login(){
     return;
   }
 
-  var chumba = document.getElementById("loginChumba").value.trim().toUpperCase();
-  var jina   = document.getElementById("loginJina").value.trim();
+  var jinaRaw  = document.getElementById("loginJina").value.trim();
+  var chumbaRaw = document.getElementById("loginChumba").value.trim();
 
   // Kama ni admin — mwelekeze kwa loginAdmin
-  if(chumba === "ADMIN" || chumba === "") {
-    if(chumba === "") {
-      // Angalia kama jina linafanana na nenosiri la admin
-      await loginAdmin();
-      return;
-    }
+  if(chumbaRaw.toUpperCase() === "ADMIN" || chumbaRaw === "") {
     await loginAdmin();
     return;
   }
 
-  if(!chumba){
+  if(!chumbaRaw){
     showLoginErr("❌ Weka namba ya chumba lako.");
     document.getElementById("loginChumba").focus();
     return;
   }
-  if(!jina){
+  if(!jinaRaw){
     showLoginErr("❌ Weka jina lako.");
     document.getElementById("loginJina").focus();
     return;
   }
 
+  // Normalize — "C01", "c1", "1", "01" → "01"
+  var chumba = normalizeRoom(chumbaRaw) || chumbaRaw.trim().toUpperCase();
+  var jina   = jinaRaw;
+
   // Angalia kama chumba lipo kwenye mfumo
   var tenants = getTenants();
 
-  // Jaribu pia uppercase na lowercase ya namba ya chumba
+  // Linganisha baada ya normalize pande zote mbili
   var matchKey = null;
   var allKeys = Object.keys(tenants);
   for(var i=0; i<allKeys.length; i++){
-    if(allKeys[i].toUpperCase() === chumba){
+    var normKey = normalizeRoom(allKeys[i]) || allKeys[i].toUpperCase();
+    if(normKey === chumba || allKeys[i].toUpperCase() === chumba){
       matchKey = allKeys[i];
       break;
     }
   }
 
-  // Kama chumba hakipatikani kabisa — angalia kama admin anajaribu
+  // Kama chumba hakipatikani kabisa
   if(!matchKey){
-    // Ruhusu kuingia kama chumba lipo katika rekodi za LUKU (hata bila mpangaji)
     var recs = getRecs();
-    var hasRec = recs.some(function(r){ return r.chumba && r.chumba.toUpperCase() === chumba; });
+    var hasRec = recs.some(function(r){
+      return r.chumba && (normalizeRoom(r.chumba) === chumba || r.chumba.toUpperCase() === chumba);
+    });
     if(!hasRec){
       var s = recordFailedAttempt();
       if(isLockedOut()){
