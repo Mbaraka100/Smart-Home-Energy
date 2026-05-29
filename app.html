@@ -1228,7 +1228,7 @@
 // ══════════════════════════════════════
 // CONFIG & STATE
 // ══════════════════════════════════════
-var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbzD6350LueahbgWq25RZnJM48DygwBIPWnAVHehlmWeWYHCb0MHzImRSe3RGypHJUS7/exec";
+var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbwHQ6VZA_2q607OB6EVX9VRd0c_dY029toGSuVciW-IPK8kkokXeQa2Up_IypwxILwb/exec";
 // ── HELPER SALAMA — huzuia "Cannot set properties of null" ──
 function $set(id, val){
   var el = document.getElementById(id);
@@ -1406,9 +1406,11 @@ async function runAutoBackup(reason){
     var res = await Promise.race([
       fetch(url, {
         method: "POST",
+        redirect: "follow",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify(payload)
-      }).then(function(r){ return r.json(); }),
+      }).then(function(r){ return r.text(); })
+        .then(function(txt){ try{ return JSON.parse(txt); } catch(e){ throw new Error("Jibu si JSON"); } }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 10000); })
     ]);
 
@@ -1438,7 +1440,9 @@ async function restoreFromSheets(){
 
   try {
     var res = await Promise.race([
-      fetch(url + "?action=RESTORE_FULL").then(function(r){ return r.json(); }),
+            fetch(url + "?action=RESTORE_FULL", {method:"GET", redirect:"follow"})
+        .then(function(r){ return r.text(); })
+        .then(function(txt){ try{ return JSON.parse(txt); } catch(e){ throw new Error("Jibu si JSON"); } }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 12000); })
     ]);
 
@@ -1576,11 +1580,9 @@ function visibleRecs(){ var recs=getRecs(); return currentUser&&currentUser.isAd
 function monthBill(recs){ return recs.reduce(function(sum,r){ return sum+(Number(r.gharama)||((Number(r.kwh)||0)*(Number(r.rate)||500))); },0); }
 
 function normalizeRoom(v){
-  v=String(v||"").trim().toUpperCase();
-  var n=v.replace(/[^0-9]/g,"");
-  if(!n)return null;
-  if(n.length===1)n="0"+n;
-  return "C"+n;
+  v=String(v||"").trim().replace(/[^0-9]/g,"");
+  if(!v)return null;
+  return v.length===1?"0"+v:v;
 }
 function today(){
   var d=new Date();
@@ -1636,17 +1638,30 @@ async function testUrl(){
   if(!u){ r.textContent="Weka URL kwanza."; return; }
   r.style.color="var(--muted)"; r.textContent="Inajaribu...";
   try{
-    var d=await fetchSheets("?action=list",u);
-    if(d && d.status==="ok"){
-      r.style.color="var(--accent3)";
-      r.textContent="✓ Inafanya kazi! Wapangaji: "+(d.data?d.data.length:0);
-    } else {
-      r.style.color="var(--accent2)";
-      r.textContent="⚠ Jibu lisilo sahihi: "+JSON.stringify(d).substring(0,80);
+    // Onyesha jibu RAW kabla ya parse
+    var response = await Promise.race([
+      fetch(u+"?action=list", {method:"GET", redirect:"follow"}),
+      new Promise(function(_,rej){setTimeout(function(){rej(new Error("Timeout — hakuna jibu baada ya sekunde 10"));},10000);})
+    ]);
+    var rawText = await response.text();
+    r.style.color="var(--muted)";
+    r.textContent="HTTP "+response.status+" | Raw: "+rawText.substring(0,120);
+    try{
+      var d = JSON.parse(rawText);
+      if(d && d.status==="ok"){
+        r.style.color="var(--accent3)";
+        r.textContent="✓ Inafanya kazi! Wapangaji: "+(d.data?d.data.length:0);
+      } else {
+        r.style.color="var(--accent2)";
+        r.textContent="⚠ Status: "+(d.status||"?")+" | "+JSON.stringify(d).substring(0,100);
+      }
+    } catch(pe){
+      r.style.color="var(--danger)";
+      r.textContent="✗ JSON parse imeshindwa. HTTP "+response.status+" | "+rawText.substring(0,150);
     }
   } catch(e){
     r.style.color="var(--danger)";
-    r.textContent="✗ Haifiki: "+e.message;
+    r.textContent="✗ "+e.message;
   }
 }
 
@@ -1656,113 +1671,14 @@ async function testUrl(){
 function fetchSheets(params, urlOverride){
   var url=(urlOverride||getUrl())+params;
   return Promise.race([
-    fetch(url).then(function(r){return r.json();}),
-    new Promise(function(_,rej){setTimeout(function(){rej(new Error("Timeout (6s)"));},6000);})
+    fetch(url, {method:"GET", redirect:"follow"})
+      .then(function(r){ return r.text(); })
+      .then(function(txt){
+        try{ return JSON.parse(txt); }
+        catch(e){ throw new Error("Jibu si JSON: "+txt.substring(0,60)); }
+      }),
+    new Promise(function(_,rej){setTimeout(function(){rej(new Error("Timeout (10s)"));},10000);})
   ]);
-}
-
-// ══════════════════════════════════════
-// LOGIN (SHA-256 + LOCKOUT)
-// ══════════════════════════════════════
-async function login(){
-  var rawC=document.getElementById("loginChumba").value.trim();
-  var jina=document.getElementById("loginJina").value.trim();
-  var errEl=document.getElementById("loginError");
-  errEl.style.display="none";
-
-  if(!jina){showLoginErr("Weka jina lako au nenosiri.");return;}
-
-  // Angalia kama imefungwa
-  if(isLockedOut()){
-    var secs=lockoutTimeLeft();
-    showLoginErr("🔒 Akaunti imefungwa kwa muda. Jaribu tena baada ya sekunde "+secs+".");
-    startLockoutCountdown();
-    return;
-  }
-
-  // Admin — hash na ulinganishe
-  var inputHash = await sha256(jina.trim());
-  if(inputHash === getAdminHash()){
-    resetAttempts();
-    currentUser={jina:"Admin",chumba:rawC?normalizeRoom(rawC):null,isAdmin:true};
-    startApp(); return;
-  }
-
-  var chumba=normalizeRoom(rawC);
-  if(!chumba){
-    // Jaribio baya la admin — rekodi
-    var s=recordFailedAttempt();
-    if(isLockedOut()){
-      showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
-      startLockoutCountdown();
-    } else {
-      showLoginErr("❌ Taarifa si sahihi. Majaribio "+attemptsLeft()+" yaliyobaki.");
-    }
-    return;
-  }
-
-  // Mpangaji — jina halihitaji hash
-  // localStorage kwanza
-  var t=getTenants();
-  if(t[chumba]&&matchName(t[chumba].jina,jina)){
-    resetAttempts();
-    currentUser={jina:t[chumba].jina,chumba:chumba,isAdmin:false};
-    startApp(); return;
-  }
-
-  // Jaribu Sheets
-  if(getUrl()){
-    try{
-      var d=await fetchSheets("?action=list");
-      if(d&&d.data){
-        var all=getTenants();
-        d.data.forEach(function(r){if(r.chumba)all[r.chumba]=r;});
-        saveTenants(all);
-        var rec=d.data.find(function(r){return r.chumba===chumba;});
-        if(rec){
-          if(matchName(rec.jina,jina)){
-            resetAttempts();
-            currentUser={jina:rec.jina,chumba:chumba,isAdmin:false};
-            startApp(); return;
-          } else {
-            var s2=recordFailedAttempt();
-            if(isLockedOut()){
-              showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
-              startLockoutCountdown();
-            } else {
-              showLoginErr("❌ Taarifa si sahihi. Majaribio "+attemptsLeft()+" yaliyobaki.");
-            }
-            return;
-          }
-        }
-      }
-    }catch(e){}
-  }
-
-  // Angalia tena baada ya sync
-  var t2=getTenants();
-  if(t2[chumba]){
-    if(matchName(t2[chumba].jina,jina)){
-      resetAttempts();
-      currentUser={jina:t2[chumba].jina,chumba:chumba,isAdmin:false};
-      startApp(); return;
-    }
-    var s3=recordFailedAttempt();
-    if(isLockedOut()){
-      showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
-      startLockoutCountdown();
-    } else {
-      showLoginErr("❌ Taarifa si sahihi. Majaribio "+attemptsLeft()+" yaliyobaki.");
-    }
-  } else {
-    showLoginErr("❌ Taarifa si sahihi. Wasiliana na Admin.");
-  }
-}
-
-function matchName(stored,entered){
-  var s=stored.toLowerCase().trim();
-  var e=entered.toLowerCase().trim();
-  return s===e||s.startsWith(e)||e.startsWith(s.split(" ")[0]);
 }
 function showLoginErr(msg){
   var el=document.getElementById("loginError");
