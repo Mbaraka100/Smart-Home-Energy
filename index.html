@@ -138,7 +138,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
   </div>
 </div>
 
-<!-- URL Setup (collapsed by default if URL already set) -->
+<!-- URL Setup -->
 <div class="url-setup" id="urlSetupCard">
   <div class="url-setup-title">
     🔗 URL ya Google Sheets / App
@@ -149,6 +149,15 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
     <button onclick="saveAndReload()" style="padding:10px 16px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Hifadhi</button>
   </div>
   <p style="font-size:11px;color:var(--text-3);margin-top:8px">Weka URL ile ile ya Google Sheets inayotumika kwenye App yako kuu ya Smart Energy.</p>
+
+  <!-- Room Configuration -->
+  <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
+    <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:10px">🏠 Sanidi Vyumba</div>
+    <div id="room-groups-wrap"></div>
+    <button onclick="addRoomGroup()" style="width:100%;padding:10px;background:none;border:2px dashed var(--border);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--green);cursor:pointer;margin-top:6px">＋ Ongeza Kundi la Vyumba</button>
+    <button onclick="applyRoomConfig()" style="width:100%;margin-top:8px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✓ Tumia Mpangilio wa Vyumba</button>
+    <p style="font-size:11px;color:var(--text-3);margin-top:6px">Mfano: Prefix "A", Idadi 10 → A1, A2, ... A10</p>
+  </div>
 </div>
 
 <div class="steps">
@@ -302,7 +311,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
 // URL — inayotumika na App kuu
 // ══════════════════════════════════════
 var STORAGE_KEY = "smartEnergySheetUrl";
-var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxKnzzGsOrKng02Yuf0Z-4wCqkN2oj7hDEPFEA68LEH0UuNv0E0t52-DxopY0L7EKFo/exec";
+var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbx5MGriLmoWx92EQVgQ2F1h61-Vt-_XpuiEaUcZMS15Bnvn2SwCROxjrVinDe1I0pdY/exec";
 // Pia angalia URL iliyohifadhiwa na app kuu (sheetsUrl key)
 function getUrl(){
   return localStorage.getItem("sheetsUrl") ||
@@ -322,7 +331,7 @@ function saveAndReload(){
   if(!u){ showToast("Weka URL kwanza"); return; }
   saveUrl(u);
   showToast("✅ URL imehifadhiwa!", true);
-  setTimeout(function(){ loadRooms(); }, 500);
+  setTimeout(function(){ loadRoomsFromSheets(); }, 500);
 }
 
 // ══════════════════════════════════════
@@ -382,56 +391,123 @@ var kifaaCount = 0;
 var allRooms = []; // vyumba vyote kutoka sheets
 var totalRooms = 0;
 
-// ══════════════════════════════════════
-// LOAD ROOMS FROM SHEETS
-// ══════════════════════════════════════
-async function loadRooms(){
-  var area = document.getElementById("rooms-area");
-  area.innerHTML = '<div class="rooms-loading"><span>⏳</span>Inapakia vyumba kutoka App...</div>';
-  document.getElementById("urlStatusBadge").textContent = "⏳ Inapakia...";
-  document.getElementById("urlStatusBadge").className = "url-status";
-
-  var url = getUrl();
-  if(!url){
-    area.innerHTML = '<div class="rooms-error">⚠ Weka URL ya Google Sheets kwenye sehemu ya juu.</div>';
-    return;
-  }
-
+// Rejesha sensa zilizohifadhiwa ndani ya browser
+(function restoreLocalSensa(){
   try{
-    var res = await Promise.race([
-      fetch(url + "?action=list&t=" + Date.now()).then(function(r){ return r.json(); }),
-      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 8000); })
-    ]);
+    var saved = JSON.parse(localStorage.getItem("sensaEntries") || "[]");
+    if(Array.isArray(saved)) entries = saved;
+  } catch(e){}
+})();
 
-    // Process tenants from sheets
-    var data = res.data || (Array.isArray(res) ? res : []);
-    entries = data.filter(function(r){ return r.chumba || r.Chumba; }).map(function(r){
-      return {
-        jina: r.jina || r.Jina || '',
-        chumba: r.chumba || r.Chumba || '',
-        vifaa: Array.isArray(r.vifaa) ? r.vifaa : [],
-        hali: r.hali || ''
-      };
-    });
+// ══════════════════════════════════════
+// ROOM CONFIG — Prefix + Idadi
+// ══════════════════════════════════════
+var roomConfig = []; // [{prefix:"A", count:10}, ...]
+var ROOM_CONFIG_KEY = "sensaRoomConfig";
+var manualRooms = []; // vyumba vilivyoundwa kutoka config
 
-    // Collect all known rooms
-    allRooms = entries.map(function(e){ return e.chumba; }).filter(Boolean);
-    totalRooms = allRooms.length;
+(function restoreRoomConfig(){
+  try{
+    var saved = JSON.parse(localStorage.getItem(ROOM_CONFIG_KEY) || "[]");
+    if(Array.isArray(saved) && saved.length){
+      roomConfig = saved;
+      renderRoomGroups();
+      buildManualRooms();
+    } else {
+      // Anza na kundi moja tupu
+      addRoomGroup();
+    }
+  } catch(e){ addRoomGroup(); }
+})();
 
-    document.getElementById("urlStatusBadge").textContent = "✓ Imeunganika";
-    document.getElementById("urlStatusBadge").className = "url-status ok";
-
-    buildRoomGrid();
-    renderEntries();
-
-  } catch(err){
-    console.log(err);
-    document.getElementById("urlStatusBadge").textContent = "✗ Hakuna Mtandao";
-    document.getElementById("urlStatusBadge").className = "url-status err";
-    area.innerHTML = '<div class="rooms-error">⚠ Haikuweza kupakia vyumba. Angalia mtandao au URL.<br><br>' +
-      '<button onclick="loadRooms()" style="margin-top:8px;padding:8px 16px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🔄 Jaribu Tena</button></div>';
-  }
+function addRoomGroup(){
+  var id = Date.now();
+  roomConfig.push({id: id, prefix: "", count: 10});
+  renderRoomGroups();
 }
+
+function removeRoomGroup(id){
+  roomConfig = roomConfig.filter(function(g){ return g.id !== id; });
+  renderRoomGroups();
+}
+
+function renderRoomGroups(){
+  var wrap = document.getElementById("room-groups-wrap");
+  if(!wrap) return;
+  wrap.innerHTML = "";
+  roomConfig.forEach(function(g, idx){
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex;gap:8px;align-items:center;margin-bottom:8px";
+
+    var pInp = document.createElement("input");
+    pInp.type = "text";
+    pInp.value = g.prefix || "";
+    pInp.placeholder = "Prefix (A, B, Ghorofa1...)";
+    pInp.dataset.idx = idx;
+    pInp.dataset.key = "prefix";
+    pInp.style.cssText = "flex:1;font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);font-family:inherit;outline:none";
+    pInp.addEventListener("change", function(){ roomConfig[+this.dataset.idx].prefix = this.value.trim(); });
+
+    var cInp = document.createElement("input");
+    cInp.type = "number";
+    cInp.value = g.count || 10;
+    cInp.min = 1; cInp.max = 200;
+    cInp.placeholder = "Idadi";
+    cInp.dataset.idx = idx;
+    cInp.style.cssText = "width:80px;font-size:13px;padding:9px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);font-family:inherit;outline:none";
+    cInp.addEventListener("change", function(){ roomConfig[+this.dataset.idx].count = parseInt(this.value)||10; });
+
+    var dBtn = document.createElement("button");
+    dBtn.textContent = "✕";
+    dBtn.style.cssText = "padding:9px 12px;background:none;border:1.5px solid #fca5a5;border-radius:8px;color:#b91c1c;cursor:pointer;font-size:15px;line-height:1";
+    dBtn.addEventListener("click", function(){ removeRoomGroup(g.id); });
+
+    row.appendChild(pInp);
+    row.appendChild(cInp);
+    row.appendChild(dBtn);
+    wrap.appendChild(row);
+  });
+}
+
+function updateGroup(id, key, val){
+  var g = roomConfig.find(function(x){ return x.id === id; });
+  if(g) g[key] = val;
+}
+
+function buildManualRooms(){
+  var rooms = [];
+  roomConfig.forEach(function(g){
+    if(!g.prefix || !g.count) return;
+    for(var i = 1; i <= g.count; i++){
+      rooms.push(g.prefix + i);
+    }
+  });
+  manualRooms = rooms;
+  return rooms;
+}
+
+function applyRoomConfig(){
+  // Update values from inputs first
+  document.querySelectorAll("#room-groups-wrap input[type=text]").forEach(function(inp, i){
+    if(roomConfig[i]) roomConfig[i].prefix = inp.value.trim();
+  });
+  document.querySelectorAll("#room-groups-wrap input[type=number]").forEach(function(inp, i){
+    if(roomConfig[i]) roomConfig[i].count = parseInt(inp.value)||10;
+  });
+
+  buildManualRooms();
+  localStorage.setItem(ROOM_CONFIG_KEY, JSON.stringify(roomConfig));
+
+  // Merge manual rooms into allRooms
+  var combined = [...new Set([...manualRooms, ...allRooms])];
+  allRooms = combined;
+  totalRooms = manualRooms.length; // total = configured rooms
+
+  buildRoomGrid();
+  renderEntries();
+  showToast("✅ Vyumba " + manualRooms.length + " vimewekwa!", true);
+}
+
 
 function buildRoomGrid(){
   var area = document.getElementById("rooms-area");
@@ -688,11 +764,14 @@ async function submitForm(){
     if(idx >= 0) entries[idx] = sensaEntry;
     else entries.push(sensaEntry);
 
+    // Hifadhi sensa zote kwenye localStorage ili zisipotee
+    try{ localStorage.setItem("sensaEntries", JSON.stringify(entries)); } catch(e){}
+
     renderEntries();
     clearForm();
     goPage(1);
     showToast("✅ " + chumba + " — " + jina + " imetumwa!", true);
-    setTimeout(loadRooms, 1500);
+    setTimeout(loadRoomsFromSheets, 1500);
 
   } catch(err){
     console.log(err);
@@ -806,9 +885,105 @@ function showToast(msg, green){
 }
 
 // ══════════════════════════════════════
-// INIT
+// INIT — Manual rooms kwanza, sheets ni ziada
 // ══════════════════════════════════════
-loadRooms();
+(function init(){
+  // 1. Jenga vyumba vya manual mara moja — bila kusubiri mtandao
+  if(manualRooms.length){
+    allRooms = [...manualRooms];
+    totalRooms = manualRooms.length;
+    buildRoomGrid();
+    renderEntries();
+  }
+
+  // 2. Jaribu sheets kwa background — ikiwa itafaulu, ongeza wapangaji waliosajiliwa
+  loadRoomsFromSheets();
+})();
+
+function loadRoomsFromSheets(){
+  var url = getUrl();
+  if(!url) return;
+
+  document.getElementById("urlStatusBadge").textContent = "⏳ Inapakia...";
+  document.getElementById("urlStatusBadge").className = "url-status";
+
+  // Tumia JSONP — inafanya kazi file://, http://, na bila CORS issues
+  var cbName = "sensaCb_" + Date.now();
+  var done = false;
+
+  window[cbName] = function(res){
+    done = true;
+    clearTimeout(timer);
+    var sc = document.getElementById(cbName + "_sc");
+    if(sc) sc.remove();
+    delete window[cbName];
+
+    try{
+      var data = res.data || (Array.isArray(res) ? res : []);
+      var sheetsEntries = data.filter(function(r){ return r.chumba || r.Chumba; }).map(function(r){
+        return {
+          jina: r.jina || r.Jina || "",
+          chumba: r.chumba || r.Chumba || "",
+          vifaa: Array.isArray(r.vifaa) ? r.vifaa : [],
+          hali: r.hali || ""
+        };
+      });
+
+      sheetsEntries.forEach(function(se){
+        var localIdx = entries.findIndex(function(e){ return e.chumba === se.chumba; });
+        if(localIdx >= 0){
+          if(!entries[localIdx].vifaa || entries[localIdx].vifaa.length === 0){
+            entries[localIdx] = se;
+          }
+        } else {
+          entries.push(se);
+        }
+      });
+
+      var sheetsRooms = sheetsEntries.map(function(e){ return e.chumba; }).filter(Boolean);
+      var localRooms = entries.map(function(e){ return e.chumba; }).filter(Boolean);
+      allRooms = [...new Set([...manualRooms, ...sheetsRooms, ...localRooms])];
+      totalRooms = manualRooms.length || allRooms.length;
+
+      document.getElementById("urlStatusBadge").textContent = "✓ Imeunganika";
+      document.getElementById("urlStatusBadge").className = "url-status ok";
+
+      buildRoomGrid();
+      renderEntries();
+    } catch(e){
+      console.log("JSONP parse error:", e);
+      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
+      document.getElementById("urlStatusBadge").className = "url-status ok";
+    }
+  };
+
+  var timer = setTimeout(function(){
+    if(!done){
+      delete window[cbName];
+      var sc = document.getElementById(cbName + "_sc");
+      if(sc) sc.remove();
+      console.log("Sheets timeout — offline mode");
+      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
+      document.getElementById("urlStatusBadge").className = "url-status ok";
+    }
+  }, 8000);
+
+  var sc = document.createElement("script");
+  sc.id = cbName + "_sc";
+  sc.src = url + "?action=list&callback=" + cbName + "&t=" + Date.now();
+  sc.onerror = function(){
+    if(!done){
+      done = true;
+      clearTimeout(timer);
+      delete window[cbName];
+      sc.remove();
+      console.log("Sheets script error — offline mode");
+      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
+      document.getElementById("urlStatusBadge").className = "url-status ok";
+    }
+  };
+  document.head.appendChild(sc);
+}
 </script>
 </body>
 </html>
