@@ -1229,6 +1229,24 @@
 // CONFIG & STATE
 // ══════════════════════════════════════
 var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbzD6350LueahbgWq25RZnJM48DygwBIPWnAVHehlmWeWYHCb0MHzImRSe3RGypHJUS7/exec";
+// ── HELPER SALAMA — huzuia "Cannot set properties of null" ──
+function $set(id, val){
+  var el = document.getElementById(id);
+  if(el) el.textContent = (val === undefined || val === null) ? "" : val;
+}
+function $html(id, val){
+  var el = document.getElementById(id);
+  if(el) el.innerHTML = val || "";
+}
+function $show(id, display){
+  var el = document.getElementById(id);
+  if(el) el.style.display = display !== undefined ? display : "block";
+}
+function $hide(id){
+  var el = document.getElementById(id);
+  if(el) el.style.display = "none";
+}
+
 
 // ══════════════════════════════════════
 // USALAMA — SHA-256 + LOCKOUT
@@ -1388,17 +1406,10 @@ async function runAutoBackup(reason){
     var res = await Promise.race([
       fetch(url, {
         method: "POST",
-        redirect: "follow",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify(payload)
-      }).then(function(r){
-        if(!r.ok) throw new Error("HTTP "+r.status);
-        return r.text();
-      }).then(function(txt){
-        try{ return JSON.parse(txt); }
-        catch(e){ throw new Error("Jibu si JSON"); }
-      }),
-      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout (10s)")); }, 10000); })
+      }).then(function(r){ return r.json(); }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 10000); })
     ]);
 
     if(res && (res.status === "ok" || res.result === "success")){
@@ -1427,17 +1438,7 @@ async function restoreFromSheets(){
 
   try {
     var res = await Promise.race([
-      fetch(url + "?action=RESTORE_FULL", {
-        method: "GET",
-        redirect: "follow",
-        headers: { "Accept": "application/json" }
-      }).then(function(r){
-        if(!r.ok) throw new Error("HTTP "+r.status);
-        return r.text();
-      }).then(function(txt){
-        try{ return JSON.parse(txt); }
-        catch(e){ throw new Error("Jibu si JSON: "+txt.substring(0,60)); }
-      }),
+      fetch(url + "?action=RESTORE_FULL").then(function(r){ return r.json(); }),
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 12000); })
     ]);
 
@@ -1601,12 +1602,12 @@ function updateUrlBadge(){
   }
   var inp=document.getElementById("inlineUrl");
   if(inp) inp.value=u||"";
-  document.getElementById("currentUrlShow").textContent=u||(DEFAULT_URL?"(default)":"(haijawekwa)");
+  $set("currentUrlShow", u||(DEFAULT_URL?"(default)":"(haijawekwa)"));
 }
 
 function openSetup(){
   document.getElementById("setupUrl").value=getUrl()||"";
-  document.getElementById("currentUrlShow").textContent=getUrl()||"Haijawekwa bado";
+  $set("currentUrlShow", getUrl()||"Haijawekwa bado");
   document.getElementById("setupModal").classList.add("open");
 }
 function closeSetup(){ document.getElementById("setupModal").classList.remove("open"); }
@@ -1655,18 +1656,8 @@ async function testUrl(){
 function fetchSheets(params, urlOverride){
   var url=(urlOverride||getUrl())+params;
   return Promise.race([
-    fetch(url, {
-      method: "GET",
-      redirect: "follow",
-      headers: { "Accept": "application/json" }
-    }).then(function(r){
-      if(!r.ok) throw new Error("HTTP "+r.status);
-      return r.text();
-    }).then(function(txt){
-      try{ return JSON.parse(txt); }
-      catch(e){ throw new Error("Jibu si JSON: "+txt.substring(0,80)); }
-    }),
-    new Promise(function(_,rej){setTimeout(function(){rej(new Error("Timeout (10s)"));},10000);})
+    fetch(url).then(function(r){return r.json();}),
+    new Promise(function(_,rej){setTimeout(function(){rej(new Error("Timeout (6s)"));},6000);})
   ]);
 }
 
@@ -1784,8 +1775,7 @@ function showLoginErr(msg){
 function startApp(){
   document.getElementById("loginPage").style.display="none";
   document.getElementById("appPage").style.display="flex";
-  document.getElementById("userBadgeName").textContent=
-    currentUser.isAdmin?"⚙ Admin":"🏠 "+currentUser.jina+" ("+currentUser.chumba+")";
+  $set("userBadgeName", currentUser.isAdmin?"⚙ Admin":"🏠 "+currentUser.jina+" ("+currentUser.chumba+")");
   document.getElementById("adminTab").style.display=currentUser.isAdmin?"":"none";
   document.getElementById("mchangoTab").style.display=currentUser.isAdmin?"":"none";
   document.getElementById("lukuTab").style.display=currentUser.isAdmin?"":"none";
@@ -1949,7 +1939,7 @@ function renderMuhtasari(){
   var kwh=0, monthKwh=0;
   recs.filter(function(r){return r.tarehe===today();}).forEach(function(r){kwh+=Number(r.kwh)||0;});
   recs.filter(function(r){return r.tarehe&&r.tarehe.startsWith(month);}).forEach(function(r){monthKwh+=Number(r.kwh)||0;});
-  document.getElementById("s-occ").textContent=occ;
+  $set("s-occ", occ);
   // LUKU iliyokuwepo kutoka rekodi ya mwisho
   var _latestG=getLatestGlobalLuku();
   var lukuEl=document.getElementById("s-luku-sasa");
@@ -1967,9 +1957,9 @@ function renderMuhtasari(){
     lukuEl.textContent="—";
     lukuSub.textContent="Bado haijawekwa";
   }
-  document.getElementById("s-kwh").textContent=kwh.toFixed(1);
-  document.getElementById("s-month-kwh").textContent=monthKwh.toFixed(1);
-  document.getElementById("s-month-bill").textContent=monthBill(recs.filter(function(r){return r.tarehe&&r.tarehe.startsWith(month);})).toLocaleString();
+  $set("s-kwh", kwh.toFixed(1));
+  $set("s-month-kwh", monthKwh.toFixed(1));
+  $set("s-month-bill", monthBill(recs.filter(function(r){return r.tarehe&&r.tarehe.startsWith(month);})).toLocaleString());
   var g=document.getElementById("muhtasariGrid"); g.innerHTML="";
   rooms.forEach(function(c){
     var tn=t[c];
@@ -2023,7 +2013,7 @@ function showRoomModal(c){
   if(currentUser&&!currentUser.isAdmin&&c!==currentUser.chumba)return;
   var t=getTenants()[c];
   var recs=visibleRecs().filter(function(r){return r.chumba===c;});
-  document.getElementById("modalTitle").textContent="⚡ Chumba "+c;
+  $set("modalTitle", "⚡ Chumba "+c);
   var html=t
     ?'<p><b>Mpangaji:</b> '+t.jina+'</p><p style="margin-top:7px;color:var(--muted)"><b>Vifaa:</b> '+(t.vifaa||"—")+'</p>'
     :'<p style="color:var(--muted)">Chumba hiki hakina mpangaji.</p>';
@@ -2039,7 +2029,7 @@ function showRoomModal(c){
       +recs.slice().reverse().map(function(x){return '<div>'+x.tarehe+' '+(x.muda||'')+' - '+Number(x.kwh).toFixed(1)+' kWh, Tsh '+Number(x.gharama||0).toLocaleString()+'</div>';}).join('')
       +'</div>';
   }
-  document.getElementById("modalBody").innerHTML=html;
+  $html("modalBody", html);
   document.getElementById("roomModal").classList.add("open");
 }
 function closeModal(){document.getElementById("roomModal").classList.remove("open");}
@@ -2066,7 +2056,7 @@ function calcKwh(){
   var a=Number(document.getElementById("lAwali").value)||0;
   var s=Number(document.getElementById("lSasa").value)||0;
   var total=a+s;
-  document.getElementById("kwhRes").textContent=total.toFixed(0);
+  $set("kwhRes", total.toFixed(0));
   var awShw=document.getElementById("kwhAwaliShow");
   var mpShw=document.getElementById("kwhMpyaShow");
   var totShw=document.getElementById("kwhTotalShow");
@@ -2100,7 +2090,7 @@ function saveLuku(){
   document.getElementById("lSasa").value="";
   document.getElementById("lKiasi").value="";
   document.getElementById("lMuda").value=nowTime();
-  document.getElementById("kwhRes").textContent=total.toFixed(0);
+  $set("kwhRes", total.toFixed(0));
   var awShw=document.getElementById("kwhAwaliShow");
   var mpShw=document.getElementById("kwhMpyaShow");
   var totShw=document.getElementById("kwhTotalShow");
@@ -2818,8 +2808,8 @@ function renderAdminTenants(){
   });
 }
 function updateAdminStats(){
-  document.getElementById("a-occ").textContent=Object.keys(getTenants()).length;
-  document.getElementById("a-recs").textContent=getRecs().length;
+  $set("a-occ", Object.keys(getTenants()).length);
+  $set("a-recs", getRecs().length);
 }
 async function syncSheets(){
   var st=document.getElementById("syncStatus");
@@ -2886,17 +2876,16 @@ function checkAndShowLukuNotification() {
   box.className = "notif-box " + (isDanger ? "notif-danger" : "notif-warn");
 
   // Icon
-  document.getElementById("lukuNotifIcon").textContent = isDanger ? "⚠️" : "🔋";
+  $set("lukuNotifIcon", isDanger ? "⚠️" : "🔋");
 
   // Badge
-  document.getElementById("lukuNotifBadge").textContent =
-    isDanger ? "⚠ HATARI — LUKU INAKWISHA!" : "🟡 TAHADHARI — LUKU INAISHA";
+  $set("lukuNotifBadge", isDanger ? "⚠ HATARI — LUKU INAKWISHA!" : "🟡 TAHADHARI — LUKU INAISHA");
 
   // Headline
   var daysText = pred.daysLeft === 0 ? "LUKU IMEKWISHA!" :
                  pred.daysLeft === 1 ? "Siku 1 Tu Imebaki!" :
                  "Siku " + pred.daysLeft + " Zimebaki";
-  document.getElementById("lukuNotifHeadline").textContent = daysText;
+  $set("lukuNotifHeadline", daysText);
 
   // Sub-message kulingana na hali
   var tenantName = currentUser.jina.split(" ")[0]; // Jina la kwanza tu
@@ -2908,15 +2897,12 @@ function checkAndShowLukuNotification() {
   } else {
     subMsg = tenantName + ", LUKU yako inaisha ndani ya siku " + pred.daysLeft + ". Panga kununua mapema.";
   }
-  document.getElementById("lukuNotifSub").textContent = subMsg;
+  $set("lukuNotifSub", subMsg);
 
   // Stats
-  document.getElementById("lukuNotifDays").textContent =
-    pred.daysLeft >= 999 ? "∞" : pred.daysLeft;
-  document.getElementById("lukuNotifUnits").textContent =
-    pred.lukuSasa > 0 ? pred.lukuSasa.toFixed(0) : "—";
-  document.getElementById("lukuNotifKwh").textContent =
-    pred.avgPerDay.toFixed(2);
+  $set("lukuNotifDays", pred.daysLeft >= 999 ? "∞" : pred.daysLeft);
+  $set("lukuNotifUnits", pred.lukuSasa > 0 ? pred.lukuSasa.toFixed(0) : "—");
+  $set("lukuNotifKwh", pred.avgPerDay.toFixed(2));
 
   // Progress bar — inaonyesha ni kiasi gani kimebaki (reversed: nyekundu = kidogo)
   var barPct = Math.min(100, Math.max(2, pred.pctUsed));
@@ -2927,14 +2913,12 @@ function checkAndShowLukuNotification() {
   }, 100);
 
   // Main button text
-  document.getElementById("lukuNotifMainBtn").textContent =
-    isDanger ? "⚡ Nimeona — Nitanunua LUKU Sasa!" : "✓ Nimeona — Nitanunua Hivi Karibuni";
+  $set("lukuNotifMainBtn", isDanger ? "⚡ Nimeona — Nitanunua LUKU Sasa!" : "✓ Nimeona — Nitanunua Hivi Karibuni");
 
   // Timestamp
   var now = new Date();
-  document.getElementById("lukuNotifTime").textContent =
-    "Ilisomwa: " + now.toLocaleDateString("sw-TZ") + " saa " +
-    String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0");
+  $set("lukuNotifTime", "Ilisomwa: " + now.toLocaleDateString("sw-TZ") + " saa " +
+    String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0"));
 
   // Onyesha
   overlay.classList.add("open");
@@ -3463,8 +3447,8 @@ function calcMchangoBalance() {
   var box = document.getElementById("mchangoResultBox");
   if (ada > 0 || kiasi > 0) {
     box.style.display = "grid";
-    document.getElementById("mc-res-target").textContent = fmtNum(ada);
-    document.getElementById("mc-res-paid").textContent = fmtNum(kiasi);
+    $set("mc-res-target", fmtNum(ada));
+    $set("mc-res-paid", fmtNum(kiasi));
     var bEl = document.getElementById("mc-res-baki");
     bEl.textContent = fmtNum(Math.max(0, baki));
     if (baki <= 0) {
@@ -3659,15 +3643,15 @@ function editMchango(chumba) {
 }
 
 function renderMchangoDashboard(target, paid, baki, unpaidRooms) {
-  document.getElementById("mc-target").textContent = fmtNum(target);
-  document.getElementById("mc-paid").textContent = fmtNum(paid);
-  document.getElementById("mc-balance").textContent = fmtNum(baki);
-  document.getElementById("mc-unpaid-rooms").textContent = unpaidRooms;
+  $set("mc-target", fmtNum(target));
+  $set("mc-paid", fmtNum(paid));
+  $set("mc-balance", fmtNum(baki));
+  $set("mc-unpaid-rooms", unpaidRooms);
 
   var pct = target > 0 ? Math.min(100, Math.round((paid / target) * 100)) : 0;
-  document.getElementById("mc-pct-label").textContent = pct + "%";
+  $set("mc-pct-label", pct + "%");
   document.getElementById("mc-progress-fill").style.width = pct + "%";
-  document.getElementById("mc-progress-sub").textContent = "Lengo: Tsh " + fmtNum(target);
+  $set("mc-progress-sub", "Lengo: Tsh " + fmtNum(target));
 
   // Rangi ya progress bar
   var fill = document.getElementById("mc-progress-fill");
