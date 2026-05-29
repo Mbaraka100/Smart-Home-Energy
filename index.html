@@ -151,13 +151,54 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
   <p style="font-size:11px;color:var(--text-3);margin-top:8px">Weka URL ile ile ya Google Sheets inayotumika kwenye App yako kuu ya Smart Energy.</p>
 
 
-  <!-- Room Configuration -->
+  <!-- Room Configuration — ADMIN TU -->
   <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
-    <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:10px">🏠 Sanidi Vyumba</div>
-    <div id="room-groups-wrap"></div>
-    <button onclick="addRoomGroup()" style="width:100%;padding:10px;background:none;border:2px dashed var(--border);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--green);cursor:pointer;margin-top:6px">＋ Ongeza Kundi la Vyumba</button>
-    <button onclick="applyRoomConfig()" style="width:100%;margin-top:8px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✓ Tumia Mpangilio wa Vyumba</button>
-    <p style="font-size:11px;color:var(--text-3);margin-top:6px">Mfano: Prefix "A", Idadi 10 → A1, A2, ... A10</p>
+    <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:10px">
+      🏠 Weka Idadi ya Vyumba
+      <span style="font-size:10px;font-weight:600;background:#fff3cd;color:#92400e;padding:2px 8px;border-radius:20px;margin-left:6px;">🔒 ADMIN</span>
+    </div>
+
+    <!-- Locked -->
+    <div id="roomConfigLocked">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="password" id="adminPinInput" placeholder="Weka PIN ya Admin..."
+          style="flex:1;padding:10px 12px;font-size:13px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-1);font-family:'Plus Jakarta Sans',sans-serif;"
+          onkeydown="if(event.key==='Enter') checkAdminPin()">
+        <button onclick="checkAdminPin()"
+          style="padding:10px 16px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+          Ingia
+        </button>
+      </div>
+      <p id="adminPinErr" style="font-size:11px;color:#dc2626;margin-top:6px;display:none;">❌ PIN si sahihi.</p>
+    </div>
+
+    <!-- Unlocked -->
+    <div id="roomConfigUnlocked" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="font-size:11px;color:var(--green);font-weight:700;">✅ Umeingia kama Admin</span>
+        <button onclick="lockRoomConfig()"
+          style="font-size:11px;padding:4px 10px;background:none;border:1px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-3);font-family:'Plus Jakarta Sans',sans-serif;">
+          🔒 Funga
+        </button>
+      </div>
+
+      <!-- Namba moja tu -->
+      <div style="margin-bottom:10px;">
+        <label style="font-size:12px;font-weight:600;color:var(--text-2);display:block;margin-bottom:6px;">Idadi ya Vyumba</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="number" id="roomCountInput" min="1" max="200" placeholder="Mfano: 16"
+            style="flex:1;padding:11px 14px;font-size:1rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-1);font-family:'Plus Jakarta Sans',sans-serif;">
+          <button onclick="applySimpleRoomCount()"
+            style="padding:11px 18px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">
+            ✓ Tumia
+          </button>
+        </div>
+        <p style="font-size:11px;color:var(--text-3);margin-top:6px;">Vyumba vitakuwa: 01, 02, 03 ... hadi namba uliyoweka.</p>
+      </div>
+
+      <!-- Onyesha vyumba vilivyowekwa -->
+      <div id="currentRoomInfo" style="font-size:12px;color:var(--text-3);padding:8px 12px;background:rgba(255,255,255,.04);border-radius:8px;display:none;"></div>
+    </div>
   </div>
 </div>
 
@@ -462,117 +503,101 @@ var totalRooms = 0;
 })();
 
 // ══════════════════════════════════════
-// ROOM CONFIG — Prefix + Idadi
+// ADMIN PIN — Inaunganika na App Kuu
+// Inatumia hash ile ile ya adminPassHash
 // ══════════════════════════════════════
-var roomConfig = []; // [{prefix:"A", count:10}, ...]
-var ROOM_CONFIG_KEY = "sensaRoomConfig";
-var manualRooms = []; // vyumba vilivyoundwa kutoka config
 
-(function restoreRoomConfig(){
-  try{
-    var saved = JSON.parse(localStorage.getItem(ROOM_CONFIG_KEY) || "[]");
-    if(Array.isArray(saved) && saved.length){
-      roomConfig = saved;
-      renderRoomGroups();
-      buildManualRooms();
-    } else {
-      // Anza na kundi moja tupu
-      addRoomGroup();
+var ROOM_COUNT_KEY = "sensaRoomCount";
+var manualRooms = [];
+
+// Hash ya default ("mreno") — sawa na app kuu
+var DEFAULT_ADMIN_HASH = "70f97f723772dfc51ad5fa7389b6073afe314852e1f6ec05073e40c367be44b1";
+
+function getAdminHash(){
+  return localStorage.getItem("adminPassHash") || DEFAULT_ADMIN_HASH;
+}
+
+async function sha256(msg){
+  var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
+}
+
+async function checkAdminPin(){
+  var inp = document.getElementById("adminPinInput");
+  var err = document.getElementById("adminPinErr");
+  if(!inp) return;
+  var pin = inp.value.trim();
+  if(!pin){ inp.focus(); return; }
+
+  var hash = await sha256(pin);
+  if(hash === getAdminHash()){
+    document.getElementById("roomConfigLocked").style.display   = "none";
+    document.getElementById("roomConfigUnlocked").style.display = "block";
+    inp.value = "";
+    err.style.display = "none";
+    var saved = parseInt(localStorage.getItem(ROOM_COUNT_KEY)||"0");
+    if(saved > 0){
+      document.getElementById("roomCountInput").value = saved;
+      showCurrentRoomInfo(saved);
     }
-  } catch(e){ addRoomGroup(); }
-})();
-
-function addRoomGroup(){
-  var id = Date.now();
-  roomConfig.push({id: id, prefix: "", count: 10});
-  renderRoomGroups();
+  } else {
+    err.style.display = "block";
+    inp.value = "";
+    inp.focus();
+    setTimeout(function(){ err.style.display="none"; }, 3000);
+  }
 }
 
-function removeRoomGroup(id){
-  roomConfig = roomConfig.filter(function(g){ return g.id !== id; });
-  renderRoomGroups();
+function lockRoomConfig(){
+  document.getElementById("roomConfigLocked").style.display   = "block";
+  document.getElementById("roomConfigUnlocked").style.display = "none";
+  document.getElementById("adminPinInput").value = "";
 }
 
-function renderRoomGroups(){
-  var wrap = document.getElementById("room-groups-wrap");
-  if(!wrap) return;
-  wrap.innerHTML = "";
-  roomConfig.forEach(function(g, idx){
-    var row = document.createElement("div");
-    row.style.cssText = "display:flex;gap:8px;align-items:center;margin-bottom:8px";
-
-    var pInp = document.createElement("input");
-    pInp.type = "text";
-    pInp.value = g.prefix || "";
-    pInp.placeholder = "Prefix (haihitajiki — namba tu)";
-    pInp.dataset.idx = idx;
-    pInp.dataset.key = "prefix";
-    pInp.style.cssText = "flex:1;font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);font-family:inherit;outline:none";
-    pInp.addEventListener("change", function(){ roomConfig[+this.dataset.idx].prefix = this.value.trim(); });
-
-    var cInp = document.createElement("input");
-    cInp.type = "number";
-    cInp.value = g.count || 10;
-    cInp.min = 1; cInp.max = 200;
-    cInp.placeholder = "Idadi";
-    cInp.dataset.idx = idx;
-    cInp.style.cssText = "width:80px;font-size:13px;padding:9px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);font-family:inherit;outline:none";
-    cInp.addEventListener("change", function(){ roomConfig[+this.dataset.idx].count = parseInt(this.value)||10; });
-
-    var dBtn = document.createElement("button");
-    dBtn.textContent = "✕";
-    dBtn.style.cssText = "padding:9px 12px;background:none;border:1.5px solid #fca5a5;border-radius:8px;color:#b91c1c;cursor:pointer;font-size:15px;line-height:1";
-    dBtn.addEventListener("click", function(){ removeRoomGroup(g.id); });
-
-    row.appendChild(pInp);
-    row.appendChild(cInp);
-    row.appendChild(dBtn);
-    wrap.appendChild(row);
-  });
+function showCurrentRoomInfo(count){
+  var el = document.getElementById("currentRoomInfo");
+  if(!el) return;
+  var first = "01";
+  var last  = count < 10 ? "0"+count : String(count);
+  el.style.display = "block";
+  el.innerHTML = "✅ Vyumba vilivyowekwa: <strong>"+count+"</strong> &nbsp;·&nbsp; "+first+" hadi "+last;
 }
 
-function updateGroup(id, key, val){
-  var g = roomConfig.find(function(x){ return x.id === id; });
-  if(g) g[key] = val;
-}
+function applySimpleRoomCount(){
+  var inp   = document.getElementById("roomCountInput");
+  var count = parseInt(inp ? inp.value : 0) || 0;
+  if(count < 1 || count > 200){
+    showToast("⚠ Weka idadi kati ya 1 na 200", false);
+    return;
+  }
+  // Jenga vyumba — 01, 02 ... count
+  manualRooms = [];
+  for(var i = 1; i <= count; i++){
+    manualRooms.push(i < 10 ? "0"+i : String(i));
+  }
+  localStorage.setItem(ROOM_COUNT_KEY, String(count));
 
-function buildManualRooms(){
-  var rooms = [];
-  roomConfig.forEach(function(g){
-    if(!g.count) return;
-    for(var i = 1; i <= g.count; i++){
-      // Ignore prefix — tumia namba tu, zero-padded
-      var n = i < 10 ? "0" + i : String(i);
-      rooms.push(n);
-    }
-  });
-  // Ondoa rudia na panga
-  manualRooms = normalizeRooms(rooms);
-  return manualRooms;
-}
-
-function applyRoomConfig(){
-  // Update values from inputs first
-  document.querySelectorAll("#room-groups-wrap input[type=text]").forEach(function(inp, i){
-    if(roomConfig[i]) roomConfig[i].prefix = inp.value.trim();
-  });
-  document.querySelectorAll("#room-groups-wrap input[type=number]").forEach(function(inp, i){
-    if(roomConfig[i]) roomConfig[i].count = parseInt(inp.value)||10;
-  });
-
-  buildManualRooms();
-  localStorage.setItem(ROOM_CONFIG_KEY, JSON.stringify(roomConfig));
-
-  // Jenga upya allRooms — manual rooms ndio msingi, ongeza vyumba vya sensa zilizopo
-  // Usizidishe allRooms ya zamani (inaweza kuwa na C01, C1, nk.)
+  // Sasisha allRooms
   var sensaRooms = entries.map(function(e){ return normalizeRoom(e.chumba); }).filter(Boolean);
-  allRooms = normalizeRooms([...manualRooms, ...sensaRooms]);
-  totalRooms = manualRooms.length; // total = configured rooms
+  allRooms   = normalizeRooms([...manualRooms, ...sensaRooms]);
+  totalRooms = manualRooms.length;
 
   buildRoomGrid();
   renderEntries();
-  showToast("✅ Vyumba " + manualRooms.length + " vimewekwa!", true);
+  showCurrentRoomInfo(count);
+  showToast("✅ Vyumba "+count+" vimewekwa! (01 – "+(count<10?"0"+count:count)+")", true);
 }
+
+// Rejesha idadi iliyohifadhiwa ukifungua upya
+(function restoreRoomCount(){
+  var saved = parseInt(localStorage.getItem(ROOM_COUNT_KEY)||"0");
+  if(saved > 0){
+    manualRooms = [];
+    for(var i = 1; i <= saved; i++){
+      manualRooms.push(i < 10 ? "0"+i : String(i));
+    }
+  }
+})();
 
 
 function buildRoomGrid(){
