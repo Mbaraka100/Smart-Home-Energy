@@ -970,89 +970,59 @@ function showToast(msg, green){
   loadRoomsFromSheets();
 })();
 
-function loadRoomsFromSheets(){
+async function loadRoomsFromSheets(){
   var url = getUrl();
-  if(!url) return;
+  if(!url){ buildRoomGrid(); renderEntries(); return; }
 
-  document.getElementById("urlStatusBadge").textContent = "⏳ Inapakia...";
-  document.getElementById("urlStatusBadge").className = "url-status";
+  var badge = document.getElementById("urlStatusBadge");
+  badge.textContent = "⏳ Inapakia...";
+  badge.className = "url-status";
 
-  // Tumia JSONP — inafanya kazi file://, http://, na bila CORS issues
-  var cbName = "sensaCb_" + Date.now();
-  var done = false;
+  try{
+    var res = await Promise.race([
+      fetch(url + "?action=list", {method:"GET", redirect:"follow"})
+        .then(function(r){ return r.text(); })
+        .then(function(txt){
+          try{ return JSON.parse(txt); }
+          catch(e){ throw new Error("Jibu si JSON: "+txt.substring(0,60)); }
+        }),
+      new Promise(function(_,rej){
+        setTimeout(function(){ rej(new Error("Timeout")); }, 10000);
+      })
+    ]);
 
-  window[cbName] = function(res){
-    done = true;
-    clearTimeout(timer);
-    var sc = document.getElementById(cbName + "_sc");
-    if(sc) sc.remove();
-    delete window[cbName];
-
-    try{
-      var data = res.data || (Array.isArray(res) ? res : []);
-      var sheetsEntries = data.filter(function(r){ return r.chumba || r.Chumba; }).map(function(r){
-        return {
-          jina: r.jina || r.Jina || "",
-          chumba: r.chumba || r.Chumba || "",
-          vifaa: Array.isArray(r.vifaa) ? r.vifaa : [],
-          hali: r.hali || ""
-        };
-      });
-
-      sheetsEntries.forEach(function(se){
-        var localIdx = entries.findIndex(function(e){ return e.chumba === se.chumba; });
+    if(res && res.data){
+      var data = res.data;
+      var sheetsRooms = [];
+      data.forEach(function(r){
+        var ch = normalizeRoom(r.chumba || r.Chumba || "");
+        if(!ch) return;
+        sheetsRooms.push(ch);
+        var localIdx = entries.findIndex(function(e){ return e.chumba === ch; });
+        var se = { jina: r.jina||r.Jina||"", chumba: ch, vifaa: [], hali: r.hali||"" };
         if(localIdx >= 0){
-          if(!entries[localIdx].vifaa || entries[localIdx].vifaa.length === 0){
+          if(!entries[localIdx].vifaa || entries[localIdx].vifaa.length === 0)
             entries[localIdx] = se;
-          }
         } else {
           entries.push(se);
         }
       });
-
-      var sheetsRooms = sheetsEntries.map(function(e){ return e.chumba; }).filter(Boolean);
-      var localRooms = entries.map(function(e){ return e.chumba; }).filter(Boolean);
-      allRooms = [...new Set([...manualRooms, ...sheetsRooms, ...localRooms])];
+      allRooms = [...new Set([...manualRooms, ...sheetsRooms])];
       totalRooms = manualRooms.length || allRooms.length;
-
-      document.getElementById("urlStatusBadge").textContent = "✓ Imeunganika";
-      document.getElementById("urlStatusBadge").className = "url-status ok";
-
-      buildRoomGrid();
-      renderEntries();
-    } catch(e){
-      console.log("JSONP parse error:", e);
-      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
-      document.getElementById("urlStatusBadge").className = "url-status ok";
+      badge.textContent = "✓ Imeunganika";
+      badge.className = "url-status ok";
+    } else {
+      badge.textContent = "⚡ Offline mode";
+      badge.className = "url-status ok";
     }
-  };
+  } catch(e){
+    console.log("Sheets error:", e.message);
+    badge.textContent = "⚡ Offline mode";
+    badge.className = "url-status ok";
+  }
 
-  var timer = setTimeout(function(){
-    if(!done){
-      delete window[cbName];
-      var sc = document.getElementById(cbName + "_sc");
-      if(sc) sc.remove();
-      console.log("Sheets timeout — offline mode");
-      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
-      document.getElementById("urlStatusBadge").className = "url-status ok";
-    }
-  }, 8000);
-
-  var sc = document.createElement("script");
-  sc.id = cbName + "_sc";
-  sc.src = url + "?action=list&callback=" + cbName + "&t=" + Date.now();
-  sc.onerror = function(){
-    if(!done){
-      done = true;
-      clearTimeout(timer);
-      delete window[cbName];
-      sc.remove();
-      console.log("Sheets script error — offline mode");
-      document.getElementById("urlStatusBadge").textContent = "⚡ Offline mode";
-      document.getElementById("urlStatusBadge").className = "url-status ok";
-    }
-  };
-  document.head.appendChild(sc);
+  buildRoomGrid();
+  renderEntries();
 }
 </script>
 </body>
