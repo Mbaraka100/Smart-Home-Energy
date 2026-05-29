@@ -994,7 +994,80 @@ function _cleanLegacyCPrefixFromStorage(){
 
   // 3. Jaribu JSONP kwa background — ikiwa Script inaruhusu
   loadRoomsFromSheets();
+
+  // 4. Sikiliza mabadiliko ya localStorage kutoka tab nyingine (App kuu)
+  //    Kila wakati App inafuta au kuongeza mpangaji, Sensa inasasishwa mara moja
+  window.addEventListener("storage", function(ev){
+    if(ev.key === "tenants" || ev.key === "sensaEntries"){
+      syncFromStorage();
+    }
+  });
+
+  // 5. BroadcastChannel — inafanya kazi hata kwenye tab moja au dirisha moja
+  try{
+    var _bc = new BroadcastChannel("smart_energy_sync");
+    _bc.onmessage = function(ev){
+      if(ev.data && ev.data.type === "tenants_changed"){
+        syncFromStorage();
+      }
+    };
+  } catch(e){}
 })();
+
+// ══════════════════════════════════════
+// SYNC KUTOKA localStorage — inaitwa mabadiliko yakitokea
+// ══════════════════════════════════════
+function syncFromStorage(){
+  try{
+    // Pata tenants za sasa kutoka App kuu
+    var tenants = JSON.parse(localStorage.getItem("tenants") || "{}");
+    var activeChumba = new Set(Object.keys(tenants).map(function(k){ return normalizeRoom(k); }).filter(Boolean));
+
+    // FUTA kutoka entries za Sensa wapangaji ambao wamefutwa kwenye App
+    var before = entries.length;
+    entries = entries.filter(function(e){
+      return activeChumba.has(normalizeRoom(e.chumba));
+    });
+
+    // Pia sasisha sensaEntries kwenye localStorage
+    var sensaArr = JSON.parse(localStorage.getItem("sensaEntries") || "[]");
+    sensaArr = sensaArr.filter(function(e){
+      return activeChumba.has(normalizeRoom(e.chumba));
+    });
+    localStorage.setItem("sensaEntries", JSON.stringify(sensaArr));
+
+    // Ongeza wapangaji wapya waliongezwa kwenye App (ambao hawako bado kwenye entries)
+    Object.keys(tenants).forEach(function(room){
+      var code = normalizeRoom(room);
+      if(!code) return;
+      var t = tenants[room];
+      var exists = entries.findIndex(function(e){ return e.chumba === code; });
+      if(exists < 0){
+        entries.push({
+          jina: t.jina || "",
+          chumba: code,
+          vifaa: t.vifaa || [],
+          hali: t.hali || "",
+          kwh: t.kwh || 0
+        });
+      }
+    });
+
+    // Sasisha orodha ya vyumba
+    var localRooms = entries.map(function(e){ return e.chumba; }).filter(Boolean);
+    allRooms = normalizeRooms([...manualRooms, ...localRooms]);
+    totalRooms = manualRooms.length || allRooms.length;
+
+    buildRoomGrid();
+    renderEntries();
+
+    if(entries.length < before){
+      showToast("🔄 Sensa imesasishwa — mpangaji amefutwa kwenye App", false);
+    }
+  } catch(err){
+    console.log("syncFromStorage error:", err);
+  }
+}
 
 // ── Chanzo 1: localStorage (haraka, daima inafanya kazi) ──────────────────────
 function loadRoomsFromLocalStorage(){
