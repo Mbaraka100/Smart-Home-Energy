@@ -3231,6 +3231,112 @@ function startLockoutCountdown(){
   }, 1000);
 }
 
+// ══════════════════════════════════════
+// LOGIN — Mpangaji wa Kawaida
+// ══════════════════════════════════════
+async function login(){
+  // Kama amefungwa (lockout)
+  if(isLockedOut()){
+    var secs=lockoutTimeLeft();
+    showLoginErr("🔒 Akaunti imefungwa. Jaribu tena baada ya sekunde "+secs+".");
+    startLockoutCountdown();
+    return;
+  }
+
+  var chumba = document.getElementById("loginChumba").value.trim().toUpperCase();
+  var jina   = document.getElementById("loginJina").value.trim();
+
+  // Kama ni admin — mwelekeze kwa loginAdmin
+  if(chumba === "ADMIN" || chumba === "") {
+    if(chumba === "") {
+      // Angalia kama jina linafanana na nenosiri la admin
+      await loginAdmin();
+      return;
+    }
+    await loginAdmin();
+    return;
+  }
+
+  if(!chumba){
+    showLoginErr("❌ Weka namba ya chumba lako.");
+    document.getElementById("loginChumba").focus();
+    return;
+  }
+  if(!jina){
+    showLoginErr("❌ Weka jina lako.");
+    document.getElementById("loginJina").focus();
+    return;
+  }
+
+  // Angalia kama chumba lipo kwenye mfumo
+  var tenants = getTenants();
+
+  // Jaribu pia uppercase na lowercase ya namba ya chumba
+  var matchKey = null;
+  var allKeys = Object.keys(tenants);
+  for(var i=0; i<allKeys.length; i++){
+    if(allKeys[i].toUpperCase() === chumba){
+      matchKey = allKeys[i];
+      break;
+    }
+  }
+
+  // Kama chumba hakipatikani kabisa — angalia kama admin anajaribu
+  if(!matchKey){
+    // Ruhusu kuingia kama chumba lipo katika rekodi za LUKU (hata bila mpangaji)
+    var recs = getRecs();
+    var hasRec = recs.some(function(r){ return r.chumba && r.chumba.toUpperCase() === chumba; });
+    if(!hasRec){
+      var s = recordFailedAttempt();
+      if(isLockedOut()){
+        showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
+        startLockoutCountdown();
+      } else {
+        showLoginErr("❌ Chumba '"+chumba+"' halijaandikishwa. Majaribio "+attemptsLeft()+" yaliyobaki.");
+      }
+      document.getElementById("loginChumba").value="";
+      document.getElementById("loginChumba").focus();
+      return;
+    }
+    // Chumba lipo lakini halikuwa na mpangaji — ruhusu kuingia kwa jina lolote
+    resetAttempts();
+    currentUser = { jina: jina, chumba: chumba, isAdmin: false };
+    startApp();
+    return;
+  }
+
+  // Chumba lipo — angalia jina
+  var tenant = tenants[matchKey];
+  var jinaSaved = (tenant && tenant.jina) ? tenant.jina.trim().toLowerCase() : "";
+  var jinaInput = jina.toLowerCase();
+
+  if(!jinaSaved){
+    // Chumba lipo bila jina — ruhusu kuingia
+    resetAttempts();
+    currentUser = { jina: jina, chumba: matchKey, isAdmin: false };
+    startApp();
+    return;
+  }
+
+  if(jinaInput !== jinaSaved){
+    var s2 = recordFailedAttempt();
+    if(isLockedOut()){
+      showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
+      startLockoutCountdown();
+    } else {
+      showLoginErr("❌ Jina si sahihi kwa chumba "+matchKey+". Majaribio "+attemptsLeft()+" yaliyobaki.");
+    }
+    document.getElementById("loginJina").value="";
+    document.getElementById("loginJina").focus();
+    return;
+  }
+
+  // ✅ Imefanikiwa
+  resetAttempts();
+  currentUser = { jina: tenant.jina, chumba: matchKey, isAdmin: false };
+  startApp();
+}
+
 async function loginAdmin(){
   if(isLockedOut()){
     var secs=lockoutTimeLeft();
