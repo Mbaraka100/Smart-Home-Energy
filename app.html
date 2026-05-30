@@ -5,7 +5,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Smart Home Energy System</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* Fonts inline — hakuna external dependency, inafanya kazi offline */
+  @font-face {
+    font-family: var(--font-main);
+    font-style: normal;
+    font-weight: 400 700;
+    src: local('Segoe UI'), local('Arial'), local('sans-serif');
+  }
+</style>
+<style>
+  /* System font fallbacks — zinapatikana kwenye simu zote bila intaneti */
+  :root {
+    --font-main: 'Rajdhani', 'Segoe UI', 'Ubuntu', 'Noto Sans', Arial, sans-serif;
+    --font-body: 'Noto Sans', 'Segoe UI', 'Ubuntu', Arial, sans-serif;
+  }
+</style>
 <style>
   :root {
     --bg:#0a0e1a;--panel:#111827;--panel2:#1a2236;--border:#1e3a5f;
@@ -13,20 +28,20 @@
     --text:#e2e8f0;--muted:#64748b;--card:#0f1929;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-  body{background:var(--bg);color:var(--text);font-family:'Noto Sans',sans-serif;min-height:100vh;-webkit-text-size-adjust:100%;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;-webkit-text-size-adjust:100%;}
 
   /* LOGIN */
   #loginPage{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 60% 40%,#0d2137 0%,#0a0e1a 70%);}
   .login-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 0 60px rgba(0,212,255,0.08);}
   .login-logo{text-align:center;margin-bottom:32px;}
   .login-logo .icon{font-size:48px;display:block;margin-bottom:8px;}
-  .login-logo h1{font-family:'Rajdhani',sans-serif;font-size:1.6rem;color:var(--accent);letter-spacing:2px;}
+  .login-logo h1{font-family:var(--font-main);font-size:1.6rem;color:var(--accent);letter-spacing:2px;}
   .login-logo p{color:var(--muted);font-size:0.85rem;margin-top:4px;}
   .fg{margin-bottom:20px;}
   .fg label{display:block;color:var(--muted);font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
   .fg input,.fg select{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 16px;border-radius:8px;font-size:1rem;outline:none;transition:border-color .2s;}
   .fg input:focus,.fg select:focus{border-color:var(--accent);}
-  .btn-login{width:100%;background:var(--accent);color:#0a0e1a;font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:2px;padding:14px;border:none;border-radius:8px;cursor:pointer;transition:opacity .2s;}
+  .btn-login{width:100%;background:var(--accent);color:#0a0e1a;font-family:var(--font-main);font-size:1.1rem;font-weight:700;letter-spacing:2px;padding:14px;border:none;border-radius:8px;cursor:pointer;transition:opacity .2s;}
   .btn-login:hover{opacity:.85;}
   .login-error{background:rgba(239,68,68,.15);border:1px solid var(--danger);color:#fca5a5;padding:10px 14px;border-radius:8px;font-size:.88rem;margin-bottom:16px;display:none;}
   .login-hint{text-align:center;margin-top:16px;color:var(--muted);font-size:.82rem;}
@@ -35,7 +50,7 @@
   .setup-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;align-items:center;justify-content:center;}
   .setup-modal.open{display:flex;}
   .setup-box{background:var(--panel);border:2px solid var(--accent2);border-radius:16px;padding:36px;max-width:500px;width:90%;}
-  .setup-title{font-family:'Rajdhani',sans-serif;font-size:1.3rem;color:var(--accent2);margin-bottom:8px;}
+  .setup-title{font-family:var(--font-main);font-size:1.3rem;color:var(--accent2);margin-bottom:8px;}
   .setup-desc{color:var(--muted);font-size:.85rem;line-height:1.6;margin-bottom:20px;}
   .setup-input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:8px;font-size:.88rem;outline:none;margin-bottom:16px;}
   .setup-input:focus{border-color:var(--accent2);}
@@ -44,7 +59,7 @@
   /* APP */
   #appPage{display:none;flex-direction:column;min-height:100vh;}
   .topbar{background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
-  .topbar-brand{font-family:'Rajdhani',sans-serif;color:var(--accent);font-size:1.2rem;letter-spacing:2px;}
+  .topbar-brand{font-family:var(--font-main);color:var(--accent);font-size:1.2rem;letter-spacing:2px;}
   .user-badge{background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:.85rem;display:flex;align-items:center;gap:8px;}
   .user-badge span{color:var(--accent3);font-weight:600;}
   .btn-logout{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;}
@@ -54,7 +69,7 @@
   .nav-tabs{background:var(--panel);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;padding:0 16px;gap:2px;}
   .nav-tabs::-webkit-scrollbar{height:3px;}
   .nav-tabs::-webkit-scrollbar-thumb{background:var(--border);}
-  .nav-tab{padding:14px 16px;font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:1px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;}
+  .nav-tab{padding:14px 16px;font-family:var(--font-main);font-size:.95rem;font-weight:600;letter-spacing:1px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;}
   .nav-tab:hover{color:var(--text);}
   .nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
   .nav-tab.atab{color:var(--accent2);}
@@ -74,16 +89,16 @@
   .stat-card.yellow::before{background:var(--accent2);}
   .stat-card.red::before{background:var(--danger);}
   .stat-label{color:var(--muted);font-size:.75rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
-  .stat-value{font-family:'Rajdhani',sans-serif;font-size:2rem;font-weight:700;}
+  .stat-value{font-family:var(--font-main);font-size:2rem;font-weight:700;}
   .stat-sub{color:var(--muted);font-size:.78rem;margin-top:3px;}
-  .section-title{font-family:'Rajdhani',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--accent);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .section-title{font-family:var(--font-main);font-size:1.1rem;letter-spacing:2px;color:var(--accent);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
 
   /* ROOM GRID */
   .room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
   .room-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;position:relative;}
   .room-card:hover{border-color:var(--accent);transform:translateY(-2px);}
   .room-card.occupied{border-color:#1e4d3a;}
-  .room-num{font-family:'Rajdhani',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent);}
+  .room-num{font-family:var(--font-main);font-size:1.3rem;font-weight:700;color:var(--accent);}
   .room-tenant{font-size:.83rem;color:var(--text);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .room-kwh{font-size:.75rem;color:var(--muted);margin-top:5px;}
   .room-badge{position:absolute;top:8px;right:8px;padding:2px 7px;border-radius:10px;font-size:.68rem;font-weight:600;}
@@ -99,8 +114,8 @@
   .ff input:focus,.ff select:focus{border-color:var(--accent);}
   .ff input[readonly]{color:var(--accent3);}
   .kwh-display{background:rgba(0,212,255,.07);border:1px solid var(--accent);border-radius:8px;padding:14px;text-align:center;margin-bottom:16px;}
-  .kwh-big{font-family:'Rajdhani',sans-serif;font-size:2.2rem;color:var(--accent);font-weight:700;}
-  .btn{padding:11px 24px;border-radius:8px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:1px;transition:opacity .2s;}
+  .kwh-big{font-family:var(--font-main);font-size:2.2rem;color:var(--accent);font-weight:700;}
+  .btn{padding:11px 24px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font-main);font-size:.95rem;font-weight:700;letter-spacing:1px;transition:opacity .2s;}
   .btn:hover{opacity:.82;}
   .btn-primary{background:var(--accent);color:#0a0e1a;}
   .btn-success{background:var(--accent3);color:#0a0e1a;}
@@ -251,7 +266,7 @@
     .topbar-brand{font-size:.9rem;}
   }
   .admin-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px;}
-  .admin-sub{font-family:'Rajdhani',sans-serif;color:var(--accent2);font-size:.95rem;letter-spacing:1px;margin-bottom:16px;}
+  .admin-sub{font-family:var(--font-main);color:var(--accent2);font-size:.95rem;letter-spacing:1px;margin-bottom:16px;}
   .tenant-wrap{max-height:380px;overflow-y:auto;}
 
   /* USHAURI */
@@ -273,7 +288,7 @@
   .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;}
   .modal-bg.open{display:flex;}
   .modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px;max-width:460px;width:90%;}
-  .modal-title{font-family:'Rajdhani',sans-serif;font-size:1.15rem;color:var(--accent);margin-bottom:18px;}
+  .modal-title{font-family:var(--font-main);font-size:1.15rem;color:var(--accent);margin-bottom:18px;}
   .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
 
   /* PREDICTION ENGINE */
@@ -284,9 +299,9 @@
   .pred-card.alert-yellow{border-color:var(--accent2);box-shadow:0 0 18px rgba(245,158,11,.12);}
   .pred-card.alert-green{border-color:var(--accent3);}
   .pred-card.no-data{border-color:rgba(30,58,95,.4);opacity:.65;}
-  .pred-room-num{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent);margin-bottom:2px;}
+  .pred-room-num{font-family:var(--font-main);font-size:1.1rem;font-weight:700;color:var(--accent);margin-bottom:2px;}
   .pred-tenant{font-size:.8rem;color:var(--muted);margin-bottom:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .pred-days{font-family:'Rajdhani',sans-serif;font-size:2.4rem;font-weight:700;line-height:1;}
+  .pred-days{font-family:var(--font-main);font-size:2.4rem;font-weight:700;line-height:1;}
   .pred-days.danger{color:var(--danger);}
   .pred-days.warn{color:var(--accent2);}
   .pred-days.safe{color:var(--accent3);}
@@ -295,7 +310,7 @@
   .pred-bar-fill{height:100%;border-radius:20px;transition:width 1s ease;}
   .pred-stats{display:flex;gap:14px;margin-top:8px;}
   .pred-stat{flex:1;}
-  .pred-stat-val{font-family:'Rajdhani',sans-serif;font-size:1.05rem;font-weight:700;}
+  .pred-stat-val{font-family:var(--font-main);font-size:1.05rem;font-weight:700;}
   .pred-stat-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
   .pred-badge{position:absolute;top:12px;right:12px;padding:3px 9px;border-radius:20px;font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
   .pred-badge.red{background:rgba(239,68,68,.2);color:#fca5a5;}
@@ -303,11 +318,11 @@
   .pred-badge.green{background:rgba(16,185,129,.2);color:#6ee7b7;}
   .pred-badge.grey{background:rgba(100,116,139,.15);color:var(--muted);}
   .pred-filter-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
-  .pred-filter-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;}
+  .pred-filter-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font-main);font-size:.82rem;cursor:pointer;transition:all .2s;}
   .pred-filter-btn:hover,.pred-filter-btn.active{background:var(--accent);color:#0a0e1a;border-color:var(--accent);}
   .pred-summary-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px;}
   .pred-sum-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;text-align:center;}
-  .pred-sum-val{font-family:'Rajdhani',sans-serif;font-size:1.7rem;font-weight:700;}
+  .pred-sum-val{font-family:var(--font-main);font-size:1.7rem;font-weight:700;}
   .pred-sum-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
   .pred-no-recs{text-align:center;color:var(--muted);font-size:.82rem;padding:18px 0;font-style:italic;}
   .pred-trend{font-size:.75rem;margin-top:5px;}
@@ -316,12 +331,55 @@
   .pred-trend.flat{color:var(--muted);}
   .pred-month-forecast{background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(16,185,129,.05));border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:.8rem;}
   .pred-month-forecast .mf-label{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
-  .pred-month-forecast .mf-val{font-family:'Rajdhani',sans-serif;font-size:1.1rem;color:var(--accent);}
+  .pred-month-forecast .mf-val{font-family:var(--font-main);font-size:1.1rem;color:var(--accent);}
   .pred-card-detail{font-size:.75rem;color:var(--muted);margin-top:6px;padding-top:8px;border-top:1px solid rgba(30,58,95,.4);}
 
   /* ══════════════════════════════════════
      LUKU NOTIFICATION SYSTEM
   ══════════════════════════════════════ */
+  /* ── Ripoti ya Mwezi ── */
+  .ripoti-stat-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:16px; }
+  .ripoti-stat { background:var(--surface2); border-radius:10px; padding:12px; }
+  .ripoti-stat-val { font-size:1.4rem; font-weight:900; color:var(--accent); }
+  .ripoti-stat-lbl { font-size:.72rem; color:var(--muted); margin-top:2px; }
+  .ripoti-table { width:100%; border-collapse:collapse; font-size:.82rem; margin-top:8px; }
+  .ripoti-table th { background:var(--surface2); padding:8px 10px; text-align:left; font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; border-bottom:2px solid var(--border); }
+  .ripoti-table td { padding:8px 10px; border-bottom:1px solid var(--border); color:var(--text); }
+  .ripoti-table tr:last-child td { border-bottom:none; }
+  .ripoti-table tr.totals-row td { font-weight:700; background:var(--surface2); color:var(--accent); }
+  .ripoti-section-title { font-size:.8rem; font-weight:700; color:var(--accent2); text-transform:uppercase; letter-spacing:1px; margin:16px 0 8px; }
+  .ripoti-badge-ok { color:var(--accent3); font-weight:700; }
+  .ripoti-badge-warn { color:var(--accent2); font-weight:700; }
+  .ripoti-badge-danger { color:var(--danger); font-weight:700; }
+
+  @media print {
+    body > *:not(#ripotiPrintArea) { display:none !important; }
+    #ripotiPrintArea {
+      display:block !important;
+      position:fixed; inset:0; z-index:9999;
+      background:#fff; color:#000;
+      padding:20px; font-family:Arial,sans-serif;
+    }
+    #ripotiPrintArea * { color:#000 !important; background:transparent !important; border-color:#ddd !important; }
+    #ripotiPrintArea .no-print { display:none !important; }
+    #ripotiPrintArea table { border-collapse:collapse; width:100%; }
+    #ripotiPrintArea th, #ripotiPrintArea td { border:1px solid #ddd !important; padding:6px 8px; }
+    #ripotiPrintArea .ripoti-stat { border:1px solid #ddd; padding:8px; border-radius:4px; }
+  }
+
+  /* ── Karibu Screen ── */
+  .karibu-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background .3s, transform .3s;
+  }
+  .karibu-dot.active {
+    background: var(--accent);
+    transform: scale(1.3);
+  }
+  .karibu-step { animation: fadeIn .35s ease; }
+
   #lukuNotifOverlay {
     display: none;
     position: fixed;
@@ -400,7 +458,7 @@
     display: inline-block;
     padding: 3px 14px;
     border-radius: 20px;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: var(--font-main);
     font-size: .72rem;
     font-weight: 700;
     letter-spacing: 2px;
@@ -411,7 +469,7 @@
   .notif-warn   .notif-badge-top { background: rgba(245,158,11,.2); color: #fde68a; }
 
   .notif-headline {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: var(--font-main);
     font-size: 1.7rem;
     font-weight: 700;
     line-height: 1.2;
@@ -441,7 +499,7 @@
   .notif-danger .notif-stat { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); }
   .notif-warn   .notif-stat { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); }
   .notif-stat-val {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: var(--font-main);
     font-size: 1.5rem;
     font-weight: 700;
     line-height: 1;
@@ -473,7 +531,7 @@
     padding: 14px;
     border: none;
     border-radius: 10px;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: var(--font-main);
     font-size: 1rem;
     font-weight: 700;
     letter-spacing: 1.5px;
@@ -517,8 +575,8 @@
     box-shadow:0 -4px 20px rgba(239,68,68,.4);
   }
   #offlineBanner.visible{display:flex;}
-  #offlineBanner strong{font-family:'Rajdhani',sans-serif;font-size:.95rem;letter-spacing:.5px;}
-  #offlineBanner button{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);color:#fff;padding:5px 14px;border-radius:6px;font-size:.78rem;cursor:pointer;white-space:nowrap;font-family:'Rajdhani',sans-serif;font-weight:700;}
+  #offlineBanner strong{font-family:var(--font-main);font-size:.95rem;letter-spacing:.5px;}
+  #offlineBanner button{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);color:#fff;padding:5px 14px;border-radius:6px;font-size:.78rem;cursor:pointer;white-space:nowrap;font-family:var(--font-main);font-weight:700;}
 
   /* Timestamp */
   .notif-timestamp {
@@ -529,21 +587,21 @@
 
   /* SMART OPTIMIZATION */
   .room-opt-grid{display:flex;flex-wrap:wrap;gap:8px;}
-  .room-opt-btn{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:.88rem;cursor:pointer;transition:all .2s;}
+  .room-opt-btn{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:var(--font-main);font-size:.88rem;cursor:pointer;transition:all .2s;}
   .room-opt-btn:hover{border-color:var(--accent);color:var(--accent);}
   .room-opt-btn.selected{background:rgba(0,212,255,.1);border-color:var(--accent);color:var(--accent);}
   .room-opt-btn.has-alert{border-color:var(--danger);color:#fca5a5;}
   .room-opt-btn.has-warn{border-color:var(--accent2);color:#fde68a;}
   .opt-profile{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px;}
   .opt-profile-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
-  .opt-profile-name{font-family:'Rajdhani',sans-serif;font-size:1.3rem;color:var(--accent);}
+  .opt-profile-name{font-family:var(--font-main);font-size:1.3rem;color:var(--accent);}
   .opt-profile-sub{font-size:.8rem;color:var(--muted);margin-top:2px;}
   .opt-score-ring{text-align:center;}
-  .opt-score-num{font-family:'Rajdhani',sans-serif;font-size:2.5rem;font-weight:700;}
+  .opt-score-num{font-family:var(--font-main);font-size:2.5rem;font-weight:700;}
   .opt-score-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
   .opt-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;}
   .opt-metric{background:var(--card);border-radius:10px;padding:12px;text-align:center;}
-  .opt-metric-val{font-family:'Rajdhani',sans-serif;font-size:1.4rem;font-weight:700;}
+  .opt-metric-val{font-family:var(--font-main);font-size:1.4rem;font-weight:700;}
   .opt-metric-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;margin-top:2px;}
   .opt-tips{display:flex;flex-direction:column;gap:10px;}
   .opt-tip{border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
@@ -564,23 +622,23 @@
   .opt-tip.warn .opt-tip-saving{color:#fde68a;}
   .opt-tip.info .opt-tip-saving{color:var(--accent);}
   .opt-tip.good .opt-tip-saving{color:var(--accent3);}
-  .opt-section-title{font-family:'Rajdhani',sans-serif;font-size:.9rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin:16px 0 10px;}
+  .opt-section-title{font-family:var(--font-main);font-size:.9rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin:16px 0 10px;}
   .opt-comparison{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px;}
   .opt-comp-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
   .opt-comp-label{width:80px;font-size:.78rem;color:var(--muted);}
   .opt-comp-bar-wrap{flex:1;background:rgba(255,255,255,.06);border-radius:20px;height:10px;overflow:hidden;}
   .opt-comp-bar{height:100%;border-radius:20px;}
-  .opt-comp-val{width:70px;text-align:right;font-family:'Rajdhani',sans-serif;font-size:.9rem;}
+  .opt-comp-val{width:70px;text-align:right;font-family:var(--font-main);font-size:.9rem;}
   .anomaly-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:12px;}
   .anomaly-card.flagged{border-color:var(--danger);}
   .anomaly-card.minor{border-color:var(--accent2);}
   .anomaly-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-  .anomaly-room{font-family:'Rajdhani',sans-serif;font-size:1.1rem;color:var(--accent);}
+  .anomaly-room{font-family:var(--font-main);font-size:1.1rem;color:var(--accent);}
   .anomaly-desc{font-size:.83rem;color:var(--muted);line-height:1.6;}
   .anomaly-stat{font-size:.8rem;margin-top:8px;padding:8px 12px;background:var(--card);border-radius:8px;}
   .no-data-box{text-align:center;padding:40px 20px;color:var(--muted);}
   .no-data-box .nd-icon{font-size:2.5rem;margin-bottom:10px;}
-  .no-data-box .nd-title{font-family:'Rajdhani',sans-serif;font-size:1.1rem;color:var(--text);margin-bottom:6px;}
+  .no-data-box .nd-title{font-family:var(--font-main);font-size:1.1rem;color:var(--text);margin-bottom:6px;}
 
   /* ══════════════════════════════════════
      MICHANGO — Contributions Module
@@ -593,7 +651,7 @@
   .mchango-sum-card.yellow::before{background:var(--accent2);}
   .mchango-sum-card.red::before{background:var(--danger);}
   .mchango-sum-lbl{color:var(--muted);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
-  .mchango-sum-val{font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;}
+  .mchango-sum-val{font-family:var(--font-main);font-size:1.8rem;font-weight:700;}
   .mchango-sum-sub{color:var(--muted);font-size:.74rem;margin-top:3px;}
 
   .mchango-progress{background:rgba(255,255,255,.06);border-radius:20px;height:10px;margin:10px 0 6px;overflow:hidden;}
@@ -615,7 +673,7 @@
   /* Ingiza mchango form */
   .mchango-form-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px;max-width:560px;margin-bottom:24px;}
   .mchango-result-box{background:rgba(245,158,11,.07);border:1px solid var(--accent2);border-radius:10px;padding:14px 18px;margin:14px 0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center;}
-  .mchango-res-val{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;}
+  .mchango-res-val{font-family:var(--font-main);font-size:1.5rem;font-weight:700;}
   .mchango-res-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
   .mchango-res-val.target{color:var(--accent);}
   .mchango-res-val.paid{color:var(--accent3);}
@@ -625,8 +683,8 @@
   /* History of contributions */
   .hist-mchango-entry{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 15px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.84rem;}
   .hist-mchango-entry:not(:last-child){margin-bottom:6px;}
-  .hist-mchango-entry .hm-chumba{font-family:'Rajdhani',sans-serif;font-size:1rem;color:var(--accent);}
-  .hist-mchango-entry .hm-amount{font-family:'Rajdhani',sans-serif;color:var(--accent3);font-size:1.05rem;}
+  .hist-mchango-entry .hm-chumba{font-family:var(--font-main);font-size:1rem;color:var(--accent);}
+  .hist-mchango-entry .hm-amount{font-family:var(--font-main);color:var(--accent3);font-size:1.05rem;}
   .hist-mchango-entry .hm-date{color:var(--muted);font-size:.76rem;}
 
   @media(max-width:480px){
@@ -635,6 +693,50 @@
     .mchango-sum-val{font-size:1.4rem;}
   }
 </style>
+
+<!-- PWA Manifest inline (blob) — ruhusu "Add to Home Screen" bila server -->
+<meta name="theme-color" content="#00d4ff">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SmartEnergy">
+<meta name="application-name" content="SmartEnergy">
+<script>
+// Unda manifest ya PWA na kuiingiza kwa blob (inafanya kazi bila server)
+(function(){
+  try {
+    var manifest = {
+      name: "Smart Home Energy System",
+      short_name: "SmartEnergy",
+      description: "Mfumo wa kusimamia umeme na malipo ya wapangaji",
+      start_url: "./",
+      display: "standalone",
+      background_color: "#0a0e1a",
+      theme_color: "#00d4ff",
+      orientation: "portrait-primary",
+      icons: [
+        {
+          src: "data:image/svg+xml," + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">' +
+            '<rect width="192" height="192" rx="24" fill="#0a0e1a"/>' +
+            '<text x="96" y="130" font-size="110" text-anchor="middle">⚡</text>' +
+            '</svg>'
+          ),
+          sizes: "192x192",
+          type: "image/svg+xml",
+          purpose: "any maskable"
+        }
+      ]
+    };
+    var blob = new Blob([JSON.stringify(manifest)], {type: "application/manifest+json"});
+    var url  = URL.createObjectURL(blob);
+    var link = document.createElement("link");
+    link.rel  = "manifest";
+    link.href = url;
+    document.head.appendChild(link);
+  } catch(e) {}
+})();
+</script>
 </head>
 <body>
 
@@ -644,7 +746,7 @@
     <div class="login-logo">
       <span class="icon">⚡</span>
       <h1>SMART HOME ENERGY</h1>
-      <h2 style="font-family:'Rajdhani',sans-serif;font-size:1rem;color:var(--accent2);letter-spacing:1px;font-weight:600;margin-top:4px;">PREDICTION AND OPTIMIZATION SYSTEM</h2>
+      <h2 style="font-family:var(--font-main);font-size:1rem;color:var(--accent2);letter-spacing:1px;font-weight:600;margin-top:4px;">PREDICTION AND OPTIMIZATION SYSTEM</h2>
       <p style="margin-top:8px;">Mfumo wa kufuatilia matumizi ya umeme, kutabiri salio la LUKU,<br>na kutoa ushauri wa kupunguza gharama za nishati.</p>
     </div>
     <div class="login-error" id="loginError"></div>
@@ -662,7 +764,15 @@
     </div>
     <button class="btn-login" onclick="var pw=document.getElementById('pinWrap');if(pw)pw.style.display='';login()">INGIA ⚡</button>
     <button class="btn-login" style="margin-top:10px;background:#f59e0b;font-size:.95rem;" onclick="var pw=document.getElementById('pinWrap');if(pw)pw.style.display='none';loginAdmin()">🔧 INGIA KAMA ADMIN</button>
-    
+
+    <!-- Install App button — inaonekana tu ukiwa na Android Chrome na bado haujaweka -->
+    <button id="installAppBtn" onclick="installApp()"
+      style="display:none;margin-top:16px;width:100%;background:transparent;border:1px solid var(--accent3);
+             color:var(--accent3);padding:11px;border-radius:8px;font-size:.88rem;cursor:pointer;
+             font-family:var(--font-main);font-weight:600;letter-spacing:1px;">
+      📲 WEKA APP KWENYE SIMU
+    </button>
+
   </div>
 </div>
 
@@ -698,7 +808,7 @@
     <div class="setup-title">🔗 Weka URL ya Google Apps Script</div>
     <div class="setup-desc">
       Baada ya deploy kwenye Google Apps Script, copy URL yako na paste hapa.<br>
-      Mfano: <code style="color:var(--accent);font-size:.8rem;">https://script.google.com/macros/s/AKfycbxpW_MYtOhyyz2sdM6yP4h9X6g5vem_ewKGU6_DdI7iD7IW1AVQe7jWmejLqSVRbczu/exec
+      Mfano: <code style="color:var(--accent);font-size:.8rem;">https://script.google.com/macros/s/.../exec</code>
     </div>
     <input class="setup-input" id="setupUrl" type="text" placeholder="https://script.google.com/macros/s/.../exec" />
     <div style="color:var(--muted);font-size:.78rem;margin-bottom:14px;">
@@ -714,15 +824,50 @@
 <!-- ═══ APP ═══ -->
 <div id="appPage">
   <div class="topbar">
-    <div style="display:flex;align-items:center;gap:8px;">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
       <div class="topbar-brand">⚡ SMART ENERGY</div>
       <div class="url-badge" id="urlStatusBadge" onclick="openSetup()">🔗 Weka URL</div>
       <div id="backupBadge" style="display:none;align-items:center;border:1px solid;border-radius:20px;padding:4px 10px;font-size:.72rem;cursor:pointer;transition:all .2s;" onclick="showPage('admin',document.getElementById('adminTab'))">☁ Backup</div>
+      <div id="rateBadge" style="display:inline-flex;align-items:center;border:1px solid var(--accent2);border-radius:20px;padding:4px 10px;font-size:.72rem;cursor:pointer;transition:all .2s;background:rgba(245,158,11,.1);color:var(--accent2);" onclick="openRateModal()">⚠ Bei: 500/u</div>
     </div>
     <div class="user-badge">
       <span id="userBadgeName"></span>
       <span style="color:var(--muted)">|</span>
       <button class="btn-logout" onclick="logout()">Toka</button>
+    </div>
+  </div>
+
+  <!-- RATE MODAL -->
+  <div class="modal-overlay" id="rateModal" onclick="if(event.target===this)closeRateModal()">
+    <div class="modal" style="max-width:420px;">
+      <div class="section-title" style="margin-bottom:16px;">💰 Weka Bei ya Unit (Tsh/kWh)</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:16px;line-height:1.6;">
+        Bei hii itatumika kwa hesabu zote za bili — prediction, ulinganisho, na ushauri.
+        Sasisha kila wakati TANESCO inabadilisha bei.
+      </div>
+      <div id="rateLastDate" style="font-size:.76rem;color:var(--accent2);margin-bottom:12px;"></div>
+      <div class="ff" style="margin-bottom:16px;">
+        <label>Bei ya Unit (Tsh kwa kila unit moja ya LUKU)</label>
+        <input type="number" id="rateInput" min="10" max="50000" placeholder="Mfano: 500"
+          style="font-size:1.2rem;padding:14px;font-family:var(--font-main);color:var(--accent2);"
+          onkeydown="if(event.key==='Enter') saveUnitRate()">
+        <div style="font-size:.74rem;color:var(--muted);margin-top:6px;">
+          💡 Mfano: Kama ulinunua units 200 kwa Tsh 100,000 → bei = 100,000 ÷ 200 = <strong style="color:var(--accent2);">500 Tsh/unit</strong>
+        </div>
+      </div>
+      <!-- Bei ya kawaida TANESCO kwa kumbukumbu -->
+      <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:.78rem;">
+        <div style="color:var(--muted);margin-bottom:6px;font-weight:600;">📋 Kumbukumbu ya Bei za TANESCO:</div>
+        <div style="color:var(--muted);">Block 1 (0–75 units): ~Tsh 292/unit</div>
+        <div style="color:var(--muted);">Block 2 (76–400 units): ~Tsh 454/unit</div>
+        <div style="color:var(--muted);">Block 3 (400+ units): ~Tsh 613/unit</div>
+        <div style="color:var(--accent2);margin-top:4px;">Tumia bei ya wastani inayofaa jengo lako.</div>
+      </div>
+      <div id="rateMsg" style="font-size:.82rem;min-height:20px;margin-bottom:12px;"></div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-success" onclick="saveUnitRate()" style="flex:1;">💾 Hifadhi Bei</button>
+        <button class="btn btn-outline" onclick="closeRateModal()" style="flex:1;">Funga</button>
+      </div>
     </div>
   </div>
 
@@ -746,7 +891,7 @@
       <!-- Taarifa ya LUKU inayoonekana kwa wapangaji wote -->
       <div id="globalLukuCard" style="display:none;margin-bottom:16px;">
         <div style="background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:14px 18px;">
-          <div style="font-family:'Rajdhani',sans-serif;color:var(--accent);font-size:.88rem;letter-spacing:1px;margin-bottom:10px;">⚡ TAARIFA YA LUKU — ILIYOWEKWA NA ADMIN</div>
+          <div style="font-family:var(--font-main);color:var(--accent);font-size:.88rem;letter-spacing:1px;margin-bottom:10px;">⚡ TAARIFA YA LUKU — ILIYOWEKWA NA ADMIN</div>
           <div id="globalLukuCardContent" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;"></div>
         </div>
       </div>
@@ -770,7 +915,7 @@
       <!-- Taarifa ya LUKU iliyohifadhiwa ya mwisho -->
       <div id="lukuLastInfo" style="margin-bottom:18px;display:none;">
         <div style="background:rgba(0,212,255,.07);border:1px solid var(--accent);border-radius:12px;padding:14px 18px;">
-          <div style="font-family:'Rajdhani',sans-serif;color:var(--accent);font-size:.85rem;letter-spacing:1px;margin-bottom:10px;">📋 TAARIFA YA LUKU ILIYOHIFADHIWA</div>
+          <div style="font-family:var(--font-main);color:var(--accent);font-size:.85rem;letter-spacing:1px;margin-bottom:10px;">📋 TAARIFA YA LUKU ILIYOHIFADHIWA</div>
           <div id="lukuLastContent" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;"></div>
         </div>
       </div>
@@ -792,6 +937,16 @@
               <option value="Jioni">🌆 Jioni (16:00 - 20:00)</option>
               <option value="Usiku">🌙 Usiku (20:00 - 06:00)</option>
             </select>
+          </div>
+        </div>
+        <!-- CHUMBA — muhimu kwa prediction -->
+        <div class="ff" style="margin-bottom:14px;">
+          <label>🏠 Chumba (Hiari — kwa Prediction ya Chumba Kimoja)</label>
+          <select id="lChumba" style="color:var(--accent2);">
+            <option value="">— Jumla ya Jengo Zima —</option>
+          </select>
+          <div style="font-size:.74rem;color:var(--muted);margin-top:5px;">
+            💡 Chagua chumba ili prediction ya chumba hicho ifanye kazi. Acha wazi kwa rekodi ya jumla tu.
           </div>
         </div>
         <div class="form-row">
@@ -830,7 +985,7 @@
       <div class="section-title" style="margin-top:26px;">📋 HISTORIA YA LUKU (Matumizi ya Jumla)</div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Tarehe</th><th>Muda</th><th>Ilikuwepo</th><th>+Mpya</th><th>Jumla (Total)</th><th>Tsh Lililipwa</th><th>Maelezo</th><th></th></tr></thead>
+      "<thead><tr><th>Tarehe</th><th>Muda</th><th>Chumba</th><th>Ilikuwepo</th><th>+Mpya</th><th>Jumla (Total)</th><th>Tsh Lililipwa</th><th>Maelezo</th><th></th></tr></thead>"
           <tbody id="lukuHistTbody"></tbody>
         </table>
       </div>
@@ -862,14 +1017,24 @@
     <!-- KUMBUKUMBU -->
     <div class="page" id="page-kumbukumbu">
       <div class="section-title">KUMBUKUMBU YA LUKU</div>
+
+      <!-- Info note -->
+      <div style="background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:8px;">
+        <span style="font-size:1rem;">📋</span>
+        <span>Inaonyesha rekodi <b style="color:var(--accent);">zote</b> — jumla ya jengo na za vyumba moja moja. Tumia filter kuchagua chumba au mwezi maalum.</span>
+      </div>
+
       <div class="hist-filters">
-        <select id="hChumba" onchange="renderHistory()"><option value="">Vyumba Vyote</option></select>
+        <select id="hChumba" onchange="renderHistory()">
+          <option value="">Vyumba Vyote</option>
+          <option value="JUMLA">📦 Jumla ya Jengo</option>
+        </select>
         <input type="month" id="hMonth" onchange="renderHistory()" />
         <button class="btn btn-outline btn-sm" onclick="exportCSV()">📤 Hamisha CSV</button>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Tarehe</th><th>Muda</th><th>Chumba</th><th>Mpangaji</th><th>Awali</th><th>Sasa</th><th>kWh</th><th>Gharama</th></tr></thead>
+          <thead><tr><th>Tarehe</th><th>Muda</th><th>Chumba</th><th>Mpangaji</th><th>Awali</th><th>Sasa</th><th>+Mpya (kWh)</th><th>Gharama</th></tr></thead>
           <tbody id="histTbody"></tbody>
         </table>
       </div>
@@ -927,7 +1092,7 @@
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px;">
         <div>
           <label style="color:var(--muted);font-size:.74rem;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px;">Mwezi</label>
-          <input type="month" id="mchangoMwezi" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:.93rem;outline:none;" onchange="renderMichango()" />
+          <input type="month" id="mchangoMwezi" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:.93rem;outline:none;" onchange="renderMichango();updateLukuMgawanyo();" />
         </div>
         <div style="margin-top:20px;">
           <button class="btn btn-outline btn-sm" onclick="exportMchangoCSV()">📤 Hamisha CSV</button>
@@ -961,8 +1126,8 @@
       <!-- Progress Bar ya Ukusanyaji -->
       <div style="background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:22px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-family:'Rajdhani',sans-serif;color:var(--accent2);font-size:.9rem;letter-spacing:1px;">MAENDELEO YA UKUSANYAJI</span>
-          <span id="mc-pct-label" style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent2);">0%</span>
+          <span style="font-family:var(--font-main);color:var(--accent2);font-size:.9rem;letter-spacing:1px;">MAENDELEO YA UKUSANYAJI</span>
+          <span id="mc-pct-label" style="font-family:var(--font-main);font-size:1.1rem;font-weight:700;color:var(--accent2);">0%</span>
         </div>
         <div class="mchango-progress">
           <div class="mchango-progress-fill" id="mc-progress-fill" style="width:0%;background:linear-gradient(90deg,var(--accent2),#fde68a);"></div>
@@ -999,6 +1164,33 @@
             <input type="number" id="mcKiasi" placeholder="Mfano: 10000" oninput="calcMchangoBalance()" />
           </div>
         </div>
+
+        <!-- HESABU YA LUKU - Mgawanyo wa Otomatiki -->
+        <div id="lukuMgawanyoBox" style="display:none;background:var(--surface2);border:1px solid var(--accent);border-radius:12px;padding:14px;margin-top:2px;margin-bottom:4px;">
+          <div style="font-size:.82rem;font-weight:700;color:var(--accent);margin-bottom:8px;">⚡ HESABU YA LUKU — Mgawanyo wa Otomatiki</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-bottom:10px;">Fomula: <span style="color:var(--accent2);">(kWh za chumba / kWh za jumla) × jumla iliyolipwa</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+            <div style="background:var(--surface);border-radius:8px;padding:8px;">
+              <div style="font-size:.7rem;color:var(--muted);">kWh za chumba hiki</div>
+              <div id="luku-chumba-kwh" style="font-size:1.1rem;font-weight:700;color:var(--accent3);">—</div>
+            </div>
+            <div style="background:var(--surface);border-radius:8px;padding:8px;">
+              <div style="font-size:.7rem;color:var(--muted);">kWh za jumla (mwezi)</div>
+              <div id="luku-jumla-kwh" style="font-size:1.1rem;font-weight:700;color:var(--text);">—</div>
+            </div>
+            <div style="background:var(--surface);border-radius:8px;padding:8px;">
+              <div style="font-size:.7rem;color:var(--muted);">Jumla iliyolipwa (Tsh)</div>
+              <div id="luku-jumla-tsh" style="font-size:1.1rem;font-weight:700;color:var(--text);">—</div>
+            </div>
+            <div style="background:var(--accent);border-radius:8px;padding:8px;">
+              <div style="font-size:.7rem;color:rgba(255,255,255,.8);">Ada ya LUKU inayohitajika</div>
+              <div id="luku-ada-hesabu" style="font-size:1.2rem;font-weight:800;color:#fff;">—</div>
+            </div>
+          </div>
+          <div id="lukuMgawanyoWarn" style="display:none;font-size:.75rem;color:var(--danger);margin-bottom:8px;padding:6px;background:rgba(239,68,68,.1);border-radius:6px;"></div>
+          <button class="btn btn-outline btn-sm" onclick="tumiaAdaYaLuku()" style="font-size:.78rem;">✅ Tumia Ada Hii</button>
+        </div>
+
         <div class="ff">
           <label>Tarehe ya Malipo</label>
           <input type="date" id="mcTarehe" />
@@ -1065,7 +1257,7 @@
 
       <!-- URL SETUP NDANI YA ADMIN -->
       <div style="background:rgba(245,158,11,.08);border:1px solid var(--accent2);border-radius:12px;padding:18px;margin-bottom:20px;">
-        <div style="font-family:'Rajdhani',sans-serif;color:var(--accent2);font-size:1rem;letter-spacing:1px;margin-bottom:10px;">🔗 URL YA GOOGLE APPS SCRIPT</div>
+        <div style="font-family:var(--font-main);color:var(--accent2);font-size:1rem;letter-spacing:1px;margin-bottom:10px;">🔗 URL YA GOOGLE APPS SCRIPT</div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           <input type="text" id="inlineUrl" placeholder="https://script.google.com/macros/s/.../exec"
             style="flex:1;min-width:200px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 13px;border-radius:8px;font-size:.85rem;outline:none;" />
@@ -1211,9 +1403,26 @@
             <label>Thibitisha Nenosiri Jipya</label>
             <input type="password" id="pwdConfirm" placeholder="Rudia nenosiri jipya" autocomplete="new-password" />
           </div>
+          <button class="btn btn-info" style="margin-bottom:8px;" onclick="openRipotiModal()">📊 Ripoti ya Mwezi</button>
           <button class="btn btn-warn" onclick="changeAdminPassword()">🔑 Badilisha Nenosiri</button>
           <div style="margin-top:10px;padding:10px;background:rgba(245,158,11,.08);border:1px solid var(--accent2);border-radius:8px;font-size:.75rem;color:var(--muted);">
             🆘 <strong style="color:var(--accent2);">Nenosiri la Dharura:</strong> Kama umesahau nenosiri, ingia na neno <code style="color:var(--accent);background:var(--surface2);padding:2px 6px;border-radius:4px;">SmartEnergy#Reset</code> — kisha badilisha nenosiri lako mara moja.
+          </div>
+
+          <!-- WhatsApp / Simu ya Admin -->
+          <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border);">
+            <div style="font-size:.78rem;font-weight:700;color:var(--accent3);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">📱 Mawasiliano ya Admin</div>
+            <div class="ff" style="margin-bottom:8px;">
+              <label>Jina la Admin (litaonekana kwa wapangaji)</label>
+              <input type="text" id="adminContactName" placeholder="Mfano: Bw. Muba" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;width:100%;" />
+            </div>
+            <div class="ff" style="margin-bottom:8px;">
+              <label>Nambari ya WhatsApp/Simu (255XXXXXXXXX)</label>
+              <input type="tel" id="adminContactPhone" placeholder="Mfano: 255712345678" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;width:100%;" />
+              <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">⚠ Andika nambari bila + na bila nafasi. Mfano: 255712345678</div>
+            </div>
+            <button class="btn btn-success btn-sm" onclick="saveAdminContact()">💾 Hifadhi Mawasiliano</button>
+            <div id="adminContactAlert" style="margin-top:8px;"></div>
           </div>
         </div>
       </div>
@@ -1225,6 +1434,118 @@
 <!-- ══════════════════════════════════
      LUKU NOTIFICATION OVERLAY
      ══════════════════════════════════ -->
+<!-- ================================================================
+     RIPOTI YA MWEZI — Monthly Report Modal
+     ================================================================ -->
+<div class="setup-modal" id="ripotiModal" style="z-index:450;align-items:flex-start;padding:16px;overflow-y:auto;">
+  <div style="background:var(--card);border-radius:16px;width:100%;max-width:700px;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.5);">
+
+    <!-- Header ya Modal -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px 12px;border-bottom:1px solid var(--border);">
+      <div style="font-size:1rem;font-weight:800;color:var(--accent);">📊 Ripoti ya Mwezi</div>
+      <button class="btn btn-outline btn-sm" onclick="closeRipotiModal()">✕ Funga</button>
+    </div>
+
+    <!-- Chagua Mwezi -->
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+      <div>
+        <label style="font-size:.75rem;color:var(--muted);display:block;margin-bottom:4px;">Chagua Mwezi</label>
+        <input type="month" id="ripotiMwezi" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:.9rem;" onchange="generateRipoti()" />
+      </div>
+      <div>
+        <label style="font-size:.75rem;color:var(--muted);display:block;margin-bottom:4px;">Jina la Jengo</label>
+        <input type="text" id="ripotiJengo" placeholder="Mfano: Nyumba ya Muba" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:.9rem;min-width:180px;" oninput="generateRipoti()" />
+      </div>
+      <button class="btn btn-success btn-sm" onclick="printRipoti()" style="padding:9px 18px;">🖨 Chapisha / PDF</button>
+    </div>
+
+    <!-- Ripoti Content -->
+    <div id="ripotiContent" style="padding:20px;">
+      <div style="text-align:center;color:var(--muted);padding:30px;">Chagua mwezi kuona ripoti</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     KARIBU SCREEN — Onboarding kwa Wapangaji Wapya
+     ================================================================ -->
+<div class="setup-modal" id="karibuModal" style="z-index:500;">
+  <div class="setup-box" style="max-width:380px;text-align:center;padding:28px 24px;">
+
+    <!-- Step 1 -->
+    <div class="karibu-step" id="karibuStep1">
+      <div style="font-size:3rem;margin-bottom:8px;">🏠</div>
+      <div style="font-size:1.2rem;font-weight:800;color:var(--accent);margin-bottom:6px;">Karibu!</div>
+      <div id="karibuJinaText" style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:12px;"></div>
+      <div style="font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:18px;">
+        Hii ni app yako ya kufuatilia <strong style="color:var(--text);">LUKU</strong> na <strong style="color:var(--text);">malipo ya nyumba</strong>.
+        Utaona takwimu zako zote hapa — bila kuhitaji karatasi.
+      </div>
+      <div style="background:var(--surface2);border-radius:10px;padding:14px;margin-bottom:18px;text-align:left;">
+        <div style="font-size:.75rem;font-weight:700;color:var(--accent3);margin-bottom:8px;text-transform:uppercase;">Utaweza kufanya:</div>
+        <div style="font-size:.82rem;color:var(--text);line-height:2;">
+          ⚡ Angalia hali ya LUKU yako wakati wowote<br>
+          📊 Angalia historia ya matumizi ya umeme<br>
+          💰 Angalia malipo yako ya kila mwezi<br>
+          🔔 Pokea arifa ukaribia kwisha LUKU
+        </div>
+      </div>
+      <button class="btn btn-success" style="width:100%;padding:13px;font-size:.95rem;" onclick="karibuNext(2)">
+        Endelea →
+      </button>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="karibu-step" id="karibuStep2" style="display:none;">
+      <div style="font-size:3rem;margin-bottom:8px;">⚡</div>
+      <div style="font-size:1.1rem;font-weight:800;color:var(--accent);margin-bottom:10px;">Hali ya LUKU Yako Sasa</div>
+      <div id="karibuLukuInfo" style="background:var(--surface2);border-radius:12px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:4px;">LUKU iliyobaki (units)</div>
+        <div id="karibuLukuUnits" style="font-size:2.5rem;font-weight:900;color:var(--accent);">—</div>
+        <div id="karibuLukuStatus" style="font-size:.82rem;margin-top:6px;">Inapakia...</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:16px;text-align:left;">
+        <div style="font-size:.75rem;font-weight:700;color:var(--accent2);margin-bottom:6px;">📖 Jinsi ya Kusoma Takwimu:</div>
+        <div style="font-size:.8rem;color:var(--muted);line-height:1.8;">
+          🟢 <strong style="color:var(--text);">Kijani</strong> = LUKU inatosha<br>
+          🟡 <strong style="color:var(--text);">Njano</strong> = Nunua hivi karibuni<br>
+          🔴 <strong style="color:var(--text);">Nyekundu</strong> = Haraka! Inakwisha
+        </div>
+      </div>
+      <button class="btn btn-success" style="width:100%;padding:13px;font-size:.95rem;" onclick="karibuNext(3)">
+        Nionyeshe Dashboard →
+      </button>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="karibu-step" id="karibuStep3" style="display:none;">
+      <div style="font-size:3rem;margin-bottom:8px;">📞</div>
+      <div style="font-size:1.1rem;font-weight:800;color:var(--accent);margin-bottom:10px;">Msimamizi Wako</div>
+      <div id="karibuAdminContact" style="background:var(--surface2);border-radius:12px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:8px;">Kwa msaada wowote, wasiliana na:</div>
+        <div id="karibuAdminName" style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;" id="karibuContactBtns"></div>
+      </div>
+      <div style="font-size:.78rem;color:var(--muted);margin-bottom:16px;">
+        Nambari hii itaonekana pia kwenye arifa za LUKU — utapigiwa simu au kutumia WhatsApp wakati LUKU inaisha.
+      </div>
+      <button class="btn btn-success" style="width:100%;padding:13px;font-size:.95rem;" onclick="closeKaribu()">
+        ✅ Niko Tayari — Ingia Dashboard
+      </button>
+      <div style="margin-top:8px;">
+        <button class="btn btn-outline btn-sm" style="font-size:.75rem;" onclick="closeKaribu()">Ruka</button>
+      </div>
+    </div>
+
+    <!-- Dots za progress -->
+    <div style="display:flex;justify-content:center;gap:6px;margin-top:16px;" id="karibuDots">
+      <div class="karibu-dot active" id="dot1"></div>
+      <div class="karibu-dot" id="dot2"></div>
+      <div class="karibu-dot" id="dot3"></div>
+    </div>
+  </div>
+</div>
+
 <div id="lukuNotifOverlay">
   <div class="notif-box" id="lukuNotifBox">
     <div class="notif-icon-ring" id="lukuNotifIcon">⚡</div>
@@ -1255,6 +1576,24 @@
       <button class="notif-btn-main" id="lukuNotifMainBtn" onclick="closeLukuNotif(false)">
         ✓ Nimeona — Nitanunua LUKU
       </button>
+
+      <!-- WhatsApp / Simu ya Admin -->
+      <div id="notifAdminContact" style="display:none;margin:10px 0;padding:12px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);border-radius:10px;">
+        <div style="font-size:.72rem;color:rgba(255,255,255,.6);margin-bottom:6px;">📞 Wasiliana na Msimamizi</div>
+        <div id="notifAdminName" style="font-size:.85rem;font-weight:700;color:#fff;margin-bottom:8px;"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <a id="notifWhatsappBtn" href="#" target="_blank" rel="noopener"
+             style="display:inline-flex;align-items:center;gap:6px;background:#25D366;color:#fff;padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:700;text-decoration:none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp Admin
+          </a>
+          <a id="notifCallBtn" href="#"
+             style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);color:#fff;padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:700;text-decoration:none;">
+            📞 Piga Simu
+          </a>
+        </div>
+      </div>
+
       <div class="notif-snooze-row">
         <input type="checkbox" id="notifSnoozeCheck" />
         <label for="notifSnoozeCheck">Usinifikishie tena leo</label>
@@ -1280,14 +1619,105 @@
 <!-- OFFLINE / NO-SHEETS BANNER -->
 <div id="offlineBanner">
   <div>
-    <strong>⚠ Tahadhari: Sheets haipatikani</strong>
-    <span style="margin-left:8px;opacity:.85;">Data inabaki kwenye browser tu. Unaweza kupoteza data ukifuta cache.</span>
+    <strong>📵 Offline</strong>
+    <span style="margin-left:8px;opacity:.85;">App inafanya kazi — </span>
+    <span id="syncQueueBadge" style="display:none;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;font-size:.78rem;font-weight:700;">0 zinasubiri</span>
+    <span id="syncQueueDone" style="display:none;opacity:.85;font-size:.82rem;">Data itasync ukipata mtandao</span>
   </div>
   <button onclick="document.getElementById('offlineBanner').classList.remove('visible');syncFromSheets(true);">🔄 Jaribu Tena</button>
 </div>
 
 <script>
 var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw5M9m5N9K6Yv5GA03ILkrVfqvq20lUFopFglcISB93SynPKFzB7R0AY0kRoQbU924G/exec";
+
+// ══════════════════════════════════════
+// BEI YA UNIT — Inabadilishwa na Admin
+// ══════════════════════════════════════
+var DEFAULT_RATE     = 500;   // Tsh/unit — fallback kama haijawekwa
+var RATE_STORAGE_KEY = "se_unit_rate";
+var RATE_DATE_KEY    = "se_unit_rate_date";
+
+function getUnitRate(){
+  var saved = parseInt(localStorage.getItem(RATE_STORAGE_KEY));
+  return (saved && saved > 0) ? saved : DEFAULT_RATE;
+}
+
+function setUnitRate(rate, skipMsg){
+  if(!rate || rate <= 0) return false;
+  localStorage.setItem(RATE_STORAGE_KEY, String(rate));
+  localStorage.setItem(RATE_DATE_KEY, today());
+  if(!skipMsg) updateRateBadge();
+  return true;
+}
+
+function getUnitRateDate(){
+  return localStorage.getItem(RATE_DATE_KEY) || null;
+}
+
+// Badge ya topbar — inakumbusha Admin kama bei ni ya zamani (zaidi ya siku 180)
+function updateRateBadge(){
+  var badge = document.getElementById("rateBadge");
+  if(!badge) return;
+  var rate    = getUnitRate();
+  var dateStr = getUnitRateDate();
+  var isDefault = !localStorage.getItem(RATE_STORAGE_KEY);
+
+  if(isDefault){
+    badge.style.cssText = "display:inline-flex;align-items:center;border:1px solid var(--accent2);border-radius:20px;padding:4px 10px;font-size:.72rem;cursor:pointer;background:rgba(245,158,11,.1);color:var(--accent2);";
+    badge.textContent   = "⚠ Bei: "+rate+"/u (default)";
+    badge.title         = "Bei ya unit haijawekwa — inatumia Tsh 500 ya default. Bonyeza kubadilisha.";
+  } else {
+    // Angalia kama ni ya zamani
+    var stale = false;
+    if(dateStr){
+      var d = new Date(dateStr);
+      stale = (Date.now() - d.getTime()) > 180 * 24 * 60 * 60 * 1000; // siku 180
+    }
+    if(stale){
+      badge.style.cssText = "display:inline-flex;align-items:center;border:1px solid var(--accent2);border-radius:20px;padding:4px 10px;font-size:.72rem;cursor:pointer;background:rgba(245,158,11,.1);color:var(--accent2);";
+      badge.textContent   = "⚠ Bei: "+rate+"/u (zamani)";
+      badge.title         = "Bei ya unit ni ya zamani — inaweza kuwa imebadilika. Bonyeza kusasisha.";
+    } else {
+      badge.style.cssText = "display:inline-flex;align-items:center;border:1px solid var(--accent3);border-radius:20px;padding:4px 10px;font-size:.72rem;cursor:pointer;background:rgba(16,185,129,.1);color:var(--accent3);";
+      badge.textContent   = "✓ Bei: Tsh "+rate+"/u";
+      badge.title         = "Bei ya unit: Tsh "+rate+" — Imewekwa: "+(dateStr||"?");
+    }
+  }
+}
+
+function openRateModal(){
+  var modal = document.getElementById("rateModal");
+  if(!modal) return;
+  var inp = document.getElementById("rateInput");
+  if(inp) inp.value = getUnitRate();
+  var dateEl = document.getElementById("rateLastDate");
+  if(dateEl){
+    var d = getUnitRateDate();
+    dateEl.textContent = d ? "Imewekwa mwisho: "+d : "Haijawekwa bado (inatumia "+DEFAULT_RATE+")";
+  }
+  modal.classList.add("open");
+  if(inp) setTimeout(function(){ inp.focus(); inp.select(); }, 100);
+}
+
+function closeRateModal(){
+  var modal = document.getElementById("rateModal");
+  if(modal) modal.classList.remove("open");
+}
+
+function saveUnitRate(){
+  var inp  = document.getElementById("rateInput");
+  var rate = parseInt(inp ? inp.value : 0);
+  var msg  = document.getElementById("rateMsg");
+  if(!rate || rate < 10 || rate > 50000){
+    if(msg){ msg.textContent = "❌ Weka bei kati ya 10 na 50,000 Tsh/unit."; msg.style.color="var(--danger)"; }
+    return;
+  }
+  setUnitRate(rate);
+  if(msg){ msg.textContent = "✅ Bei ya "+rate+" Tsh/unit imehifadhiwa! ("+today()+")"; msg.style.color="var(--accent3)"; }
+  updateRateBadge();
+  refreshAll();
+  setTimeout(closeRateModal, 1200);
+}
 // ── HELPER SALAMA — huzuia "Cannot set properties of null" ──
 function $set(id, val){
   var el = document.getElementById(id);
@@ -1509,26 +1939,191 @@ async function syncSheets(){
   hideOfflineBanner();
 }
 
-function getTenants(){ try{return JSON.parse(localStorage.getItem("tenants")||"{}");}catch(e){return{};} }
+function getTenants(){
+  // Sync fallback — kwa sehemu zinazoita synchronously
+  var enc = localStorage.getItem("tenants_enc");
+  if(!enc){
+    try{ return JSON.parse(localStorage.getItem("tenants")||"{}"); }catch(e){ return {}; }
+  }
+  // Kwa sync calls — rejesha cache iliyohifadhiwa
+  return window._tenantsCache || {};
+}
 function saveTenants(t){
-  localStorage.setItem("tenants",JSON.stringify(t));
+  window._tenantsCache = t;
+  // Hifadhi encrypted kwa background
+  encryptData(t).then(function(enc){
+    localStorage.setItem("tenants_enc", enc);
+    localStorage.removeItem("tenants");
+  }).catch(function(){
+    localStorage.setItem("tenants", JSON.stringify(t));
+  });
   scheduleAutoBackup();
-  // Arifu Sensa (tab nyingine au dirisha moja) kuhusu mabadiliko
-  try{
-    if(window._sensaChannel) window._sensaChannel.postMessage({type:"tenants_changed"});
-  } catch(e){}
+}
+
+// Pakia tenants kwenye cache wakati wa startup
+async function loadTenantsCache(){
+  var t = await getTenantsSecure();
+  window._tenantsCache = t;
+  return t;
 }
 
 // BroadcastChannel — Sensa itasikiliza hii iwe kwenye tab ipi ipi
 try{
   window._sensaChannel = new BroadcastChannel("smart_energy_sync");
 } catch(e){ window._sensaChannel = null; }
-function getRecs(){ try{return JSON.parse(localStorage.getItem("lukuRecs")||"[]");}catch(e){return[];} }
-function saveRecs(r){ localStorage.setItem("lukuRecs",JSON.stringify(r)); scheduleAutoBackup(); }
+
+function getRecs(){
+  // Sync fallback — tumia cache
+  return window._recsCache || [];
+}
+function saveRecs(r){
+  window._recsCache = r;
+  encryptData(r).then(function(enc){
+    localStorage.setItem("lukuRecs_enc", enc);
+    localStorage.removeItem("lukuRecs");
+  }).catch(function(){
+    localStorage.setItem("lukuRecs", JSON.stringify(r));
+  });
+  scheduleAutoBackup();
+}
+
+// Pakia recs kwenye cache wakati wa startup
+async function loadRecsCache(){
+  var r = await getRecsSecure();
+  window._recsCache = r;
+  return r;
+}
 
 // ══════════════════════════════════════
-// BACKUP SYSTEM
+// ENCRYPTION — AES-GCM kwa localStorage
 // ══════════════════════════════════════
+
+// Funguo la siri — linatokana na fingerprint ya browser + salt
+// Halibadiliki kwa browser moja — lakini mtu mwingine kwenye browser tofauti hawezi kusoma
+var _encKey = null;
+
+async function getEncKey(){
+  if(_encKey) return _encKey;
+  // Tumia adminHash + browser fingerprint kama msingi wa funguo
+  var fp = (navigator.userAgent + navigator.language + screen.width + screen.height + "smart_energy_2026").substring(0, 32);
+  var raw = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(fp));
+  _encKey = await crypto.subtle.importKey(
+    "raw", raw, { name: "AES-GCM" }, false, ["encrypt", "decrypt"]
+  );
+  return _encKey;
+}
+
+async function encryptData(obj){
+  try {
+    var key = await getEncKey();
+    var iv  = crypto.getRandomValues(new Uint8Array(12));
+    var txt = new TextEncoder().encode(JSON.stringify(obj));
+    var enc = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, txt);
+    // Hifadhi IV + data pamoja kama base64
+    var combined = new Uint8Array(iv.length + enc.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(enc), iv.length);
+    return btoa(String.fromCharCode(...combined));
+  } catch(e){
+    // Fallback — kama crypto haifanyi kazi
+    return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+  }
+}
+
+async function decryptData(b64){
+  try {
+    var key      = await getEncKey();
+    var combined = new Uint8Array(atob(b64).split("").map(c => c.charCodeAt(0)));
+    var iv       = combined.slice(0, 12);
+    var data     = combined.slice(12);
+    var dec      = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, data);
+    return JSON.parse(new TextDecoder().decode(dec));
+  } catch(e){
+    // Jaribu plain JSON (data ya zamani kabla ya encryption)
+    try { return JSON.parse(atob(b64)); } catch(e2){}
+    try { return JSON.parse(decodeURIComponent(escape(atob(b64)))); } catch(e3){}
+    return null;
+  }
+}
+
+// ══════════════════════════════════════
+// SESSION TOKEN — baada ya login
+// ══════════════════════════════════════
+
+var SESSION_KEY = "se_session";
+var SESSION_TIMEOUT = 8 * 60 * 60 * 1000; // masaa 8
+
+async function createSession(user){
+  // Tengeneza token ya nasibu — ya kipekee kwa kila login
+  var randBytes = crypto.getRandomValues(new Uint8Array(32));
+  var token = Array.from(randBytes).map(b => b.toString(16).padStart(2,"0")).join("");
+  var session = {
+    token,
+    jina:    user.jina,
+    chumba:  user.chumba,
+    isAdmin: user.isAdmin,
+    loginAt: Date.now(),
+    expires: Date.now() + SESSION_TIMEOUT
+  };
+  var enc = await encryptData(session);
+  sessionStorage.setItem(SESSION_KEY, enc); // sessionStorage — inafutwa ukifunga tab
+  return session;
+}
+
+async function getSession(){
+  var enc = sessionStorage.getItem(SESSION_KEY);
+  if(!enc) return null;
+  var session = await decryptData(enc);
+  if(!session) return null;
+  // Angalia muda — session imeisha?
+  if(Date.now() > session.expires){
+    sessionStorage.removeItem(SESSION_KEY);
+    return null;
+  }
+  return session;
+}
+
+function clearSession(){
+  sessionStorage.removeItem(SESSION_KEY);
+}
+
+// ══════════════════════════════════════
+// ENCRYPTED localStorage helpers
+// ══════════════════════════════════════
+
+async function saveTenantsSecure(t){
+  var enc = await encryptData(t);
+  localStorage.setItem("tenants_enc", enc);
+  // Futa wazi ya zamani
+  localStorage.removeItem("tenants");
+}
+
+async function getTenantsSecure(){
+  // Kwanza jaribu encrypted
+  var enc = localStorage.getItem("tenants_enc");
+  if(enc){
+    var d = await decryptData(enc);
+    if(d) return d;
+  }
+  // Fallback — data ya zamani isiyofichwa
+  try { return JSON.parse(localStorage.getItem("tenants")||"{}"); } catch(e){ return {}; }
+}
+
+async function saveRecsSecure(r){
+  var enc = await encryptData(r);
+  localStorage.setItem("lukuRecs_enc", enc);
+  localStorage.removeItem("lukuRecs");
+}
+
+async function getRecsSecure(){
+  var enc = localStorage.getItem("lukuRecs_enc");
+  if(enc){
+    var d = await decryptData(enc);
+    if(d) return d;
+  }
+  try { return JSON.parse(localStorage.getItem("lukuRecs")||"[]"); } catch(e){ return []; }
+}
+
 
 var _backupTimer = null;
 var _backupBusy  = false;
@@ -1842,7 +2437,7 @@ function nowTime(){
 }
 function visibleRooms(){ return currentUser&&currentUser.isAdmin?ROOMS:(currentUser&&currentUser.chumba?[currentUser.chumba]:[]); }
 function visibleRecs(){ var recs=getRecs(); return currentUser&&currentUser.isAdmin?recs:recs.filter(function(r){return currentUser&&r.chumba===currentUser.chumba;}); }
-function monthBill(recs){ return recs.reduce(function(sum,r){ return sum+(Number(r.gharama)||((Number(r.kwh)||0)*(Number(r.rate)||500))); },0); }
+function monthBill(recs){ return recs.reduce(function(sum,r){ return sum+(Number(r.gharama)||((Number(r.kwh)||0)*(Number(r.rate)||getUnitRate()))); },0); }
 
 function normalizeRoom(v){
   v=String(v||"").trim().replace(/[^0-9]/g,"");
@@ -1973,6 +2568,10 @@ function startApp(){
   document.getElementById("hMonth").value=today().substring(0,7);
   updateUrlBadge();
   updateBackupBadge();
+  // Rate badge — Admin pekee anaona na kubadilisha
+  var rb = document.getElementById("rateBadge");
+  if(rb) rb.style.display = currentUser.isAdmin ? "inline-flex" : "none";
+  if(currentUser.isAdmin) updateRateBadge();
   populateSelects();
   refreshAll();
 
@@ -1992,7 +2591,25 @@ function startApp(){
     // Mpangaji — soma data yake kutoka Sheets haraka
     setTimeout(function(){ syncFromSheets(false); }, 800);
   }
-  setTimeout(checkAndShowLukuNotification, 600);
+  if (!currentUser.isAdmin) {
+    setTimeout(showKaribu, 800);
+  } else {
+    setTimeout(checkAndShowLukuNotification, 600);
+    setTimeout(loadAdminContactSettings, 300);
+  }
+  // Angalia hali ya mtandao mara ya kuanza
+  if (!navigator.onLine) {
+    var b = document.getElementById("offlineBanner");
+    if (b) b.classList.add("visible");
+  }
+  // Onyesha pending syncs na flush queue ya zamani iliyokuwa ikisubiri
+  setTimeout(function(){
+    pruneQueue();           // Futa rekodi za zamani kwanza
+    updateSyncQueueBadge();
+    if(navigator.onLine) {
+      flushSyncQueue();     // Tuma zilizokuwa zikisubiri
+    }
+  }, 2000);
 }
 
 // ── Sync kutoka Sheets (Source of Truth) ──
@@ -2078,8 +2695,11 @@ async function syncFromSheets(isFullSync){
 }
 
 function logout(){
+  clearSession();
   stopPeriodicBackup();
-  currentUser=null;
+  currentUser = null;
+  window._tenantsCache = {};
+  window._recsCache    = [];
   document.getElementById("loginPage").style.display="flex";
   document.getElementById("appPage").style.display="none";
   document.getElementById("loginError").style.display="none";
@@ -2096,15 +2716,37 @@ function populateSelects(){
   var t=getTenants();
   var dynamicRooms = getDynamicRooms();
 
-  // lChumba na hChumba — vyumba vilivyopo tu
+  // lChumba — dropdown ya chumba kwenye fomu ya LUKU
+  var lc = document.getElementById("lChumba");
+  if(lc){
+    var prevL = lc.value;
+    lc.innerHTML = '<option value="">— Jumla ya Jengo Zima —</option>';
+    dynamicRooms.forEach(function(c){
+      var opt = new Option(c + (t[c] ? " — "+t[c].jina : " (Wazi)"), c);
+      lc.appendChild(opt);
+    });
+    if(prevL) lc.value = prevL;
+  }
+
+  // hChumba — historia: inaonyesha vyumba vyote vilivyoingia rekodi (kutoka tenants + globalLukuRecs)
   ["hChumba"].forEach(function(id){
     var el=document.getElementById(id);
     if(!el)return;
     var prev=el.value;
-    el.innerHTML=id==="hChumba"
-      ?'<option value="">Vyumba Vyote</option>'
-      :'<option value="">-- Chagua --</option>';
-    dynamicRooms.forEach(function(c){
+    el.innerHTML='<option value="">Vyumba Vyote</option>';
+
+    // Kusanya vyumba vyote — kutoka tenants NA globalLukuRecs
+    var roomSet = {};
+    dynamicRooms.forEach(function(c){ if(c) roomSet[c]=true; });
+    getGlobalLukuRecs().forEach(function(r){
+      if(r.chumba && r.chumba !== "JUMLA") roomSet[r.chumba]=true;
+    });
+    var allRooms = Object.keys(roomSet).sort(function(a,b){
+      var na=parseInt(a.replace(/[^0-9]/g,""))||0, nb=parseInt(b.replace(/[^0-9]/g,""))||0;
+      if(na!==nb) return na-nb; return a.localeCompare(b);
+    });
+
+    allRooms.forEach(function(c){
       var opt=new Option(c+(t[c]?" — "+t[c].jina:" (Wazi)"),c);
       el.appendChild(opt);
     });
@@ -2159,7 +2801,7 @@ function renderGlobalLukuCard(){
   cont.innerHTML=items.map(function(it){
     return "<div style=\"background:var(--card);border-radius:8px;padding:9px 12px;\">"+
       "<div style=\"font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;\">"+it.lbl+"</div>"+
-      "<div style=\"font-family:Rajdhani,sans-serif;font-size:1rem;font-weight:700;color:"+it.col+"\">"+it.val+"</div>"+
+      "<div style=\"font-family:var(--font-main);font-size:1rem;font-weight:700;color:"+it.col+"\">"+it.val+"</div>"+
       "</div>";
   }).join("");
 }
@@ -2343,45 +2985,92 @@ function calcKwh(){
 }
 function saveLuku(){
   if(!currentUser||!currentUser.isAdmin){return;}
-  var tar=document.getElementById("lTarehe").value||today();
-  var muda=document.getElementById("lMuda").value||nowTime();
-  var aw=Number(document.getElementById("lAwali").value)||0;
-  var mpya=Number(document.getElementById("lSasa").value)||0;
-  var total=aw+mpya; // Jumla = Iliyokuwepo + Mpya
-  var kiasi=Number(document.getElementById("lKiasi").value)||0;
-  var note=document.getElementById("lNote").value;
-  var el=document.getElementById("lukuAlert");
-  if(mpya<=0){showAlert(el,"Weka LUKU mpya uliyonunua (zaidi ya 0).","danger");return;}
-  var entry={
-    tarehe:tar, muda:muda,
-    lukuAwali:aw, lukuMpya:mpya, lukuSasa:total,
-    kwh:total, rate:0,
-    gharama:kiasi, kiasi:kiasi,
-    note:note, id:Date.now()
+  var tar   = document.getElementById("lTarehe").value||today();
+  var muda  = document.getElementById("lMuda").value||nowTime();
+  var aw    = Number(document.getElementById("lAwali").value)||0;
+  var mpya  = Number(document.getElementById("lSasa").value)||0;
+  var total = aw + mpya;
+  var kiasi = Number(document.getElementById("lKiasi").value)||0;
+  var note  = document.getElementById("lNote").value;
+  var chumbaEl = document.getElementById("lChumba");
+  var chumba   = chumbaEl ? chumbaEl.value.trim() : "";
+  var el = document.getElementById("lukuAlert");
+
+  if(mpya <= 0){ showAlert(el, "Weka LUKU mpya uliyonunua (zaidi ya 0).", "danger"); return; }
+
+  // Rate kwa kila unit (kama kiasi na mpya vipo)
+  var rate = mpya > 0 && kiasi > 0 ? Math.round(kiasi / mpya) : 0;
+
+  // ── 1. Hifadhi kwenye globalLukuRecs (kila wakati) ──
+  var globalEntry = {
+    tarehe: tar, muda: muda,
+    chumba: chumba || "JUMLA",
+    lukuAwali: aw, lukuMpya: mpya, lukuSasa: total,
+    kwh: total, rate: rate,
+    gharama: kiasi, kiasi: kiasi,
+    note: note, id: Date.now()
   };
-  var recs=getGlobalLukuRecs();
-  recs.push(entry);
-  saveGlobalLukuRecs(recs);
-  showAlert(el,"✅ LUKU imehifadhiwa! Iliyokuwepo: "+aw+" + Mpya: "+mpya+" = Jumla: "+total+" units | Tsh Lililipwa: "+kiasi.toLocaleString(),"success");
-  document.getElementById("lAwali").value=total;
-  document.getElementById("lSasa").value="";
-  document.getElementById("lKiasi").value="";
-  document.getElementById("lMuda").value=nowTime();
+  var globalRecs = getGlobalLukuRecs();
+  globalRecs.push(globalEntry);
+  saveGlobalLukuRecs(globalRecs);
+
+  // ── 2. Hifadhi kwenye lukuRecs (kwa chumba kilichochaguliwa) ──
+  // Hii ndiyo inayotumika na calcPrediction()
+  if(chumba){
+    var tenants = getTenants();
+    var tenant  = tenants[chumba];
+    var jina    = tenant ? tenant.jina : chumba;
+
+    var roomEntry = {
+      tarehe: tar, muda: muda,
+      chumba: chumba, jina: jina,
+      lukuAwali: aw, lukuSasa: total,
+      kwh: mpya,        // kWh iliyoongezwa — ndiyo tofauti
+      rate: rate,
+      gharama: kiasi,
+      note: note, id: Date.now() + 1
+    };
+    var recs = getRecs();
+    recs.push(roomEntry);
+    saveRecs(recs);
+
+    showAlert(el,
+      "✅ LUKU ya Chumba " + chumba + " imehifadhiwa! " +
+      "Iliyokuwepo: " + aw + " + Mpya: " + mpya + " = Jumla: " + total + " units | " +
+      "Tsh " + kiasi.toLocaleString() + " | Rate: " + rate + "/unit",
+      "success"
+    );
+  } else {
+    showAlert(el,
+      "✅ LUKU ya Jumla imehifadhiwa! " +
+      "Iliyokuwepo: " + aw + " + Mpya: " + mpya + " = Jumla: " + total + " units | " +
+      "Tsh " + kiasi.toLocaleString() +
+      " — 💡 Chagua chumba ili prediction ifanye kazi.",
+      "success"
+    );
+  }
+
+  // Sasisha fomu
+  document.getElementById("lAwali").value = total;
+  document.getElementById("lSasa").value  = "";
+  document.getElementById("lKiasi").value = "";
+  document.getElementById("lMuda").value  = nowTime();
   $set("kwhRes", total.toFixed(0));
-  var awShw=document.getElementById("kwhAwaliShow");
-  var mpShw=document.getElementById("kwhMpyaShow");
-  var totShw=document.getElementById("kwhTotalShow");
-  if(awShw) awShw.textContent=total.toLocaleString();
-  if(mpShw) mpShw.textContent="0";
-  if(totShw) totShw.textContent=total.toLocaleString();
+  var awShw = document.getElementById("kwhAwaliShow");
+  var mpShw = document.getElementById("kwhMpyaShow");
+  var totShw= document.getElementById("kwhTotalShow");
+  if(awShw)  awShw.textContent  = total.toLocaleString();
+  if(mpShw)  mpShw.textContent  = "0";
+  if(totShw) totShw.textContent = total.toLocaleString();
+
   renderLukuHist();
   renderLukuLastInfo();
   refreshAll();
-  if(getUrl()){
-    try{fetch(getUrl(),{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
-      body:JSON.stringify({action:"GLOBAL_LUKU",tarehe:tar,muda:muda,
-      lukuAwali:aw,lukuMpya:mpya,lukuSasa:total,kwh:total,gharama:kiasi,kiasi:kiasi,note:note})});}catch(e){}
-  }
+
+  // Tuma Sheets (queue — inafanya kazi offline pia)
+  queueSync("GLOBAL_LUKU", { tarehe:tar, muda:muda, chumba:chumba||"JUMLA",
+    lukuAwali:aw, lukuMpya:mpya, lukuSasa:total, kwh:mpya, rate:rate,
+    gharama:kiasi, kiasi:kiasi, note:note });
 }
 
 // Render historia ya LUKU (jedwali ndogo chini ya fomu)
@@ -2393,14 +3082,18 @@ function renderLukuHist(){
   if(!recs.length){tb.innerHTML="";em.style.display="";return;}
   em.style.display="none";
   tb.innerHTML=recs.map(function(r,i){
-    var idx=recs.length-1-i; // index halisi kwenye array ya kawaida
+    var idx=recs.length-1-i;
+    var chumbaLabel = r.chumba && r.chumba !== "JUMLA"
+      ? '<span style="color:var(--accent2);font-weight:700;">'+r.chumba+'</span>'
+      : '<span style="color:var(--muted);font-size:.8rem;">Jumla</span>';
     return "<tr>"+
       "<td>"+r.tarehe+"<\/td>"+
       "<td>"+r.muda+"<\/td>"+
+      "<td>"+chumbaLabel+"<\/td>"+
       "<td>"+Number(r.lukuAwali||0).toLocaleString()+" u<\/td>"+
-      "<td style=\"color:var(--accent2);font-family:Rajdhani,sans-serif;font-weight:700;\">+"+Number(r.lukuMpya||r.kwh||0).toLocaleString()+" u<\/td>"+
-      "<td style=\"color:var(--accent);font-family:Rajdhani,sans-serif;font-weight:700;\">"+Number(r.lukuSasa||0).toLocaleString()+" u<\/td>"+
-      "<td style=\"color:var(--accent2);font-family:Rajdhani,sans-serif;font-weight:700;\">Tsh "+Number(r.kiasi||r.gharama||0).toLocaleString()+"<\/td>"+
+      "<td style=\"color:var(--accent2);font-family:var(--font-main);font-weight:700;\">+"+Number(r.lukuMpya||r.kwh||0).toLocaleString()+" u<\/td>"+
+      "<td style=\"color:var(--accent);font-family:var(--font-main);font-weight:700;\">"+Number(r.lukuSasa||0).toLocaleString()+" u<\/td>"+
+      "<td style=\"color:var(--accent2);font-family:var(--font-main);font-weight:700;\">Tsh "+Number(r.kiasi||r.gharama||0).toLocaleString()+"<\/td>"+
       "<td style=\"color:var(--muted);font-size:.8rem;\">"+(r.note||"—")+"<\/td>"+
       "<td><button class=\"btn btn-danger btn-sm\" onclick=\"deleteGlobalLuku("+idx+")\" title=\"Futa\">🗑<\/button><\/td>"+
       "<\/tr>";
@@ -2437,7 +3130,7 @@ function renderLukuLastInfo(){
   cont.innerHTML=items.map(function(it){
     return "<div style=\"background:var(--card);border-radius:8px;padding:10px 13px;\">"+
       "<div style=\"font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;\">"+it.lbl+"</div>"+
-      "<div style=\"font-family:Rajdhani,sans-serif;font-size:1.05rem;font-weight:700;color:"+it.col+"\">"+it.val+"</div>"+
+      "<div style=\"font-family:var(--font-main);font-size:1.05rem;font-weight:700;color:"+it.col+"\">"+it.val+"</div>"+
       "</div>";
   }).join("");
 }
@@ -2446,37 +3139,113 @@ function renderLukuLastInfo(){
 // HISTORY
 // ══════════════════════════════════════
 function renderHistory(){
-  var fc=document.getElementById("hChumba").value;
-  var fm=document.getElementById("hMonth").value;
-  var recs=visibleRecs();
-  if(currentUser&&!currentUser.isAdmin){fc=currentUser.chumba; document.getElementById("hChumba").value=fc;}
-  if(fc)recs=recs.filter(function(r){return r.chumba===fc;});
-  if(fm)recs=recs.filter(function(r){return r.tarehe&&r.tarehe.startsWith(fm);});
-  recs=recs.slice().reverse();
-  var tb=document.getElementById("histTbody");
-  var em=document.getElementById("histEmpty");
-  tb.innerHTML="";
-  if(!recs.length){em.style.display="";return;}
-  em.style.display="none";
+  var fc = document.getElementById("hChumba").value;
+  var fm = document.getElementById("hMonth").value;
+
+  // Wapangaji wanaona chumba chao peke yake
+  if(currentUser && !currentUser.isAdmin){
+    fc = currentUser.chumba;
+    var hcEl = document.getElementById("hChumba");
+    if(hcEl) hcEl.value = fc;
+  }
+
+  // ── Chanzo kikuu: globalLukuRecs (ina rekodi ZOTE — jumla + vyumba) ──
+  var tenants = getTenants();
+  var recs = getGlobalLukuRecs();
+
+  // Wapangaji wanaona rekodi za chumba chao tu (au rekodi za JUMLA)
+  if(currentUser && !currentUser.isAdmin){
+    recs = recs.filter(function(r){
+      return r.chumba === currentUser.chumba || r.chumba === "JUMLA";
+    });
+  }
+
+  // Filter ya chumba
+  if(fc) recs = recs.filter(function(r){ return r.chumba === fc; });
+
+  // Filter ya mwezi
+  if(fm) recs = recs.filter(function(r){ return r.tarehe && r.tarehe.startsWith(fm); });
+
+  // Panga — za hivi karibuni kwanza
+  recs = recs.slice().sort(function(a,b){
+    var ka = (a.tarehe||"") + (a.muda||"");
+    var kb = (b.tarehe||"") + (b.muda||"");
+    return ka < kb ? 1 : -1;
+  });
+
+  var tb = document.getElementById("histTbody");
+  var em = document.getElementById("histEmpty");
+  tb.innerHTML = "";
+
+  if(!recs.length){
+    em.style.display = "";
+    return;
+  }
+  em.style.display = "none";
+
   recs.forEach(function(r){
-    var tr=document.createElement("tr");
-    tr.innerHTML='<td>'+r.tarehe+'</td>'
-      +'<td>'+(r.muda||'--')+'</td>'
-      +'<td><span class="tag tag-blue">'+r.chumba+'</span></td>'
-      +'<td>'+(r.jina||"—")+'</td>'
-      +'<td>'+r.lukuAwali+'</td><td>'+r.lukuSasa+'</td>'
-      +'<td><b>'+Number(r.kwh).toFixed(1)+'</b></td>'
-      +'<td style="color:var(--accent2)">Tsh '+Number(r.gharama||0).toLocaleString()+'</td>';
+    // Jina la mpangaji kutoka tenants au rekodi yenyewe
+    var jina = r.jina || (tenants[r.chumba] && tenants[r.chumba].jina) || "—";
+
+    // Label ya chumba — JUMLA inaonekana tofauti
+    var chumbaLabel = (r.chumba === "JUMLA" || !r.chumba)
+      ? '<span style="color:var(--muted);font-size:.8rem;">Jumla</span>'
+      : '<span class="tag tag-blue">' + r.chumba + '</span>';
+
+    // kWh — globalRecs hutumia kwh = total, lakini tunajua mpya
+    var kwhVal = Number(r.lukuMpya || r.kwh || 0);
+    var kwhDisplay = kwhVal > 0 ? kwhVal.toFixed(1) : "—";
+
+    // Gharama
+    var gharama = Number(r.gharama || r.kiasi || 0);
+    var gharamaDisplay = gharama > 0
+      ? 'Tsh ' + gharama.toLocaleString()
+      : '—';
+
+    // Awali na Sasa
+    var awali = Number(r.lukuAwali || 0);
+    var sasa  = Number(r.lukuSasa  || 0);
+
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      '<td>' + (r.tarehe || "—") + '</td>' +
+      '<td>' + (r.muda || "—") + '</td>' +
+      '<td>' + chumbaLabel + '</td>' +
+      '<td>' + jina + '</td>' +
+      '<td>' + (awali > 0 ? awali.toLocaleString() : "—") + '</td>' +
+      '<td style="color:var(--accent);font-weight:700;">' + (sasa > 0 ? sasa.toLocaleString() : "—") + '</td>' +
+      '<td><b>' + kwhDisplay + '</b></td>' +
+      '<td style="color:var(--accent2);">' + gharamaDisplay + '</td>';
     tb.appendChild(tr);
   });
 }
+
 function exportCSV(){
-  var r=visibleRecs();
-  var csv="Tarehe,Muda,Chumba,Mpangaji,Awali,Sasa,kWh,Gharama\n";
-  r.forEach(function(x){csv+=[x.tarehe,x.muda||"",x.chumba,x.jina,x.lukuAwali,x.lukuSasa,Number(x.kwh).toFixed(1),x.gharama].join(",")+"\n";});
-  var a=document.createElement("a");
-  a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(csv);
-  a.download="luku_historia.csv"; a.click();
+  // Tumia globalLukuRecs — chanzo kikuu sawa na renderHistory
+  var tenants = getTenants();
+  var recs = getGlobalLukuRecs();
+  if(currentUser && !currentUser.isAdmin){
+    recs = recs.filter(function(r){
+      return r.chumba === currentUser.chumba || r.chumba === "JUMLA";
+    });
+  }
+  var csv = "Tarehe,Muda,Chumba,Mpangaji,Awali,Sasa,kWh Mpya,Gharama\n";
+  recs.slice().sort(function(a,b){
+    return ((a.tarehe||"")+(a.muda||"")) < ((b.tarehe||"")+(b.muda||"")) ? 1 : -1;
+  }).forEach(function(r){
+    var jina = r.jina || (tenants[r.chumba] && tenants[r.chumba].jina) || "";
+    csv += [
+      r.tarehe || "", r.muda || "",
+      r.chumba || "JUMLA", jina,
+      Number(r.lukuAwali||0), Number(r.lukuSasa||0),
+      Number(r.lukuMpya||r.kwh||0).toFixed(1),
+      Number(r.gharama||r.kiasi||0)
+    ].join(",") + "\n";
+  });
+  var a = document.createElement("a");
+  a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+  a.download = "luku_historia.csv";
+  a.click();
 }
 
 // ══════════════════════════════════════
@@ -2503,7 +3272,7 @@ function renderComparison(){
   });
   var tb=document.getElementById("compTbody"); tb.innerHTML="";
   rooms.forEach(function(c){
-    var tn=t[c]; var kwh=byRoom[c]||0; var gh=kwh*500;
+    var tn=t[c]; var kwh=byRoom[c]||0; var gh=kwh*getUnitRate();
     var tr=document.createElement("tr");
     tr.innerHTML='<td><span class="tag tag-blue">'+c+'</span></td>'
       +'<td>'+(tn?tn.jina:"—")+'</td>'
@@ -2613,7 +3382,7 @@ function generateRoomTips(chumba) {
       icon: "🚨",
       title: "Matumizi Yako Ni Ya Juu Sana!",
       desc: "Unatumia " + avg.toFixed(2) + " units/siku — hii ni " + (overRatio*100-100).toFixed(0) + "% zaidi ya wastani wa nyumba (" + median.toFixed(2) + " units/siku). Angalia vifaa unavyotumia.",
-      saving: "Unaweza kuokoa Tsh " + Math.round((avg - median) * 30 * 500).toLocaleString() + "/mwezi ukipunguza hadi wastani"
+      saving: "Unaweza kuokoa Tsh " + Math.round((avg - median) * 30 * getUnitRate()).toLocaleString() + "/mwezi ukipunguza hadi wastani"
     });
   } else if (overRatio > 1.2) {
     tips.push({
@@ -2621,7 +3390,7 @@ function generateRoomTips(chumba) {
       icon: "⚠️",
       title: "Matumizi Kidogo Ya Juu",
       desc: "Unatumia " + avg.toFixed(2) + " units/siku — kidogo zaidi ya wastani (" + median.toFixed(2) + " units/siku). Kuna nafasi ya kupunguza.",
-      saving: "Akiba inayowezekana: Tsh " + Math.round((avg - median) * 30 * 500).toLocaleString() + "/mwezi"
+      saving: "Akiba inayowezekana: Tsh " + Math.round((avg - median) * 30 * getUnitRate()).toLocaleString() + "/mwezi"
     });
   } else if (overRatio < 0.7) {
     tips.push({
@@ -2629,7 +3398,7 @@ function generateRoomTips(chumba) {
       icon: "🏆",
       title: "Matumizi Mazuri — Unashinda!",
       desc: "Hongera! Unatumia " + avg.toFixed(2) + " units/siku — " + (100 - overRatio*100).toFixed(0) + "% chini ya wastani. Endelea hivyo.",
-      saving: "Unaosha Tsh " + Math.round((median - avg) * 30 * 500).toLocaleString() + " kila mwezi kuliko wengine"
+      saving: "Unaosha Tsh " + Math.round((median - avg) * 30 * getUnitRate()).toLocaleString() + " kila mwezi kuliko wengine"
     });
   }
 
@@ -3029,8 +3798,7 @@ async function saveTenant(){
   // Sasisha stat card ya jumla ya vyumba
   updateTotalRoomsCard();
   if(getUrl()){
-    try{fetch(getUrl(),{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
-      body:JSON.stringify({action:"SAVE_TENANT",chumba:c,jina:j,vifaa:v,kwh:k,pin:pinHash||""})});}catch(e){}
+    queueSync("SAVE_TENANT", {chumba:c,jina:j,vifaa:v,kwh:k,pin:pinHash||""});
   }
 }
 function onAdminChumbaChange(){
@@ -3121,7 +3889,7 @@ function resetTenantPin(c){
 
 function updateAdminStats(){
   $set("a-occ", Object.keys(getTenants()).length);
-  $set("a-recs", getRecs().length);
+  $set("a-recs", getGlobalLukuRecs().length);
 }
 // syncSheets — ona definition mpya hapo juu (line ~1485)
 function clearAllData(){
@@ -3147,6 +3915,561 @@ function showAlert(el,msg,type){
 
 function getNotifSnoozeKey(chumba) {
   return "lukuNotifSnooze_" + chumba + "_" + today();
+}
+
+
+
+// ================================================================
+// ================================================================
+// OFFLINE SYNC QUEUE — Toleo Bora
+// ● Data inayobadilishwa offline inahifadhiwa localStorage
+// ● Inajaribu tena kwa backoff: mara 1 → sekunde 5 → sekunde 30 → dakika 2
+// ● Rekodi za zamani (zaidi ya siku 7) zinafutwa — hazitumwi tena
+// ● CORS-aware: inajaribu fetch ya kawaida kwanza, kisha no-cors fallback
+// ================================================================
+var _syncInProgress = false;
+var _isOnline = navigator.onLine;
+var _flushRetryTimer = null;
+var QUEUE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // siku 7
+var QUEUE_MAX_RETRIES = 10;
+
+function getSyncQueue() {
+  try { return JSON.parse(localStorage.getItem("syncQueue") || "[]"); } catch(e) { return []; }
+}
+function saveSyncQueue(q) {
+  try { localStorage.setItem("syncQueue", JSON.stringify(q)); } catch(e) {}
+}
+
+// Ongeza kazi kwenye queue
+function queueSync(action, payload) {
+  // Futa rekodi za zamani kwanza
+  pruneQueue();
+  var q = getSyncQueue();
+  // Angalia kama kuna duplicate (same action + chumba + tarehe) — usiiongeze tena
+  var key = action + "|" + (payload.chumba||"") + "|" + (payload.tarehe||"") + "|" + (payload.mwezi||"");
+  var dup = q.find(function(i){ return i.key === key; });
+  if(dup) {
+    // Update badala ya kuongeza
+    dup.payload  = payload;
+    dup.ts       = new Date().toISOString();
+    dup.retries  = 0;
+    saveSyncQueue(q);
+  } else {
+    q.push({
+      id      : Date.now() + "_" + Math.random().toString(36).slice(2,6),
+      key     : key,
+      action  : action,
+      payload : payload,
+      ts      : new Date().toISOString(),
+      retries : 0
+    });
+    saveSyncQueue(q);
+  }
+  updateSyncQueueBadge();
+  if (_isOnline) flushSyncQueue();
+}
+
+// Futa rekodi za zamani au zilizoshindwa sana
+function pruneQueue() {
+  var q = getSyncQueue();
+  var now = Date.now();
+  var clean = q.filter(function(item) {
+    var age = now - new Date(item.ts).getTime();
+    return age < QUEUE_MAX_AGE_MS && (item.retries || 0) < QUEUE_MAX_RETRIES;
+  });
+  if(clean.length !== q.length) saveSyncQueue(clean);
+}
+
+// Tuma item moja — jaribu CORS kwanza, kisha no-cors
+async function sendQueueItem(url, item) {
+  var body = JSON.stringify(Object.assign({ action: item.action }, item.payload));
+  // Jaribu 1: fetch ya kawaida (tunapata jibu halisi)
+  try {
+    var res = await fetch(url, {
+      method : "POST",
+      headers: { "Content-Type": "text/plain" },
+      body   : body
+    });
+    if(res.ok || res.status === 302) return true;
+    // Jibu la makosa (4xx, 5xx) — usijaribu tena mara moja
+    if(res.status >= 400 && res.status < 500) return true; // client error, tupa
+  } catch(e) {
+    // CORS imezuia — jaribu no-cors
+    try {
+      await fetch(url, {
+        method : "POST",
+        mode   : "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body   : body
+      });
+      // no-cors haitupei jibu — assume ok
+      return true;
+    } catch(e2) {
+      return false; // mtandao umeshindwa
+    }
+  }
+  return false;
+}
+
+// Tuma queue yote — na retry backoff
+async function flushSyncQueue() {
+  if (_syncInProgress) return;
+  var url = getUrl();
+  if (!url) return;
+  pruneQueue();
+  var q = getSyncQueue();
+  if (!q.length) return;
+
+  _syncInProgress = true;
+  if(_flushRetryTimer) { clearTimeout(_flushRetryTimer); _flushRetryTimer = null; }
+
+  var failed  = [];
+  var success = 0;
+
+  for (var i = 0; i < q.length; i++) {
+    var item = q[i];
+    var ok = await sendQueueItem(url, item);
+    if(ok) {
+      success++;
+    } else {
+      item.retries = (item.retries || 0) + 1;
+      failed.push(item);
+    }
+  }
+
+  saveSyncQueue(failed);
+  _syncInProgress = false;
+  updateSyncQueueBadge();
+
+  // Kama bado kuna za kushindwa na tuko online — jaribu tena baadaye
+  if(failed.length > 0 && _isOnline) {
+    var delay = Math.min(30000 * Math.pow(2, failed[0].retries - 1), 120000);
+    _flushRetryTimer = setTimeout(flushSyncQueue, delay);
+  }
+
+  // Toa toast ukimalize sync iliyokuwa pending
+  if(success > 0 && failed.length === 0) {
+    var remaining = getSyncQueue();
+    if(remaining.length === 0) {
+      showToast("✅ Data " + success + " zimetumwa Sheets.");
+    }
+  }
+}
+
+// Onyesha idadi ya pending syncs
+function updateSyncQueueBadge() {
+  var q = getSyncQueue();
+  var badge = document.getElementById("syncQueueBadge");
+  var done  = document.getElementById("syncQueueDone");
+  if (!badge) return;
+  if (q.length > 0) {
+    badge.textContent = q.length + " zinasubiri";
+    badge.style.display = "";
+    if(done) done.style.display = "";
+  } else {
+    badge.style.display = "none";
+    if(done) done.style.display = "none";
+  }
+}
+var _syncInProgress = false;
+var _isOnline = navigator.onLine;
+
+function getSyncQueue() {
+  try { return JSON.parse(localStorage.getItem("syncQueue") || "[]"); } catch(e) { return []; }
+}
+function saveSyncQueue(q) {
+  try { localStorage.setItem("syncQueue", JSON.stringify(q)); } catch(e) {}
+}
+
+// queueSync, flushSyncQueue, updateSyncQueueBadge — ona definitions mpya hapo juu
+
+// Sikiliza online/offline events
+window.addEventListener("online", function() {
+  _isOnline = true;
+  var b = document.getElementById("offlineBanner");
+  if (b) b.classList.remove("visible");
+  updateSyncQueueBadge();
+  flushSyncQueue();
+  // Sync kutoka Sheets baada ya kurudi online
+  setTimeout(function() { if(getUrl() && currentUser) syncFromSheets(!!currentUser.isAdmin); }, 2500);
+  showToast("✅ Umeunganika tena! Data inapokelewa...");
+});
+
+window.addEventListener("offline", function() {
+  _isOnline = false;
+  var b = document.getElementById("offlineBanner");
+  if (b) b.classList.add("visible");
+  showToast("📵 Offline — App inafanya kazi, data itasync ukipata mtandao.");
+});
+
+// Angalia mtandao mara kwa mara (fallback kwa browsers ambazo hazitoi events vizuri)
+setInterval(function() {
+  var wasOnline = _isOnline;
+  _isOnline = navigator.onLine;
+  if (!wasOnline && _isOnline) {
+    var b = document.getElementById("offlineBanner");
+    if(b) b.classList.remove("visible");
+    flushSyncQueue();
+  }
+  if(wasOnline && !_isOnline) {
+    var b = document.getElementById("offlineBanner");
+    if(b) b.classList.add("visible");
+  }
+  updateSyncQueueBadge();
+}, 10000);
+
+// ── "Add to Home Screen" (PWA Install Prompt) ──
+// Inaonyesha kitufe cha kuinstall app kwenye simu bila App Store
+var _installPrompt = null;
+window.addEventListener("beforeinstallprompt", function(e) {
+  e.preventDefault();
+  _installPrompt = e;
+  // Onyesha kitufe cha install (kwenye login page au admin)
+  var btn = document.getElementById("installAppBtn");
+  if(btn) btn.style.display = "inline-flex";
+});
+
+window.addEventListener("appinstalled", function() {
+  _installPrompt = null;
+  var btn = document.getElementById("installAppBtn");
+  if(btn) btn.style.display = "none";
+  showToast("✅ App imewekwa kwenye simu yako!");
+});
+
+function installApp() {
+  if(_installPrompt) {
+    _installPrompt.prompt();
+    _installPrompt.userChoice.then(function(result) {
+      if(result.outcome === "accepted") {
+        showToast("✅ App inawekwa...");
+      }
+      _installPrompt = null;
+    });
+  } else {
+    // Maelekezo ya manual kwa iOS (Safari haitegemezi beforeinstallprompt)
+    showToast("iOS: Bonyeza 'Share' → 'Add to Home Screen' kwenye Safari.");
+  }
+}
+
+// ================================================================
+// RIPOTI YA MWEZI — Monthly Report
+// ================================================================
+function openRipotiModal() {
+  var el = document.getElementById("ripotiMwezi");
+  if (el && !el.value) {
+    var now = new Date();
+    el.value = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0");
+  }
+  // Weka jina la jengo lililohifadhiwa
+  var jengoEl = document.getElementById("ripotiJengo");
+  if (jengoEl) jengoEl.value = localStorage.getItem("ripotiJengo") || "";
+  document.getElementById("ripotiModal").classList.add("open");
+  generateRipoti();
+}
+
+function closeRipotiModal() {
+  document.getElementById("ripotiModal").classList.remove("open");
+}
+
+function generateRipoti() {
+  var mwezi = document.getElementById("ripotiMwezi").value;
+  var jengo = document.getElementById("ripotiJengo").value.trim();
+  if (jengo) localStorage.setItem("ripotiJengo", jengo);
+
+  var el = document.getElementById("ripotiContent");
+  if (!mwezi) { el.innerHTML = "<div style='text-align:center;color:var(--muted);padding:30px;'>Chagua mwezi kuona ripoti</div>"; return; }
+
+  var ym = mwezi; // "2024-06"
+  var [yr, mo] = ym.split("-");
+  var meziNames = ["","Januari","Februari","Machi","Aprili","Mei","Juni","Julai","Agosti","Septemba","Oktoba","Novemba","Desemba"];
+  var meziLabel = meziNames[parseInt(mo)] + " " + yr;
+
+  var tenants    = getTenants();
+  var allRecs    = getRecs();
+  var globalRecs = getGlobalLukuRecs();
+  var mchangoData = getMchangoData();
+  var adminContact = getAdminContact();
+
+  // ── Hesabu Global LUKU ──
+  var globalKwh = 0, globalTsh = 0;
+  globalRecs.forEach(function(r) {
+    if (r.tarehe && r.tarehe.substring(0,7) === ym) {
+      globalKwh += parseFloat(r.kwh || r.lukuSasa || 0);
+      globalTsh += parseFloat(r.gharama || r.kiasi || 0);
+    }
+  });
+
+  // ── Hesabu kwa kila chumba ──
+  var roomsData = [];
+  var rooms = Object.keys(tenants).sort();
+  if (!rooms.length) {
+    // Tumia vyumba kutoka rekodi
+    var seenRooms = {};
+    allRecs.forEach(function(r){ if(r.chumba) seenRooms[r.chumba]=1; });
+    rooms = Object.keys(seenRooms).sort();
+  }
+
+  var totalMchangoAda = 0, totalMchangoLipwa = 0, totalMchangoBaki = 0;
+  var totalChumbaKwh = 0;
+
+  rooms.forEach(function(chumba) {
+    var tenant = tenants[chumba] || {};
+    var jina = tenant.jina || "—";
+
+    // kWh za chumba hiki mwezi huu
+    var cKwh = 0;
+    allRecs.forEach(function(r) {
+      if (r.chumba === chumba && r.tarehe && r.tarehe.substring(0,7) === ym) {
+        cKwh += parseFloat(r.kwh || 0);
+      }
+    });
+    totalChumbaKwh += cKwh;
+
+    // Mgawanyo wa LUKU
+    var lukuAda = 0;
+    if (globalKwh > 0 && cKwh > 0) {
+      lukuAda = Math.round((cKwh / globalKwh) * globalTsh);
+    }
+
+    // Mchango
+    var mKey = getMchangoKey(mwezi, chumba);
+    var mData = mchangoData[mKey] || {};
+    var ada    = parseFloat(mData.ada || 0);
+    var lipwa  = parseFloat(mData.kilicholipwa || 0);
+    var baki   = parseFloat(mData.baki || Math.max(0, ada - lipwa));
+
+    totalMchangoAda  += ada;
+    totalMchangoLipwa+= lipwa;
+    totalMchangoBaki += baki;
+
+    var hali = baki <= 0 && ada > 0 ? "ok" : baki > 0 && ada > 0 ? "warn" : "—";
+
+    roomsData.push({ chumba, jina, cKwh, lukuAda, ada, lipwa, baki, hali });
+  });
+
+  // ── Tengeneza HTML ya ripoti ──
+  var now = new Date();
+  var printDate = now.toLocaleDateString("sw-TZ");
+
+  var html = '<div id="ripotiPrintArea">';
+
+  // Header
+  html += '<div style="border-bottom:2px solid var(--accent);padding-bottom:14px;margin-bottom:16px;">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">';
+  html += '<div>';
+  html += '<div style="font-size:1.3rem;font-weight:900;color:var(--accent);">📊 RIPOTI YA MWEZI</div>';
+  html += '<div style="font-size:1rem;font-weight:700;color:var(--text);margin-top:2px;">' + meziLabel + '</div>';
+  if (jengo) html += '<div style="font-size:.82rem;color:var(--muted);">🏠 ' + jengo + '</div>';
+  if (adminContact.name) html += '<div style="font-size:.78rem;color:var(--muted);">👤 Landlord: ' + adminContact.name + (adminContact.phone ? " | " + adminContact.phone : "") + '</div>';
+  html += '</div>';
+  html += '<div style="text-align:right;font-size:.72rem;color:var(--muted);">Imetolewa: ' + printDate + '</div>';
+  html += '</div></div>';
+
+  // Muhtasari wa juu — stat cards
+  html += '<div class="ripoti-stat-grid">';
+  html += '<div class="ripoti-stat"><div class="ripoti-stat-val">' + fmtNum(globalKwh) + ' kWh</div><div class="ripoti-stat-lbl">⚡ Jumla ya Umeme (Jengo)</div></div>';
+  html += '<div class="ripoti-stat"><div class="ripoti-stat-val">Tsh ' + fmtNum(globalTsh) + '</div><div class="ripoti-stat-lbl">💵 Jumla Iliyolipwa kwa LUKU</div></div>';
+  html += '<div class="ripoti-stat"><div class="ripoti-stat-val">Tsh ' + fmtNum(totalMchangoLipwa) + '</div><div class="ripoti-stat-lbl">💰 Michango Iliyokusanywa</div></div>';
+  html += '<div class="ripoti-stat"><div class="ripoti-stat-val' + (totalMchangoBaki > 0 ? ' ripoti-badge-danger' : '') + '">Tsh ' + fmtNum(totalMchangoBaki) + '</div><div class="ripoti-stat-lbl">⚠ Madeni Yaliyobaki</div></div>';
+  html += '</div>';
+
+  // Jedwali kuu
+  html += '<div class="ripoti-section-title">📋 Hali ya Kila Chumba</div>';
+  html += '<div style="overflow-x:auto;">';
+  html += '<table class="ripoti-table">';
+  html += '<thead><tr>';
+  html += '<th>Chumba</th><th>Mpangaji</th><th>kWh</th><th>Ada ya LUKU</th><th>Ada ya Mwezi</th><th>Kilicholipwa</th><th>Baki</th><th>Hali</th>';
+  html += '</tr></thead><tbody>';
+
+  roomsData.forEach(function(r) {
+    var haliHtml = r.hali === "ok"
+      ? '<span class="ripoti-badge-ok">✅ Amelipa</span>'
+      : r.hali === "warn"
+      ? '<span class="ripoti-badge-danger">⚠ Ana Deni</span>'
+      : '<span style="color:var(--muted);">—</span>';
+
+    html += '<tr>';
+    html += '<td><strong>' + r.chumba + '</strong></td>';
+    html += '<td>' + r.jina + '</td>';
+    html += '<td>' + (r.cKwh > 0 ? fmtNum(r.cKwh) + ' kWh' : '—') + '</td>';
+    html += '<td>' + (r.lukuAda > 0 ? 'Tsh ' + fmtNum(r.lukuAda) : '—') + '</td>';
+    html += '<td>' + (r.ada > 0 ? 'Tsh ' + fmtNum(r.ada) : '—') + '</td>';
+    html += '<td>' + (r.lipwa > 0 ? 'Tsh ' + fmtNum(r.lipwa) : '—') + '</td>';
+    html += '<td>' + (r.baki > 0 ? '<strong style="color:var(--danger);">Tsh ' + fmtNum(r.baki) + '</strong>' : r.ada > 0 ? '<span style="color:var(--accent3);">0</span>' : '—') + '</td>';
+    html += '<td>' + haliHtml + '</td>';
+    html += '</tr>';
+  });
+
+  // Jumla
+  html += '<tr class="totals-row">';
+  html += '<td colspan="2"><strong>JUMLA</strong></td>';
+  html += '<td><strong>' + fmtNum(totalChumbaKwh) + ' kWh</strong></td>';
+  html += '<td><strong>Tsh ' + fmtNum(globalTsh) + '</strong></td>';
+  html += '<td><strong>Tsh ' + fmtNum(totalMchangoAda) + '</strong></td>';
+  html += '<td><strong>Tsh ' + fmtNum(totalMchangoLipwa) + '</strong></td>';
+  html += '<td><strong style="color:var(--danger);">Tsh ' + fmtNum(totalMchangoBaki) + '</strong></td>';
+  html += '<td></td>';
+  html += '</tr>';
+  html += '</tbody></table></div>';
+
+  // Rekodi za Global LUKU za mwezi huu
+  var gRecsMonth = globalRecs.filter(function(r){ return r.tarehe && r.tarehe.substring(0,7) === ym; });
+  if (gRecsMonth.length) {
+    html += '<div class="ripoti-section-title">⚡ Rekodi za LUKU (Global)</div>';
+    html += '<div style="overflow-x:auto;">';
+    html += '<table class="ripoti-table"><thead><tr><th>Tarehe</th><th>Muda</th><th>LUKU Awali</th><th>LUKU Mpya</th><th>kWh</th><th>Gharama (Tsh)</th><th>Maelezo</th></tr></thead><tbody>';
+    gRecsMonth.forEach(function(r){
+      html += '<tr><td>' + (r.tarehe||'—') + '</td><td>' + (r.muda||'—') + '</td><td>' + fmtNum(r.lukuAwali) + '</td><td>' + fmtNum(r.lukuMpya||r.lukuSasa) + '</td><td>' + fmtNum(r.kwh) + '</td><td>' + fmtNum(r.gharama||r.kiasi) + '</td><td style="font-size:.75rem;color:var(--muted);">' + (r.note||'—') + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+
+  // Footer
+  html += '<div style="margin-top:20px;padding-top:12px;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted);text-align:center;">';
+  html += 'Smart Home Energy System &nbsp;|&nbsp; ' + meziLabel + ' &nbsp;|&nbsp; Imetolewa: ' + printDate;
+  html += '</div>';
+
+  html += '</div>'; // ripotiPrintArea
+
+  el.innerHTML = html;
+}
+
+function printRipoti() {
+  // Hifadhi jina la jengo
+  var jengo = document.getElementById("ripotiJengo").value.trim();
+  if (jengo) localStorage.setItem("ripotiJengo", jengo);
+  window.print();
+}
+
+// ================================================================
+// ADMIN CONTACT — Hifadhi / Soma
+// ================================================================
+function getAdminContact() {
+  try { return JSON.parse(localStorage.getItem("adminContact") || "{}"); } catch(e) { return {}; }
+}
+function saveAdminContact() {
+  var name  = document.getElementById("adminContactName").value.trim();
+  var phone = document.getElementById("adminContactPhone").value.trim().replace(/\D/g,"");
+  var el    = document.getElementById("adminContactAlert");
+  if (!phone || phone.length < 9) {
+    el.innerHTML = "<div class='alert alert-danger'>❌ Weka nambari sahihi (mfano: 255712345678)</div>";
+    setTimeout(function(){ el.innerHTML=""; }, 3000);
+    return;
+  }
+  localStorage.setItem("adminContact", JSON.stringify({ name: name || "Admin", phone: phone }));
+  el.innerHTML = "<div class='alert alert-success'>✅ Imehifadhiwa!</div>";
+  setTimeout(function(){ el.innerHTML=""; }, 2500);
+}
+function loadAdminContactSettings() {
+  var c = getAdminContact();
+  var nameEl  = document.getElementById("adminContactName");
+  var phoneEl = document.getElementById("adminContactPhone");
+  if (nameEl && c.name)  nameEl.value  = c.name;
+  if (phoneEl && c.phone) phoneEl.value = c.phone;
+}
+
+// ── Onyesha WhatsApp/Simu buttons kwenye notification ──
+function updateNotifAdminContact(tenantName, daysLeft) {
+  var c = getAdminContact();
+  var div = document.getElementById("notifAdminContact");
+  if (!div) return;
+  if (!c.phone) { div.style.display = "none"; return; }
+
+  var msg = encodeURIComponent(
+    "Habari " + (c.name||"Admin") + "! Mimi ni " + (tenantName||"mpangaji") +
+    ". LUKU yangu " + (daysLeft === 0 ? "imekwisha!" : "inakwisha (siku " + daysLeft + " zimebaki).") +
+    " Tafadhali nisaidie."
+  );
+
+  document.getElementById("notifAdminName").textContent = (c.name || "Admin") + " — " + c.phone;
+  document.getElementById("notifWhatsappBtn").href = "https://wa.me/" + c.phone + "?text=" + msg;
+  document.getElementById("notifCallBtn").href = "tel:+" + c.phone;
+  div.style.display = "";
+}
+
+// ================================================================
+// KARIBU SCREEN — Onboarding
+// ================================================================
+var _karibuStep = 1;
+
+function showKaribu() {
+  // Onyesha mara ya kwanza tu
+  var seen = localStorage.getItem("karibuSeen_" + (currentUser ? currentUser.chumba : ""));
+  if (seen) return;
+
+  // Jaza jina la mpangaji
+  if (currentUser) {
+    var jina = currentUser.jina ? currentUser.jina.split(" ")[0] : "";
+    document.getElementById("karibuJinaText").textContent = jina ? "Habari " + jina + "!" : "";
+  }
+
+  // Jaza hali ya LUKU
+  var pred = currentUser ? calcPrediction(currentUser.chumba) : null;
+  var unitsEl  = document.getElementById("karibuLukuUnits");
+  var statusEl = document.getElementById("karibuLukuStatus");
+
+  if (pred && pred.hasData) {
+    unitsEl.textContent = pred.lukuSasa > 0 ? pred.lukuSasa.toFixed(0) : "—";
+    if (pred.status === "danger") {
+      unitsEl.style.color = "var(--danger)";
+      statusEl.innerHTML = "<span style='color:var(--danger);font-weight:700;'>⚠ Hatari — Nunua LUKU Haraka!</span>";
+    } else if (pred.status === "warn") {
+      unitsEl.style.color = "var(--accent2)";
+      statusEl.innerHTML = "<span style='color:var(--accent2);font-weight:700;'>🟡 Inaisha — Nunua Hivi Karibuni</span>";
+    } else {
+      unitsEl.style.color = "var(--accent3)";
+      statusEl.innerHTML = "<span style='color:var(--accent3);font-weight:700;'>✅ LUKU Inatosha</span>";
+    }
+  } else {
+    unitsEl.textContent = "—";
+    statusEl.textContent = "Bado hakuna rekodi za LUKU. Admin ataweka data yako.";
+  }
+
+  // Jaza mawasiliano ya Admin
+  var c = getAdminContact();
+  var nameDiv = document.getElementById("karibuAdminName");
+  var btnsDiv = document.getElementById("karibuContactBtns");
+  if (c.phone) {
+    nameDiv.textContent = (c.name || "Admin") + " — " + c.phone;
+    var msg = encodeURIComponent("Habari! Nimetumia app ya Smart Energy kwa mara ya kwanza.");
+    btnsDiv.innerHTML =
+      "<a href='https://wa.me/" + c.phone + "?text=" + msg + "' target='_blank' rel='noopener' style='display:inline-flex;align-items:center;gap:6px;background:#25D366;color:#fff;padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:700;text-decoration:none;'>" +
+      "<svg width='14' height='14' viewBox='0 0 24 24' fill='currentColor'><path d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z'/></svg>" +
+      "WhatsApp</a>" +
+      "<a href='tel:+" + c.phone + "' style='display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);color:var(--text);padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:700;text-decoration:none;'>📞 Piga Simu</a>";
+  } else {
+    nameDiv.textContent = "Nambari ya Admin haijawekwa bado.";
+    btnsDiv.innerHTML = "";
+  }
+
+  _karibuStep = 1;
+  updateKaribuDots(1);
+  ["karibuStep1","karibuStep2","karibuStep3"].forEach(function(id,i){
+    document.getElementById(id).style.display = i === 0 ? "" : "none";
+  });
+  document.getElementById("karibuModal").classList.add("open");
+}
+
+function karibuNext(step) {
+  _karibuStep = step;
+  ["karibuStep1","karibuStep2","karibuStep3"].forEach(function(id,i){
+    document.getElementById(id).style.display = (i + 1 === step) ? "" : "none";
+  });
+  updateKaribuDots(step);
+}
+
+function updateKaribuDots(step) {
+  [1,2,3].forEach(function(i){
+    var el = document.getElementById("dot" + i);
+    if (el) el.className = "karibu-dot" + (i === step ? " active" : "");
+  });
+}
+
+function closeKaribu() {
+  document.getElementById("karibuModal").classList.remove("open");
+  if (currentUser) localStorage.setItem("karibuSeen_" + currentUser.chumba, "1");
+  // Angalia LUKU baada ya karibu screen
+  setTimeout(checkAndShowLukuNotification, 500);
 }
 
 function checkAndShowLukuNotification() {
@@ -3215,6 +4538,9 @@ function checkAndShowLukuNotification() {
   var now = new Date();
   $set("lukuNotifTime", "Ilisomwa: " + now.toLocaleDateString("sw-TZ") + " saa " +
     String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0"));
+
+  // Onyesha mawasiliano ya Admin kwenye notification
+  updateNotifAdminContact(tenantName, pred.daysLeft);
 
   // Onyesha
   overlay.classList.add("open");
@@ -3367,7 +4693,7 @@ function calcPrediction(chumba) {
   // Makadirio ya mwezi huu — tumia avgPerDayAdj
   var daysInMonth      = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
   var forecastMonthKwh = avgPerDayAdj * daysInMonth;
-  var forecastMonthCost= forecastMonthKwh * (Number(lastRec.rate) || 500);
+  var forecastMonthCost= forecastMonthKwh * (Number(lastRec.rate) || getUnitRate());
 
   // Makadirio ya mwezi UJAO — tumia factor ya mwezi ujao
   var nextMonth        = (currentMonth + 1) % 12;
@@ -3375,7 +4701,7 @@ function calcPrediction(chumba) {
   var avgNextMonth     = applySeasonalAdjustment(avgPerDay, dataMonth, nextMonth);
   var avgNextAdj       = avgNextMonth * (1 + (SEASON_FACTORS[nextMonth]/SEASON_FACTORS[dataMonth] - 1) * 0.6);
   var forecastNextKwh  = avgNextAdj * nextMonthDays;
-  var forecastNextCost = forecastNextKwh * (Number(lastRec.rate) || 500);
+  var forecastNextCost = forecastNextKwh * (Number(lastRec.rate) || getUnitRate());
 
   // Mwelekeo
   var trend = "flat";
@@ -3533,7 +4859,7 @@ function renderPrediction() {
       var nextMonthHtml =
         '<div style="margin-top:6px;padding:8px 12px;background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);border-radius:8px;">' +
           '<div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">'+monthNames[p.nextMonth]+' (Makadirio)</div>' +
-          '<div style="font-family:\'Rajdhani\',sans-serif;font-size:.95rem;color:#a78bfa;">'+p.forecastNextKwh.toFixed(1)+' units &nbsp;·&nbsp; Tsh '+Math.round(p.forecastNextCost).toLocaleString()+'</div>' +
+          '<div style="font-family:var(--font-main);font-size:.95rem;color:#a78bfa;">'+p.forecastNextKwh.toFixed(1)+' units &nbsp;·&nbsp; Tsh '+Math.round(p.forecastNextCost).toLocaleString()+'</div>' +
         '</div>';
 
       card.className = "pred-card " + statusClass;
@@ -3749,9 +5075,11 @@ async function login(){
     return;
   }
 
-  // ✅ Imefanikiwa
+  // ✅ Imefanikiwa — Unda session token
   resetAttempts();
-  currentUser = { jina: tenant.jina||jina, chumba: matchKey, isAdmin: false };
+  var user = { jina: tenant.jina||jina, chumba: matchKey, isAdmin: false };
+  await createSession(user);
+  currentUser = user;
   startApp();
 }
 
@@ -3784,7 +5112,9 @@ async function loginAdmin(){
     return;
   }
   resetAttempts();
-  currentUser={jina:"Admin",chumba:null,isAdmin:true};
+  var user = {jina:"Admin", chumba:null, isAdmin:true};
+  await createSession(user);
+  currentUser = user;
   startApp();
 }
 
@@ -3869,6 +5199,7 @@ function populateMchangoChumba() {
 }
 
 function onMchangoChumbaChange() {
+  updateLukuMgawanyo();
   var chumba = document.getElementById("mcChumba").value;
   var tenants = getTenants();
   var mpangaji = (tenants[chumba] && tenants[chumba].jina) ? tenants[chumba].jina : "—";
@@ -3896,6 +5227,97 @@ function onMchangoChumbaChange() {
     }
   }
   calcMchangoBalance();
+}
+
+// ── Hesabu mgawanyo wa LUKU kwa chumba fulani ──
+function hesabuMgawanyoLuku(chumba, mwezi) {
+  if (!chumba || !mwezi) return null;
+
+  // Pata mwezi katika muundo wa YYYY-MM
+  var ym = mwezi.substring(0, 7); // "2024-06"
+
+  // kWh za chumba hiki katika mwezi huu (kutoka lukuRecs)
+  var recs = getRecs();
+  var chumbaKwh = 0;
+  recs.forEach(function(r) {
+    if (r.chumba === chumba && r.tarehe && r.tarehe.substring(0, 7) === ym) {
+      chumbaKwh += parseFloat(r.kwh || r.lukuMpya || 0);
+    }
+  });
+
+  // kWh za jumla na kiasi kilicholipwa (kutoka globalLukuRecs)
+  var globalRecs = getGlobalLukuRecs();
+  var jumlaKwh = 0;
+  var jumlaTsh = 0;
+  globalRecs.forEach(function(r) {
+    if (r.tarehe && r.tarehe.substring(0, 7) === ym) {
+      jumlaKwh += parseFloat(r.kwh || r.lukuSasa || 0);
+      jumlaTsh += parseFloat(r.gharama || r.kiasi || 0);
+    }
+  });
+
+  if (jumlaKwh <= 0) return { chumbaKwh: chumbaKwh, jumlaKwh: 0, jumlaTsh: jumlaTsh, adaHesabu: 0, warn: "Hakuna rekodi ya LUKU ya jumla kwa mwezi huu." };
+  if (chumbaKwh <= 0) return { chumbaKwh: 0, jumlaKwh: jumlaKwh, jumlaTsh: jumlaTsh, adaHesabu: 0, warn: "Hakuna rekodi ya LUKU ya chumba hiki kwa mwezi huu." };
+
+  var sehemu = chumbaKwh / jumlaKwh;
+  var adaHesabu = Math.round(sehemu * jumlaTsh);
+
+  return { chumbaKwh: chumbaKwh, jumlaKwh: jumlaKwh, jumlaTsh: jumlaTsh, adaHesabu: adaHesabu, sehemu: sehemu, warn: null };
+}
+
+// ── Onyesha hesabu ya mgawanyo ukibadilisha chumba ──
+function updateLukuMgawanyo() {
+  var chumba = document.getElementById("mcChumba").value.trim();
+  var mwezi = getMchangoMwezi();
+  var box = document.getElementById("lukuMgawanyoBox");
+  var warnEl = document.getElementById("lukuMgawanyoWarn");
+
+  if (!chumba || !mwezi) { box.style.display = "none"; return; }
+
+  var result = hesabuMgawanyoLuku(chumba, mwezi);
+  box.style.display = "";
+
+  if (!result || (result.jumlaKwh <= 0 && result.chumbaKwh <= 0)) {
+    document.getElementById("luku-chumba-kwh").textContent = "—";
+    document.getElementById("luku-jumla-kwh").textContent = "—";
+    document.getElementById("luku-jumla-tsh").textContent = "—";
+    document.getElementById("luku-ada-hesabu").textContent = "—";
+    warnEl.textContent = result && result.warn ? result.warn : "Hakuna rekodi za LUKU kwa mwezi huu.";
+    warnEl.style.display = "";
+    return;
+  }
+
+  document.getElementById("luku-chumba-kwh").textContent = fmtNum(result.chumbaKwh) + " kWh";
+  document.getElementById("luku-jumla-kwh").textContent = fmtNum(result.jumlaKwh) + " kWh";
+  document.getElementById("luku-jumla-tsh").textContent = "Tsh " + fmtNum(result.jumlaTsh);
+  document.getElementById("luku-ada-hesabu").textContent = "Tsh " + fmtNum(result.adaHesabu);
+
+  if (result.warn) {
+    warnEl.textContent = result.warn;
+    warnEl.style.display = "";
+  } else {
+    warnEl.style.display = "none";
+    var pct = result.sehemu ? (result.sehemu * 100).toFixed(1) + "%" : "";
+    if (pct) {
+      warnEl.textContent = "Sehemu ya chumba hiki: " + pct + " ya jumla ya LUKU";
+      warnEl.style.color = "var(--accent3)";
+      warnEl.style.display = "";
+    }
+  }
+}
+
+// ── Tumia ada iliyohesabiwa kwenye fomu ──
+function tumiaAdaYaLuku() {
+  var chumba = document.getElementById("mcChumba").value.trim();
+  var mwezi = getMchangoMwezi();
+  var result = hesabuMgawanyoLuku(chumba, mwezi);
+  if (!result || result.adaHesabu <= 0) {
+    showToast("Hesabu haiwezekani — hakuna rekodi za kutosha za LUKU.");
+    return;
+  }
+  document.getElementById("mcAda").value = result.adaHesabu;
+  calcMchangoBalance();
+  showToast("✅ Ada ya Tsh " + fmtNum(result.adaHesabu) + " imewekwa kutoka hesabu ya LUKU.");
 }
 
 function calcMchangoBalance() {
@@ -3972,8 +5394,8 @@ function saveMchango() {
   hist.unshift(entry);
   localStorage.setItem(histKey, JSON.stringify(hist));
 
-  // *** MPYA — tuma entry hii Sheets mara moja (isiende kupotea) ***
-  sendMchangoHistToSheets(entry);
+  // Tuma Sheets kwa queue (inafanya kazi offline pia)
+  queueSync("SAVE_MCHANGO", { chumba:chumba, mwezi:mwezi, mpangaji:document.getElementById("mcMpangaji").value, ada:ada, kilicholipwa:kiasi, baki:Math.max(0,ada-kiasi), tarehe:tarehe, note:note });
 
   // Hifadhi hali ya sasa ya chumba (overwrite kwa mwezi huo)
   data[key] = {
@@ -4082,7 +5504,7 @@ function renderMichango() {
     var editBtn = "<button class=\"btn btn-outline btn-sm\" style=\"margin-right:4px;\" onclick=\"editMchango(\'" + chumba + "\')\">✏</button>";
 
     rows += "<tr>";
-    rows += "<td><b style=\"color:var(--accent);font-family:Rajdhani,sans-serif;\">" + chumba + "</b></td>";
+    rows += "<td><b style=\"color:var(--accent);font-family:var(--font-main);\">" + chumba + "</b></td>";
     rows += "<td>" + jina + "</td>";
     rows += "<td>" + (ada > 0 ? fmtNum(ada) : "<span style=\"color:var(--muted);\">—</span>") + "</td>";
     rows += "<td>" + (paid > 0 ? fmtNum(paid) : "<span style=\"color:var(--muted);\">0</span>") + "</td>";
@@ -4186,10 +5608,23 @@ function exportMchangoCSV() {
   a.click();
 }
 
-window.onload=function(){
+window.onload = async function(){
   document.getElementById("loginChumba").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("loginJina").focus();});
   document.getElementById("loginJina").addEventListener("keydown",function(e){if(e.key==="Enter")login();});
-  // Onyesha ujumbe wa lockout kama ipo
+
+  // Pakia data iliyofichwa kwenye cache
+  await loadTenantsCache();
+  await loadRecsCache();
+
+  // Angalia kama session bado ipo (upya ukurasa bila kutoka)
+  var session = await getSession();
+  if(session){
+    currentUser = { jina: session.jina, chumba: session.chumba, isAdmin: session.isAdmin };
+    startApp();
+    return;
+  }
+
+  // Onyesha lockout kama ipo
   if(isLockedOut()){
     var secs=lockoutTimeLeft();
     showLoginErr("🔒 Akaunti imefungwa. Jaribu tena baada ya sekunde "+secs+".");
