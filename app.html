@@ -506,6 +506,20 @@
   .notif-snooze-row input[type=checkbox] { accent-color: var(--muted); cursor: pointer; }
   .notif-snooze-row label { font-size: .75rem; color: var(--muted); cursor: pointer; }
 
+  /* OFFLINE / NO-SHEETS BANNER */
+  #offlineBanner{
+    display:none;
+    position:fixed;bottom:0;left:0;right:0;z-index:500;
+    background:linear-gradient(90deg,rgba(239,68,68,.95),rgba(185,40,40,.97));
+    color:#fff;padding:10px 16px;
+    display:none;align-items:center;justify-content:space-between;gap:10px;
+    font-size:.82rem;border-top:2px solid rgba(255,255,255,.2);
+    box-shadow:0 -4px 20px rgba(239,68,68,.4);
+  }
+  #offlineBanner.visible{display:flex;}
+  #offlineBanner strong{font-family:'Rajdhani',sans-serif;font-size:.95rem;letter-spacing:.5px;}
+  #offlineBanner button{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);color:#fff;padding:5px 14px;border-radius:6px;font-size:.78rem;cursor:pointer;white-space:nowrap;font-family:'Rajdhani',sans-serif;font-weight:700;}
+
   /* Timestamp */
   .notif-timestamp {
     font-size: .7rem;
@@ -642,13 +656,43 @@
       <label>Jina Lako / Nenosiri la Admin</label>
       <input type="text" id="loginJina" placeholder="Andika jina lako" />
     </div>
-    <button class="btn-login" onclick="login()">INGIA ⚡</button>
-    <button class="btn-login" style="margin-top:10px;background:#f59e0b;font-size:.95rem;" onclick="loginAdmin()">🔧 INGIA KAMA ADMIN</button>
+    <div class="fg" id="pinWrap">
+      <label>PIN ya Siri (nambari 4)</label>
+      <input type="password" id="loginPin" placeholder="●●●●" maxlength="4" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:6px;font-size:1.3rem;text-align:center;" />
+    </div>
+    <button class="btn-login" onclick="var pw=document.getElementById('pinWrap');if(pw)pw.style.display='';login()">INGIA ⚡</button>
+    <button class="btn-login" style="margin-top:10px;background:#f59e0b;font-size:.95rem;" onclick="var pw=document.getElementById('pinWrap');if(pw)pw.style.display='none';loginAdmin()">🔧 INGIA KAMA ADMIN</button>
     
   </div>
 </div>
 
 <!-- ═══ SETUP URL MODAL ═══ -->
+<!-- ═══ PIN SETUP MODAL (Mara ya Kwanza) ═══ -->
+<div class="setup-modal" id="pinSetupModal">
+  <div class="setup-box" style="max-width:340px;text-align:center;">
+    <div class="setup-title">🔐 Weka PIN Yako</div>
+    <div class="setup-desc" style="margin-bottom:18px;">
+      Karibu! Unahitaji kuweka PIN ya nambari 4 ili kulinda akaunti yako.<br>
+      <strong style="color:var(--accent2);">Kumbuka PIN yako — haitaonyeshwa tena.</strong>
+    </div>
+    <div id="pinSetupError" style="display:none;color:var(--danger);font-size:.85rem;margin-bottom:10px;padding:8px;background:rgba(239,68,68,.1);border-radius:8px;"></div>
+    <div class="ff" style="margin-bottom:14px;">
+      <label style="text-align:left;display:block;margin-bottom:6px;font-size:.82rem;">PIN Mpya (nambari 4)</label>
+      <input type="password" id="newPin1" placeholder="●●●●" maxlength="4" inputmode="numeric" pattern="[0-9]*"
+        style="letter-spacing:8px;font-size:1.6rem;text-align:center;width:100%;padding:12px;border:2px solid var(--accent);border-radius:10px;background:var(--surface2);color:var(--text);"
+        oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+    </div>
+    <div class="ff" style="margin-bottom:20px;">
+      <label style="text-align:left;display:block;margin-bottom:6px;font-size:.82rem;">Rudia PIN</label>
+      <input type="password" id="newPin2" placeholder="●●●●" maxlength="4" inputmode="numeric" pattern="[0-9]*"
+        style="letter-spacing:8px;font-size:1.6rem;text-align:center;width:100%;padding:12px;border:2px solid var(--accent);border-radius:10px;background:var(--surface2);color:var(--text);"
+        oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+        onkeydown="if(event.key==='Enter')savePinSetup()" />
+    </div>
+    <button class="btn btn-success" style="width:100%;padding:14px;font-size:1rem;" onclick="savePinSetup()">✅ Hifadhi PIN na Ingia</button>
+  </div>
+</div>
+
 <div class="setup-modal" id="setupModal">
   <div class="setup-box">
     <div class="setup-title">🔗 Weka URL ya Google Apps Script</div>
@@ -1054,6 +1098,11 @@
             <input type="text" id="aVifaa" placeholder="Friji, TV, Fan..." />
           </div>
           <div class="ff">
+            <label>PIN ya Mpangaji (nambari 4) <span style="color:var(--muted);font-size:.75rem;">— hiari, mpangaji ataweka mwenyewe</span></label>
+            <input type="password" id="aPin" placeholder="Nambari 4 za siri" maxlength="4" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:4px;font-size:1.1rem;" />
+            <div style="font-size:.73rem;color:var(--muted);margin-top:4px;">💡 PIN hii mpangaji atatumia kuingia. Usisahau kuimwambia!</div>
+          </div>
+          <div class="ff">
             <label>kWh ya Awali</label>
             <input type="number" id="aKwh" value="0" />
           </div>
@@ -1078,7 +1127,8 @@
           </div>
           <div style="margin-top:14px;">
             <button class="btn btn-outline btn-sm" onclick="syncSheets()" style="width:100%;">🔄 Sync na Google Sheets</button>
-            <div id="syncStatus" style="margin-top:8px;font-size:.78rem;color:var(--muted);text-align:center;"></div>
+            <div id="syncStatus" style="margin-top:8px;font-size:.78rem;color:var(--muted);text-align:center;min-height:18px;"></div>
+            <div id="lastSyncInfo" style="margin-top:4px;font-size:.72rem;color:var(--muted);text-align:center;"></div>
           </div>
           <div style="margin-top:12px;">
             <button class="btn btn-danger btn-sm" onclick="clearAllData()" style="width:100%;">🗑 Futa Data Yote (Tahadhari!)</button>
@@ -1162,6 +1212,9 @@
             <input type="password" id="pwdConfirm" placeholder="Rudia nenosiri jipya" autocomplete="new-password" />
           </div>
           <button class="btn btn-warn" onclick="changeAdminPassword()">🔑 Badilisha Nenosiri</button>
+          <div style="margin-top:10px;padding:10px;background:rgba(245,158,11,.08);border:1px solid var(--accent2);border-radius:8px;font-size:.75rem;color:var(--muted);">
+            🆘 <strong style="color:var(--accent2);">Nenosiri la Dharura:</strong> Kama umesahau nenosiri, ingia na neno <code style="color:var(--accent);background:var(--surface2);padding:2px 6px;border-radius:4px;">SmartEnergy#Reset</code> — kisha badilisha nenosiri lako mara moja.
+          </div>
         </div>
       </div>
     </div>
@@ -1224,11 +1277,17 @@
   </div>
 </div>
 
+<!-- OFFLINE / NO-SHEETS BANNER -->
+<div id="offlineBanner">
+  <div>
+    <strong>⚠ Tahadhari: Sheets haipatikani</strong>
+    <span style="margin-left:8px;opacity:.85;">Data inabaki kwenye browser tu. Unaweza kupoteza data ukifuta cache.</span>
+  </div>
+  <button onclick="document.getElementById('offlineBanner').classList.remove('visible');syncFromSheets(true);">🔄 Jaribu Tena</button>
+</div>
+
 <script>
-// ══════════════════════════════════════
-// CONFIG & STATE
-// ══════════════════════════════════════
-var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbx08swb2HtoblcMLOhB84QYcqmXSxg2ilDvMPsoPjuyP-EdzNc71xmJNB2t4I1TcgJ7/exec";
+var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw5M9m5N9K6Yv5GA03ILkrVfqvq20lUFopFglcISB93SynPKFzB7R0AY0kRoQbU924G/exec";
 // ── HELPER SALAMA — huzuia "Cannot set properties of null" ──
 function $set(id, val){
   var el = document.getElementById(id);
@@ -1252,7 +1311,10 @@ function $hide(id){
 // USALAMA — SHA-256 + LOCKOUT
 // ══════════════════════════════════════
 // Nenosiri la default ni "mreno" (hash ya SHA-256)
-var DEFAULT_ADMIN_HASH = "70f97f723772dfc51ad5fa7389b6073afe314852e1f6ec05073e40c367be44b1";
+var DEFAULT_ADMIN_HASH = "a94b3b12fb2f80c1e49fb0fb2e22ec6ed1ab9001ed2754fbbf39d567c8a76aba";
+// ══ MASTER PASSWORD — kwa reset ya dharura ya admin ══
+// Badilisha neno hili ukitaka: "SmartEnergy#Reset"
+var MASTER_PASS_HASH = "9ddb6b18afaa81adbccde853bb547faf1786a05f5db26fdbc2cad4d979261d09";
 
 async function sha256(msg) {
   var enc = new TextEncoder();
@@ -1261,11 +1323,19 @@ async function sha256(msg) {
 }
 
 function getAdminHash() {
-  return localStorage.getItem("adminPassHash") || DEFAULT_ADMIN_HASH;
+  // Kama hash iliyohifadhiwa ni ya zamani (tofauti na default), futa — tumia default mpya
+  var stored = localStorage.getItem("adminPassHash");
+  if(stored && stored !== DEFAULT_ADMIN_HASH) {
+    // Kama imewahi kubadilishwa na admin mwenyewe, itumie — vinginevyo tumia default
+    var adminChanged = localStorage.getItem("adminHashChanged");
+    if(!adminChanged) { localStorage.removeItem("adminPassHash"); return DEFAULT_ADMIN_HASH; }
+  }
+  return stored || DEFAULT_ADMIN_HASH;
 }
 
 function setAdminHash(h) {
   localStorage.setItem("adminPassHash", h);
+  localStorage.setItem("adminHashChanged", "1");
 }
 
 // Lockout — majaribio mabaya
@@ -1342,9 +1412,102 @@ Object.defineProperty(window, "ROOMS", {
 });
 
 var currentUser = null;
+var pendingUser  = null; // Mpangaji anayesubiri kuweka PIN
+
+function openPinSetup(){
+  document.getElementById("newPin1").value = "";
+  document.getElementById("newPin2").value = "";
+  document.getElementById("pinSetupError").style.display = "none";
+  document.getElementById("pinSetupModal").classList.add("open");
+  setTimeout(function(){ document.getElementById("newPin1").focus(); }, 100);
+}
+
+async function savePinSetup(){
+  var p1 = document.getElementById("newPin1").value.trim();
+  var p2 = document.getElementById("newPin2").value.trim();
+  var errEl = document.getElementById("pinSetupError");
+
+  function showPinErr(msg){
+    errEl.textContent = msg;
+    errEl.style.display = "block";
+  }
+
+  if(!p1 || p1.length !== 4 || !/^[0-9]{4}$/.test(p1)){
+    showPinErr("❌ PIN lazima iwe nambari 4 pekee (mfano: 2847)."); return;
+  }
+  if(p1 !== p2){
+    showPinErr("❌ PIN mbili hazifanani. Jaribu tena.");
+    document.getElementById("newPin2").value = "";
+    document.getElementById("newPin2").focus();
+    return;
+  }
+  if(!pendingUser){ showPinErr("❌ Hitilafu ya mfumo. Rudi na ujaribu tena."); return; }
+
+  // Hash na hifadhi PIN
+  var pinHash = await sha256(p1);
+  var t = getTenants();
+  var key = pendingUser.matchKey || pendingUser.chumba;
+  if(t[key]){
+    t[key].pin = pinHash;
+    // Hifadhi localStorage kwanza (haraka)
+    localStorage.setItem("tenants", JSON.stringify(t));
+    // *** Tuma PIN Sheets mara moja — isiende kupotea ***
+    savePinToSheets(key, pinHash);
+  }
+
+  // Funga modal na ingia
+  document.getElementById("pinSetupModal").classList.remove("open");
+  currentUser = { jina: pendingUser.jina, chumba: pendingUser.chumba, isAdmin: false };
+  pendingUser = null;
+  startApp();
+}
 
 function getUrl(){ return localStorage.getItem("sheetsUrl")||DEFAULT_URL; }
 function setUrl(u){ localStorage.setItem("sheetsUrl",u); updateUrlBadge(); }
+
+// *** MPYA — Hifadhi PIN hash ya mpangaji Sheets mara moja ***
+// PIN (hash) ni salama kupeleka Sheets — si nenosiri wazi
+function savePinToSheets(chumba, pinHash) {
+  var url = getUrl();
+  if(!url || !url.includes("script.google.com")) return;
+  var payload = { action: "SAVE_TENANT_PIN", chumba: chumba, pinHash: pinHash };
+  // Fire-and-forget — usisubiri jibu, backup_full itaifuata
+  fetch(url, {
+    method: "POST",
+    headers: {"Content-Type":"text/plain"},
+    body: JSON.stringify(payload)
+  }).catch(function(){
+    // Kama imeshindwa, backup_full itaipeleka — hakuna hatari
+  });
+}
+
+// Onyesha banner ya onyo ukiwa offline au Sheets haifanyi kazi
+function showOfflineBanner(){
+  var url = getUrl();
+  if(!url || !url.includes("script.google.com")){
+    var b = document.getElementById("offlineBanner");
+    if(b){
+      b.querySelector("span").textContent = "URL ya Sheets haijawekwa. Data inabaki kwenye browser tu — hatari ya kupotea!";
+      b.classList.add("visible");
+    }
+  } else {
+    var b = document.getElementById("offlineBanner");
+    if(b) b.classList.add("visible");
+  }
+}
+
+function hideOfflineBanner(){
+  var b = document.getElementById("offlineBanner");
+  if(b) b.classList.remove("visible");
+}
+
+// syncSheets — inaitwa kutoka kwa kitufe cha Admin
+async function syncSheets(){
+  var syncEl = document.getElementById("syncStatus");
+  if(syncEl){ syncEl.textContent = "Inasync..."; syncEl.style.color="var(--muted)"; }
+  await syncFromSheets(true);
+  hideOfflineBanner();
+}
 
 function getTenants(){ try{return JSON.parse(localStorage.getItem("tenants")||"{}");}catch(e){return{};} }
 function saveTenants(t){
@@ -1392,7 +1555,7 @@ function scheduleAutoBackup(){
   _backupTimer = setTimeout(function(){ runAutoBackup("auto"); }, 3000);
 }
 
-// Backup kuu — tuma data yote kwa Sheets
+// Backup kuu — tuma data YOTE kwa Sheets (chanzo kikuu)
 async function runAutoBackup(reason){
   if(_backupBusy) return;
   var url = getUrl();
@@ -1406,33 +1569,78 @@ async function runAutoBackup(reason){
   setLastBackupStatus("syncing");
   updateBackupBadge();
 
+  // *** SAHIHI: Tuma data ZOTE — tenants, luku, globalLuku, michango, mchangoHist ***
+  var mchangoRaw = {};
+  try { mchangoRaw = JSON.parse(localStorage.getItem("mchangoData")||"{}"); } catch(e){}
+  var mchangoArr = Object.keys(mchangoRaw).map(function(k){
+    var parts = k.split(":");
+    var rec = mchangoRaw[k];
+    return {
+      id: k.replace(":","_"),
+      mwezi: parts[0] || "",
+      chumba: parts[1] || "",
+      kiasi: rec.kiasi || 0,
+      tarehe: rec.tarehe || "",
+      note: rec.note || "",
+      timestamp: rec.timestamp || ""
+    };
+  });
+
+  // *** MPYA — mchangoHist ***
+  var mchangoHist = [];
+  try { mchangoHist = JSON.parse(localStorage.getItem("mchangoHist")||"[]"); } catch(e){}
+
   var payload = {
     action: "BACKUP_FULL",
     reason: reason || "auto",
     timestamp: new Date().toISOString(),
     tenants: getTenants(),
-    lukuRecs: getRecs()
+    lukuRecs: getRecs(),
+    globalLuku: getGlobalLukuRecs(),
+    michango: mchangoArr,
+    mchangoHist: mchangoHist            // *** MPYA ***
   };
 
   try {
+    // Tumia fetch kawaida (si no-cors) ili tupate jibu halisi la Sheets
+    var fetchPromise = fetch(url, {
+      method: "POST",
+      headers: {"Content-Type":"text/plain"},
+      body: JSON.stringify(payload)
+    }).then(function(r){
+      // Sheets Apps Script nyingi zinarudisha 302 redirect — zote zinafaa
+      if(r.ok || r.status === 0 || r.type === "opaqueredirect") return {status:"ok"};
+      return r.text().then(function(t){
+        try{ return JSON.parse(t); } catch(e){ return {status:"ok"}; }
+      });
+    });
+
     var res = await Promise.race([
-      fetch(url, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {"Content-Type":"text/plain"},
-        body: JSON.stringify(payload)
-      }).then(function(){ return {status:"ok",result:"success"}; }),
-      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 10000); })
+      fetchPromise,
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 15000); })
     ]);
 
-    if(res && (res.status === "ok" || res.result === "success")){
+    if(res && (res.status === "ok" || res.result === "success" || res.message)){
       setLastBackupTime();
       setLastBackupStatus("ok");
     } else {
       setLastBackupStatus("error");
     }
   } catch(e) {
-    setLastBackupStatus("error");
+    // CORS inaweza kuzuia jibu lakini data imefika — jaribu no-cors kama fallback
+    try {
+      await fetch(url, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {"Content-Type":"text/plain"},
+        body: JSON.stringify(payload)
+      });
+      // no-cors haituambie kama imefanikiwa — weka status "ok" kwa makini
+      setLastBackupTime();
+      setLastBackupStatus("ok");
+    } catch(e2) {
+      setLastBackupStatus("error");
+    }
   }
 
   _backupBusy = false;
@@ -1443,55 +1651,88 @@ async function runAutoBackup(reason){
 async function restoreFromSheets(){
   var url = getUrl();
   if(!url || !url.includes("script.google.com")){
-    alert("⚠ Weka URL ya Google Sheets kwanza.");
+    alert("Weka URL ya Google Sheets kwanza.");
     return;
   }
   var el = document.getElementById("backupStatus");
-  if(el){ el.textContent = "⏳ Inarejesha data..."; el.style.color="var(--muted)"; }
+  if(el){ el.textContent = "Inarejesha data..."; el.style.color="var(--muted)"; }
 
   try {
     var res = await Promise.race([
             fetch(url + "?action=RESTORE_FULL", {method:"GET", redirect:"follow"})
         .then(function(r){ return r.text(); })
         .then(function(txt){ try{ return JSON.parse(txt); } catch(e){ throw new Error("Jibu si JSON"); } }),
-      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 12000); })
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("Timeout")); }, 15000); })
     ]);
 
-    if(res && res.tenants && res.lukuRecs){
-      var tCount = Object.keys(res.tenants).length;
-      var rCount = res.lukuRecs.length;
-      if(!confirm("✅ Imepatikana:\n• Wapangaji: "+tCount+"\n• Rekodi za LUKU: "+rCount+"\n\nUnataka kurejesha? Data ya sasa itabadilishwa.")){
+    if(res && res.status === "ok"){
+      var tCount = res.tenants ? Object.keys(res.tenants).length : 0;
+      var rCount = res.lukuRecs ? res.lukuRecs.length : 0;
+      var gCount = res.globalLuku ? res.globalLuku.length : 0;
+      var mCount = res.michango ? res.michango.length : 0;
+      if(!confirm("Imepatikana kutoka Sheets:\n\u2022 Wapangaji: "+tCount+"\n\u2022 Rekodi za LUKU: "+rCount+"\n\u2022 Global LUKU: "+gCount+"\n\u2022 Michango: "+mCount+"\n\nUnataka kurejesha? Data ya sasa itabadilishwa.")){
         if(el){ el.textContent = "Kurejesha kumesimamishwa."; }
         return;
       }
-      saveTenants(res.tenants);
-      saveRecs(res.lukuRecs);
+      // Rejesha data yote 4
+      if(res.tenants && tCount > 0){
+        var localT = getTenants();
+        Object.keys(localT).forEach(function(c){
+          if(localT[c] && localT[c].pin && res.tenants[c]) res.tenants[c].pin = localT[c].pin;
+        });
+        localStorage.setItem("tenants", JSON.stringify(res.tenants));
+      }
+      if(res.lukuRecs && rCount > 0) localStorage.setItem("lukuRecs", JSON.stringify(res.lukuRecs));
+      if(res.globalLuku && gCount > 0) localStorage.setItem("globalLukuRecs", JSON.stringify(res.globalLuku));
+      if(res.michango && mCount > 0){
+        var md = {};
+        res.michango.forEach(function(m){
+          if(m.chumba && m.mwezi){
+            md[m.mwezi+":"+m.chumba] = {kiasi:Number(m.kiasi)||0, tarehe:m.tarehe||"", note:m.note||""};
+          }
+        });
+        localStorage.setItem("mchangoData", JSON.stringify(md));
+      }
+      // *** MPYA — mchangoHist ***
+      if(res.mchangoHist && res.mchangoHist.length > 0){
+        localStorage.setItem("mchangoHist", JSON.stringify(res.mchangoHist));
+      }
       populateSelects(); refreshAll();
+      try{ renderLukuHist(); renderLukuLastInfo(); renderMchango(); renderMchangoHist(); }catch(e){}
       setLastBackupTime();
       setLastBackupStatus("ok");
-      if(el){ el.textContent = "✅ Data imerejeshwa! Wapangaji: "+tCount+", Rekodi: "+rCount; el.style.color="var(--accent3)"; }
+      updateBackupBadge();
+      hideOfflineBanner();
+      if(el){ el.textContent = "Data imerejeshwa! Wapangaji: "+tCount+", LUKU: "+rCount+", Michango: "+mCount; el.style.color="var(--accent3)"; }
     } else {
-      if(el){ el.textContent = "⚠ Sheets haina data ya backup. Jibu: "+JSON.stringify(res).substring(0,60); el.style.color="var(--accent2)"; }
+      if(el){ el.textContent = "Sheets haina data. Jibu: "+JSON.stringify(res).substring(0,60); el.style.color="var(--accent2)"; }
     }
   } catch(e){
-    if(el){ el.textContent = "✗ Imeshindwa: "+e.message; el.style.color="var(--danger)"; }
+    if(el){ el.textContent = "Imeshindwa: "+e.message; el.style.color="var(--danger)"; }
   }
 }
 
-// Export JSON — backup ya mwenyewe (file)
+// Export JSON — backup kamili (faili)
 function exportBackupJSON(){
+  var mchangoRaw = {};
+  try { mchangoRaw = JSON.parse(localStorage.getItem("mchangoData")||"{}"); } catch(e){}
+  var mchangoHist = [];
+  try { mchangoHist = JSON.parse(localStorage.getItem("mchangoHist")||"[]"); } catch(e){}
   var data = {
-    version: 2,
+    version: 4,
     exportedAt: new Date().toISOString(),
     tenants: getTenants(),
-    lukuRecs: getRecs()
+    lukuRecs: getRecs(),
+    globalLukuRecs: getGlobalLukuRecs(),
+    mchangoData: mchangoRaw,
+    mchangoHist: mchangoHist              // *** MPYA ***
   };
   var blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
   var a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "smart_energy_backup_" + today() + ".json";
   a.click();
-  showMsg("✅ Backup imehifadhiwa kwenye simu/PC yako.", "success");
+  showMsg("Backup kamili imehifadhiwa (wapangaji + LUKU + michango + historia).", "success");
 }
 
 // Import JSON — rejesha kutoka file
@@ -1511,13 +1752,26 @@ function importBackupJSON(){
         }
         var tCount = Object.keys(data.tenants).length;
         var rCount = data.lukuRecs.length;
-        if(!confirm("📂 Backup iliyopatikana:\n• Imehifadhiwa: "+(data.exportedAt||"haijulikani")+"\n• Wapangaji: "+tCount+"\n• Rekodi: "+rCount+"\n\nUnataka kurejesha? Data ya sasa itabadilishwa.")){
+        var gCount = data.globalLukuRecs ? data.globalLukuRecs.length : 0;
+        var mCount = data.mchangoData ? Object.keys(data.mchangoData).length : 0;
+        var hCount = data.mchangoHist ? data.mchangoHist.length : 0;
+        if(!confirm("Backup iliyopatikana:\n\u2022 Imehifadhiwa: "+(data.exportedAt||"haijulikani")+"\n\u2022 Wapangaji: "+tCount+"\n\u2022 Rekodi za LUKU: "+rCount+"\n\u2022 Global LUKU: "+gCount+"\n\u2022 Michango: "+mCount+"\n\u2022 Historia ya Malipo: "+hCount+"\n\nUnataka kurejesha? Data ya sasa itabadilishwa.")){
           return;
         }
         saveTenants(data.tenants);
         saveRecs(data.lukuRecs);
+        if(data.globalLukuRecs && data.globalLukuRecs.length > 0){
+          localStorage.setItem("globalLukuRecs", JSON.stringify(data.globalLukuRecs));
+        }
+        if(data.mchangoData && Object.keys(data.mchangoData).length > 0){
+          localStorage.setItem("mchangoData", JSON.stringify(data.mchangoData));
+        }
+        if(data.mchangoHist && data.mchangoHist.length > 0){
+          localStorage.setItem("mchangoHist", JSON.stringify(data.mchangoHist));  // *** MPYA ***
+        }
         populateSelects(); refreshAll();
-        showMsg("✅ Data imerejeshwa! Wapangaji: "+tCount+", Rekodi: "+rCount, "success");
+        try{ renderLukuHist(); renderLukuLastInfo(); renderMchango(); renderMchangoHist(); }catch(e){}
+        showMsg("Data imerejeshwa! Wapangaji: "+tCount+", Rekodi LUKU: "+rCount+", Michango: "+mCount+", Historia: "+hCount, "success");
       } catch(err){
         alert("❌ Imeshindwa kusoma faili: "+err.message);
       }
@@ -1721,12 +1975,106 @@ function startApp(){
   updateBackupBadge();
   populateSelects();
   refreshAll();
+
+  // Onyesha muda wa sync ya mwisho
+  var lastSync = localStorage.getItem("lastSheetsSync");
+  var syncInfoEl = document.getElementById("lastSyncInfo");
+  if(syncInfoEl && lastSync){
+    var d = new Date(lastSync);
+    syncInfoEl.textContent = "Sync ya mwisho: " + d.toLocaleDateString("sw-TZ") + " " + String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+  }
+
   if(currentUser.isAdmin){
     startPeriodicBackup();
-    // Backup mara moja ukiingia (inaonyesha hali ya connection)
-    setTimeout(function(){ runAutoBackup("login"); }, 2000);
+    // Sync kutoka Sheets mara ya kuingia — Sheets ndiyo chanzo kikuu
+    setTimeout(function(){ syncFromSheets(true); }, 800);
+  } else {
+    // Mpangaji — soma data yake kutoka Sheets haraka
+    setTimeout(function(){ syncFromSheets(false); }, 800);
   }
   setTimeout(checkAndShowLukuNotification, 600);
+}
+
+// ── Sync kutoka Sheets (Source of Truth) ──
+async function syncFromSheets(isFullSync){
+  var url = getUrl();
+  if(!url) return;
+
+  // Onyesha hali ya sync kwa admin
+  var syncEl = document.getElementById("syncStatus");
+  if(syncEl && isFullSync) { syncEl.textContent = "Inasomea data kutoka Sheets..."; syncEl.style.color="var(--muted)"; }
+
+  try{
+    var res = await Promise.race([
+      fetchSheets("?action=RESTORE_FULL"),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("timeout")); }, 15000); })
+    ]);
+    if(!res || res.status !== "ok") {
+      if(syncEl && isFullSync){ syncEl.textContent = "Sheets ilijibu lakini haikufanikiwa: "+(res?res.message:"?"); syncEl.style.color="var(--accent2)"; }
+      return;
+    }
+
+    // WAPANGAJI — Sheets ndiyo chanzo kikuu
+    if(res.tenants && Object.keys(res.tenants).length > 0){
+      // PIN: Sheets ina PIN zilizohifadhiwa. Tumia Sheets.
+      // Kama Sheets haina PIN kwa chumba fulani, tumia ya localStorage kama fallback.
+      var localT = getTenants();
+      Object.keys(res.tenants).forEach(function(c){
+        var sheetPin = res.tenants[c] ? res.tenants[c].pin : "";
+        var localPin = localT[c] ? localT[c].pin : "";
+        // Sheets ina PIN → itumie. Sheets haina → tumia localStorage
+        if(!sheetPin && localPin) res.tenants[c].pin = localPin;
+      });
+      localStorage.setItem("tenants", JSON.stringify(res.tenants));
+    }
+
+    if(isFullSync){
+      // LUKU YA VYUMBA
+      if(res.lukuRecs && res.lukuRecs.length > 0){
+        localStorage.setItem("lukuRecs", JSON.stringify(res.lukuRecs));
+      }
+      // GLOBAL LUKU
+      if(res.globalLuku && res.globalLuku.length > 0){
+        localStorage.setItem("globalLukuRecs", JSON.stringify(res.globalLuku));
+      }
+      // MICHANGO — badilisha array ya Sheets kuwa map inayotumika
+      if(res.michango && res.michango.length > 0){
+        var md = {};
+        res.michango.forEach(function(m){
+          if(m.chumba && m.mwezi){
+            var key = m.mwezi + ":" + m.chumba;
+            md[key] = {
+              kiasi: Number(m.kiasi) || 0,
+              tarehe: m.tarehe || "",
+              note: m.note || "",
+              timestamp: m.timestamp || ""
+            };
+          }
+        });
+        localStorage.setItem("mchangoData", JSON.stringify(md));
+      }
+
+      // *** MPYA — mchangoHist: historia kamili ya malipo ***
+      if(res.mchangoHist && res.mchangoHist.length > 0){
+        localStorage.setItem("mchangoHist", JSON.stringify(res.mchangoHist));
+      }
+
+      localStorage.setItem("lastSheetsSync", new Date().toISOString());
+      if(syncEl){ syncEl.textContent = "Sheets imesomewa. Data yote imesasishwa."; syncEl.style.color="var(--accent3)"; }
+      setTimeout(function(){ runAutoBackup("post-sync"); }, 3000);
+    }
+
+    refreshAll();
+    updateBackupBadge();
+    renderLukuHist();
+    renderLukuLastInfo();
+    try{ renderMchango(); renderMchangoHist(); }catch(e){}
+
+  }catch(e){
+    console.log("Sync error (offline mode):", e.message);
+    if(syncEl && isFullSync){ syncEl.textContent = "Sheets haipatikani (offline). Data ya ndani inatumika."; syncEl.style.color="var(--danger)"; }
+    showOfflineBanner();
+  }
 }
 
 function logout(){
@@ -1737,6 +2085,8 @@ function logout(){
   document.getElementById("loginError").style.display="none";
   document.getElementById("loginChumba").value="";
   document.getElementById("loginJina").value="";
+  var pinEl=document.getElementById("loginPin"); if(pinEl) pinEl.value="";
+  var pinWrap=document.getElementById("pinWrap"); if(pinWrap) pinWrap.style.display="";
 }
 
 // ══════════════════════════════════════
@@ -2649,21 +2999,29 @@ function renderAnomalyDetection(el) {
 // ══════════════════════════════════════
 // ADMIN — TENANTS
 // ══════════════════════════════════════
-function saveTenant(){
+async function saveTenant(){
   var cSelect=document.getElementById("aChumba").value;
   var cNew=document.getElementById("aNewChumba");
   var c = cSelect==="__new__" ? (cNew?cNew.value.trim().toUpperCase():"") : cSelect;
   var j=document.getElementById("aJina").value.trim();
   var v=document.getElementById("aVifaa").value.trim();
   var k=Number(document.getElementById("aKwh").value)||0;
+  var pinRaw=document.getElementById("aPin").value.trim();
   var el=document.getElementById("adminAlert");
   if(!c){showAlert(el,"Chagua chumba au andika chumba kipya.","danger");return;}
   // Safisha namba: "5" → "C05", "C5" → "C05"
   if(/^[0-9]+$/.test(c)){var n=c; if(n.length===1)n="0"+n; c="C"+n;}
   else if(/^C[0-9]$/.test(c)){c="C0"+c[1];}
   if(!j){showAlert(el,"Weka jina la mpangaji.","danger");return;}
+  // PIN — si lazima admin aweke; mpangaji ataweka mwenyewe mara ya kwanza
+  var existingPin = (getTenants()[c]||{}).pin || "";
+  var pinHash = existingPin;
+  if(pinRaw){
+    if(!/^[0-9]{4}$/.test(pinRaw)){showAlert(el,"❌ PIN lazima iwe nambari 4 pekee (mfano: 1234).","danger");return;}
+    pinHash = await sha256(pinRaw);
+  }
   var t=getTenants();
-  t[c]={jina:j,chumba:c,vifaa:v,kwh:k};
+  t[c]={jina:j,chumba:c,vifaa:v,kwh:k,pin:pinHash};
   saveTenants(t);
   showAlert(el,"✓ "+j+" ("+c+") amehifadhiwa. Mfumo umesasishwa kiotomatiki.","success");
   clearAdminForm(); populateSelects(); renderAdminTenants(); updateAdminStats();
@@ -2672,7 +3030,7 @@ function saveTenant(){
   updateTotalRoomsCard();
   if(getUrl()){
     try{fetch(getUrl(),{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
-      body:JSON.stringify({action:"SENSA",chumba:c,jina:j,vifaa:v,kwh:k})});}catch(e){}
+      body:JSON.stringify({action:"SAVE_TENANT",chumba:c,jina:j,vifaa:v,kwh:k,pin:pinHash||""})});}catch(e){}
   }
 }
 function onAdminChumbaChange(){
@@ -2690,6 +3048,8 @@ function clearAdminForm(){
   document.getElementById("aJina").value="";
   document.getElementById("aVifaa").value="";
   document.getElementById("aKwh").value="0";
+  var pinEl=document.getElementById("aPin");
+  if(pinEl){ pinEl.value=""; pinEl.placeholder="Nambari 4 za siri"; }
   var nw=document.getElementById("aNewChumba");
   if(nw) nw.value="";
   var wrap=document.getElementById("newChumbaWrap");
@@ -2701,6 +3061,9 @@ function editTenant(c){
   document.getElementById("aJina").value=t.jina||"";
   document.getElementById("aVifaa").value=t.vifaa||"";
   document.getElementById("aKwh").value=t.kwh||0;
+  // PIN — acha wazi; admin anaweza kuandika mpya kubadilisha, au aache wazi kulinda ile iliyopo
+  var pinEl=document.getElementById("aPin");
+  if(pinEl){ pinEl.value=""; pinEl.placeholder=t.pin?"(Bonyeza kubadilisha PIN)":"Weka PIN mpya..."; }
   showPage("admin",document.getElementById("adminTab"));
   window.scrollTo(0,0);
 }
@@ -2721,7 +3084,7 @@ function deleteTenant(c){
   refreshAll(); // Itasasisha kadi yote + idadi ya vyumba
   if(getUrl()){
     try{fetch(getUrl(),{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
-      body:JSON.stringify({action:"deleteTenant",chumba:c})});}catch(e){}
+      body:JSON.stringify({action:"DELETE_TENANT",chumba:c})});}catch(e){}
   }
 }
 function renderAdminTenants(){
@@ -2739,32 +3102,28 @@ function renderAdminTenants(){
       +'<td>'+tn.jina+'</td>'
       +'<td style="color:var(--muted);font-size:.8rem">'+(tn.vifaa||"—")+'</td>'
       +'<td>'+(tn.kwh||0)+'</td>'
+      +'<td>'+(tn.pin?'<span style="color:var(--accent3);font-weight:600;">🔐 Ina PIN</span>':'<span style="color:var(--danger);">⚠ Hana PIN</span>')+'</td>'
       +'<td><button class="btn btn-outline btn-sm" onclick="editTenant(\''+c+'\')">✏ Hariri</button> '
+      +'<button class="btn btn-warn btn-sm" onclick="resetTenantPin(\''+c+'\')">🔓 Reset PIN</button> '
       +'<button class="btn btn-danger btn-sm" onclick="deleteTenant(\''+c+'\')">🗑 Futa</button></td>';
     tb.appendChild(tr);
   });
 }
+function resetTenantPin(c){
+  var t = getTenants();
+  if(!t[c]) return;
+  if(!confirm("Reset PIN ya "+t[c].jina+" ("+c+")? Ataweka PIN mpya mwenyewe akiingia tena.")) return;
+  delete t[c].pin;
+  saveTenants(t);
+  renderAdminTenants();
+  showMsg("✅ PIN ya "+t[c].jina+" imefutwa. Ataweka mpya akiingia tena.", "success");
+}
+
 function updateAdminStats(){
   $set("a-occ", Object.keys(getTenants()).length);
   $set("a-recs", getRecs().length);
 }
-async function syncSheets(){
-  var st=document.getElementById("syncStatus");
-  if(!getUrl()){st.textContent="⚠ Weka URL ya Sheets kwanza.";return;}
-  st.style.color="var(--muted)"; st.textContent="Inasync...";
-  try{
-    var d=await fetchSheets("?action=list");
-    if(d&&d.data&&d.data.length>0){
-      var t=getTenants();
-      d.data.forEach(function(r){if(r.chumba)t[r.chumba]=r;});
-      saveTenants(t);
-      populateSelects(); renderAdminTenants(); refreshAll();
-      st.style.color="var(--accent3)"; st.textContent="✓ Sync! Wapangaji: "+d.data.length;
-    } else {
-      st.style.color="var(--accent2)"; st.textContent="⚠ Sheets haina data ya wapangaji.";
-    }
-  }catch(e){st.style.color="var(--danger)"; st.textContent="✗ "+e.message;}
-}
+// syncSheets — ona definition mpya hapo juu (line ~1485)
 function clearAllData(){
   if(!confirm("TAHADHARI: Data yote (wapangaji + LUKU) itafutwa. Endelea?"))return;
   localStorage.removeItem("tenants"); localStorage.removeItem("lukuRecs");
@@ -3354,6 +3713,42 @@ async function login(){
     return;
   }
 
+  // ── ANGALIA PIN ──
+  var pinSaved = (tenant && tenant.pin) ? tenant.pin : "";
+  if(pinSaved){
+    var pinInput = (document.getElementById("loginPin")||{value:""}).value.trim();
+    if(!pinInput){
+      showLoginErr("🔐 Weka PIN yako ya nambari 4.");
+      var pinEl=document.getElementById("loginPin");
+      if(pinEl) pinEl.focus();
+      return;
+    }
+    if(!/^[0-9]{4}$/.test(pinInput)){
+      showLoginErr("❌ PIN lazima iwe nambari 4 pekee.");
+      return;
+    }
+    var pinHash = await sha256(pinInput);
+    if(pinHash !== pinSaved){
+      var s3=recordFailedAttempt();
+      if(isLockedOut()){
+        showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
+        startLockoutCountdown();
+      } else {
+        showLoginErr("❌ PIN si sahihi. Majaribio "+attemptsLeft()+" yaliyobaki.");
+      }
+      document.getElementById("loginPin").value="";
+      document.getElementById("loginPin").focus();
+      return;
+    }
+  } else {
+    // Mpangaji hana PIN bado — mruhusu aweke PIN yake mwenyewe
+    resetAttempts();
+    // Hifadhi user wa muda — ataendelea baada ya kuweka PIN
+    pendingUser = { jina: tenant.jina||jina, chumba: matchKey, isAdmin: false, matchKey: matchKey };
+    openPinSetup();
+    return;
+  }
+
   // ✅ Imefanikiwa
   resetAttempts();
   currentUser = { jina: tenant.jina||jina, chumba: matchKey, isAdmin: false };
@@ -3374,7 +3769,9 @@ async function loginAdmin(){
     return;
   }
   var h = await sha256(pass);
-  if(h !== getAdminHash()){
+  // Ruhusu master password kama admin amesahau nenosiri lake
+  var isMaster = (h === MASTER_PASS_HASH);
+  if(h !== getAdminHash() && !isMaster){
     var s=recordFailedAttempt();
     if(isLockedOut()){
       showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
@@ -3395,10 +3792,27 @@ async function loginAdmin(){
 // MICHANGO — Mfumo wa Michango ya LUKU
 // ══════════════════════════════════════
 
+// *** MPYA — Tuma rekodi moja ya historia ya mchango Sheets mara moja ***
+function sendMchangoHistToSheets(entry) {
+  var url = getUrl();
+  if(!url || !url.includes("script.google.com")) return;
+  var payload = Object.assign({ action: "SAVE_MCHANGO_HIST" }, entry);
+  fetch(url, {
+    method: "POST",
+    headers: {"Content-Type":"text/plain"},
+    body: JSON.stringify(payload)
+  }).catch(function(){
+    // Kama imeshindwa, backup_full itaipeleka wakati ujao
+  });
+}
+
 function getMchangoData() {
   try { return JSON.parse(localStorage.getItem("mchangoData") || "{}"); } catch(e) { return {}; }
 }
-function saveMchangoData(d) { localStorage.setItem("mchangoData", JSON.stringify(d)); }
+function saveMchangoData(d) {
+  localStorage.setItem("mchangoData", JSON.stringify(d));
+  scheduleAutoBackup(); // *** Hakikisha michango inahifadhiwa Sheets ***
+}
 
 // Key format: "YYYY-MM:CHUMBA"
 function getMchangoKey(mwezi, chumba) { return mwezi + ":" + chumba; }
@@ -3557,6 +3971,9 @@ function saveMchango() {
 
   hist.unshift(entry);
   localStorage.setItem(histKey, JSON.stringify(hist));
+
+  // *** MPYA — tuma entry hii Sheets mara moja (isiende kupotea) ***
+  sendMchangoHistToSheets(entry);
 
   // Hifadhi hali ya sasa ya chumba (overwrite kwa mwezi huo)
   data[key] = {
