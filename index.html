@@ -353,7 +353,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.5}
 // URL — inayotumika na App kuu
 // ══════════════════════════════════════
 var STORAGE_KEY = "smartEnergySheetUrl";
-var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxpW_MYtOhyyz2sdM6yP4h9X6g5vem_ewKGU6_DdI7iD7IW1AVQe7jWmejLqSVRbczu/execycbx08swb2HtoblcMLOhB84QYcqmXSxg2ilDvMPsoPjuyP-EdzNc71xmJNB2t4I1TcgJ7/exec";
+var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxfsC79QzKBaPFwHwBLhreXJvok3DWcb-at8JvrMWFz27XoUPdfr9tttCSIk3skCZJR/exec";
 // Pia angalia URL iliyohifadhiwa na app kuu (sheetsUrl key)
 function getUrl(){
   return localStorage.getItem("sheetsUrl") ||
@@ -479,6 +479,18 @@ function normalizeRoom(code){
   if(isNaN(n) || n <= 0) return "";
   return n < 10 ? "0" + n : String(n);
 }
+
+normalizeRoom = function(code){
+  if(!code) return "";
+  var s = String(code).trim().toUpperCase().replace(/\s+/g, "");
+  var m = s.match(/^C?0*([0-9]+)$/);
+  if(m){
+    var n = parseInt(m[1], 10);
+    if(isNaN(n) || n <= 0) return "";
+    return n < 10 ? "0" + n : String(n);
+  }
+  return s;
+};
 
 function normalizeRooms(arr){
   // Normalize kila chumba na ondoa rudia
@@ -822,11 +834,17 @@ function submitForm(){
     var appTenantKey = "tenants";
     var tenants = {};
     try{ tenants = JSON.parse(localStorage.getItem(appTenantKey) || "{}"); } catch(e2){}
-    tenants[chumba] = {
+    var oldTenant = tenants[chumba] || {};
+    tenants[chumba] = Object.assign({}, oldTenant, {
       jina: jina, chumba: chumba, vifaa: vifaaStr,
       kwh: kwhTotal, simu: sensaEntry.simu, hali: sensaEntry.hali
-    };
+    });
     localStorage.setItem(appTenantKey, JSON.stringify(tenants));
+    try{
+      var bc = new BroadcastChannel("smart_energy_sync");
+      bc.postMessage({type:"tenants_changed", source:"sensa", action:"self_register", chumba:chumba});
+      bc.close();
+    }catch(e3){}
   } catch(lsErr){
     console.log("localStorage error:", lsErr);
   }
