@@ -202,8 +202,8 @@
   .charts-dashboard-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;}
   @media(max-width:640px){.charts-dashboard-row{grid-template-columns:1fr;}}
   .chart-panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 18px 14px;}
-  .chart-panel-title{font-family:var(--font-main);font-size:.82rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
-  .chart-panel-title .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .chart-panel-title{font-family:var(--font-main);font-size:.82rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:flex-start;gap:7px;}
+  .chart-panel-title .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-top:5px;flex-shrink:0;}
   .chart-panel-title .dot-blue{background:var(--accent);}
   .chart-panel-title .dot-green{background:var(--accent3);}
   .chart-panel-title .dot-yellow{background:var(--accent2);}
@@ -915,9 +915,31 @@
   .receipt-footer .btn { flex:1;min-width:120px;font-size:.82rem;padding:10px 8px; }
   /* ── Print ── */
   @media print {
-    body > *:not(#receiptPrintArea) { display:none !important; }
-    #receiptPrintArea { display:block !important; }
-    #receiptPrintArea * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+    body.receipt-printing > *:not(#receiptPrintArea) { display:none !important; }
+    body.receipt-printing #receiptPrintArea {
+      display:block !important;
+      position:fixed;
+      inset:0;
+      z-index:99999;
+      background:#ffffff !important;
+      color:#000000 !important;
+      padding:20px;
+    }
+    body.receipt-printing #receiptPrintArea * {
+      color:#000000 !important;
+      background:transparent !important;
+      border-color:#cccccc !important;
+      -webkit-print-color-adjust:exact !important;
+      print-color-adjust:exact !important;
+    }
+    body.receipt-printing #receiptPrintArea [style*="background:#00d4ff"],
+    body.receipt-printing #receiptPrintArea [style*="background:#0a7c55"],
+    body.receipt-printing #receiptPrintArea [style*="background:#d1fae5"],
+    body.receipt-printing #receiptPrintArea [style*="background:#fef3c7"] {
+      -webkit-print-color-adjust:exact !important;
+      print-color-adjust:exact !important;
+    }
+    @page { size:A5 portrait; margin:10mm; }
   }
   #receiptPrintArea { display:none; }
   /* ── Light mode overrides ── */
@@ -973,7 +995,7 @@
 // OFFLINE CACHE — Cache API moja kwa moja (bila Service Worker)
 // Inafanya kazi kwenye browser yoyote, bila warnings, bila server.
 // ══════════════════════════════════════════════════════════════
-var SE_CACHE_VERSION = "smart-energy-v25-r1";
+var SE_CACHE_VERSION = "smart-energy-v29-fix8";
 var SE_CACHE_NAME = SE_CACHE_VERSION + "-direct";
 
 // ── Hifadhi app kwenye Cache API (network-first) ─────────────
@@ -1043,6 +1065,16 @@ function isFcmConfigured() {
   return c && c.apiKey && c.apiKey !== "YOUR_API_KEY";
 }
 
+function getSheetsUrlForPush(){
+  return localStorage.getItem("sheetsUrl") || localStorage.getItem("gasUrl") || DEFAULT_URL || "";
+}
+
+function isPushSupportedContext(){
+  return location.protocol === "https:" ||
+         location.hostname === "localhost" ||
+         location.hostname === "127.0.0.1";
+}
+
 // ── Initialize Firebase na FCM ───────────────────────────────────
 function initFCM() {
   if (_fcmInitialized) return;
@@ -1074,6 +1106,10 @@ function initFCM() {
 async function requestPushPermission(onSuccess, onFail) {
   if (!("Notification" in window)) {
     (onFail || _noop)("Notifications haziungwi mkono na browser hii.");
+    return;
+  }
+  if (!isPushSupportedContext()) {
+    (onFail || _noop)("Fungua app kwa http://127.0.0.1 au hosting ya https; ukiifungua kama file:// push notifications haziruhusiwi.");
     return;
   }
   if (!isFcmConfigured()) {
@@ -1120,7 +1156,7 @@ function _saveFcmToken(token) {
 
 // ── Tuma token kwa Google Apps Script (Sheets) ───────────────────
 function _pushTokenToSheets(token, key, role, room) {
-  var url = localStorage.getItem("gasUrl");
+  var url = getSheetsUrlForPush();
   if (!url || url.includes("YOUR_")) return;
   try {
     fetch(url + "?action=saveFcmToken&token=" + encodeURIComponent(token) +
@@ -1150,7 +1186,7 @@ function getNotifPermissionStatus() {
 
 // ── Admin: Tuma notification kwa chumba kimoja au wote ───────────
 async function adminSendPushNotification(targetRoom, title, body, extraData) {
-  var url = localStorage.getItem("gasUrl");
+  var url = getSheetsUrlForPush();
   if (!url || url.includes("YOUR_")) {
     showToast("⚠ Weka URL ya Apps Script kwanza.");
     return false;
@@ -1228,7 +1264,7 @@ var T = {
     login_subtitle: "PREDICTION AND OPTIMIZATION SYSTEM",
     login_desc: "Mfumo wa kufuatilia matumizi ya umeme, kutabiri salio la LUKU, na kutoa ushauri wa kupunguza gharama za nishati.",
     login_room_label: "Weka Namba ya Chumba",
-    login_room_ph: "Mfano: 1, C01, C17, C25...",
+    login_room_ph: "Mfano: 1, 2, 17, 25...",
     login_name_label: "Jina Lako / Nenosiri la Admin",
     login_name_ph: "Andika jina lako",
     login_pin_label: "PIN ya Siri (nambari 4)",
@@ -1262,22 +1298,22 @@ var T = {
     tab_michango: "💰 Michango",
     tab_admin: "🔧 Admin",
     /* ── Muhtasari ── */
-    luku_admin_header: "⚡ TAARIFA YA LUKU — ILIYOWEKWA NA ADMIN",
+    luku_admin_header: "⚡ TATARIFA YA LUKU — ILIYOWEKWA NA ADMIN",
     stat_rooms_all: "Vyumba Vyote",
     stat_rooms_sub: "Idadi ya vyumba vyote",
     stat_occupied: "Vilivyokaliwa",
     stat_occupied_sub: "Vyumba vilivyo na wapangaji",
-    stat_units_today: "Units Zilizotumika Leo",
-    stat_units_today_sub: "Units za siku ya leo",
+    stat_units_today: "LUKU Zilizotumika Leo",
+    stat_units_today_sub: "LUKU za siku ya leo",
     stat_units_month: "Units Zilizotumika Mwezi",
     stat_units_month_sub: "Units za mwezi huu",
     stat_bill_est: "Makadirio Bili",
     stat_bill_sub: "Tsh mwezi huu",
     section_room_status: "HALI YA VYUMBA",
     /* ── LUKU Page ── */
-    luku_page_title: "⚡ INGIZA TAARIFA YA LUKU — JUMLA",
-    luku_saved_header: "📋 TAARIFA YA LUKU ILIYOHIFADHIWA",
-    luku_info_note_html: "ℹ️ Taarifa hii itaonekana kwa <b>wapangaji wote</b> — bei ya unit, salio la LUKU, tarehe na muda wa kununua.",
+    luku_page_title: "⚡ INGIZA TATARIFA YA LUKU — JUMLA",
+    luku_saved_header: "📋 TATARIFA YA LUKU ILIYOHIFADHIWA",
+    luku_info_note_html: "ℹ️ Tatarifa hii itaonekana kwa <b>wapangaji wote</b> — bei ya unit, salio la LUKU, tarehe na muda wa kununua.",
     luku_date_label: "Tarehe ya Kununua",
     luku_time_label: "Muda",
     luku_time_morning: "🌅 Asubuhi (06:00 - 12:00)",
@@ -1302,14 +1338,14 @@ var T = {
     luku_rate_btn: "✓ Weka Bei",
     luku_notes_label: "Maelezo (Hiari)",
     luku_notes_ph: "Mfano: LUKU ya Juni, benki ya CRDB...",
-    luku_save_btn: "💾 HIFADHI TAARIFA YA LUKU",
+    luku_save_btn: "💾 HIFADHI TATARIFA YA LUKU",
     luku_hist_title: "📋 HISTORIA YA LUKU (Matumizi ya Jumla)",
     luku_no_records: "Hakuna rekodi bado.",
     /* ── Vyumba ── */
     vyumba_title: "HALI YA VYUMBA VYOTE",
     /* ── Ulinganisho ── */
     comp_title: "ULINGANISHO WA MATUMIZI — MWEZI HUU",
-    comp_chart_sub: "kWh kwa kila chumba",
+    comp_chart_sub: "MATUMIZI YA LUKU (kWh) KWA KILA CHUMBA",
     comp_table_title: "JEDWALI",
     th_room: "Chumba", th_tenant: "Mpangaji", th_kwh: "kWh",
     th_cost: "Gharama (Tsh)", th_status: "Hali",
@@ -1386,7 +1422,7 @@ var T = {
     admin_room_label: "Chumba",
     admin_room_ph: "-- Chagua --",
     admin_new_room_label: "Andika Namba ya Chumba Kipya",
-    admin_new_room_ph: "Mfano: C17, C20, A1, B02...",
+    admin_new_room_ph: "Mfano: 1, 2, 17, 25...",
     admin_new_room_hint: "💡 Unaweza kuandika namba yoyote — hakuna kikomo!",
     admin_name_label: "Jina la Mpangaji",
     admin_name_ph: "Jina kamili",
@@ -1410,7 +1446,7 @@ var T = {
     login_subtitle: "PREDICTION AND OPTIMIZATION SYSTEM",
     login_desc: "System for tracking electricity usage, predicting LUKU balance, and providing energy-saving recommendations.",
     login_room_label: "Enter Room Number",
-    login_room_ph: "e.g. 1, C01, C17, C25...",
+    login_room_ph: "e.g. 1, 2, 17, 25...",
     login_name_label: "Your Name / Admin Password",
     login_name_ph: "Enter your name",
     login_pin_label: "Secret PIN (4 digits)",
@@ -1449,8 +1485,8 @@ var T = {
     stat_rooms_sub: "Total number of rooms",
     stat_occupied: "Occupied",
     stat_occupied_sub: "Rooms with tenants",
-    stat_units_today: "Units Used Today",
-    stat_units_today_sub: "Today's units",
+    stat_units_today: "LUKU Used Today",
+    stat_units_today_sub: "LUKU for today",
     stat_units_month: "Units Used This Month",
     stat_units_month_sub: "This month's units",
     stat_bill_est: "Estimated Bill",
@@ -1491,7 +1527,7 @@ var T = {
     vyumba_title: "ALL ROOMS STATUS",
     /* ── Ulinganisho ── */
     comp_title: "USAGE COMPARISON — THIS MONTH",
-    comp_chart_sub: "kWh per room",
+    comp_chart_sub: "LUKU CONSUMPTION (kWh) PER ROOM",
     comp_table_title: "TABLE",
     th_room: "Room", th_tenant: "Tenant", th_kwh: "kWh",
     th_cost: "Cost (Tsh)", th_status: "Status",
@@ -1568,7 +1604,7 @@ var T = {
     admin_room_label: "Room",
     admin_room_ph: "-- Select --",
     admin_new_room_label: "Enter New Room Number",
-    admin_new_room_ph: "e.g. C17, C20, A1, B02...",
+    admin_new_room_ph: "e.g. 1, 2, 17, 25...",
     admin_new_room_hint: "💡 You can enter any number — no limit!",
     admin_name_label: "Tenant Name",
     admin_name_ph: "Full name",
@@ -1677,33 +1713,74 @@ function toggleTheme(){
       <span class="icon">⚡</span>
       <h1>SMART HOME ENERGY</h1>
       <h2 style="font-family:var(--font-main);font-size:1rem;color:var(--accent2);letter-spacing:1px;font-weight:600;margin-top:4px;" data-i18n="login_subtitle">PREDICTION AND OPTIMIZATION SYSTEM</h2>
-      <p style="margin-top:8px;" data-i18n="login_desc">Mfumo wa kufuatilia matumizi ya umeme, kutabiri salio la LUKU,<br>na kutoa ushauri wa kupunguza gharama za nishati.</p>
     </div>
     <div class="login-error" id="loginError"></div>
-    <div class="fg">
-      <label data-i18n="login_room_label">Weka Namba ya Chumba</label>
-            <input type="text" id="loginChumba" data-i18n-ph="login_room_ph" placeholder="Mfano: 1, C01, C17, C25..." />
-    </div>
-    <div class="fg">
-      <label data-i18n="login_name_label">Jina Lako / Nenosiri la Admin</label>
-      <input type="text" id="loginJina" data-i18n-ph="login_name_ph" placeholder="Andika jina lako" />
-    </div>
-    <div class="fg" id="pinWrap">
-      <label data-i18n="login_pin_label">PIN ya Siri (nambari 4)</label>
-      <input type="password" id="loginPin" placeholder="●●●●" maxlength="4" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:6px;font-size:1.3rem;text-align:center;" />
-    </div>
-    <button class="btn-login" data-i18n="login_btn" onclick="var pw=document.getElementById('pinWrap');if(pw)pw.style.display='';login()">INGIA ⚡</button>
-    <button class="btn-login" style="margin-top:10px;background:#f59e0b;font-size:.95rem;" data-i18n="login_admin_btn" onclick="var pw=document.getElementById('pinWrap');if(pw)pw.style.display='none';loginAdmin()">🔧 INGIA KAMA ADMIN</button>
-    <button onclick="openForgotModal()" style="background:none;border:none;color:var(--muted);font-size:.78rem;cursor:pointer;margin-top:8px;text-decoration:underline;font-family:var(--font-main);">🔑 Admin amesahau nenosiri?</button>
 
-    <!-- Install App button — inaonekana tu ukiwa na Android Chrome na bado haujaweka -->
+    <!-- ══ HATUA 1 — Jina ══ -->
+    <div id="loginStep1">
+      <div class="fg">
+        <label>Jina Lako</label>
+        <input type="text" id="loginJina" placeholder="Andika jina lako kamili"
+          autocomplete="name" style="font-size:1.05rem;"
+          onkeydown="if(event.key==='Enter')loginStepOne()" />
+      </div>
+      <button class="btn-login" onclick="loginStepOne()">ENDELEA →</button>
+      <button class="btn-login" style="margin-top:10px;background:#f59e0b;font-size:.95rem;" onclick="loginShowAdmin()">🔧 INGIA KAMA ADMIN</button>
+    </div>
+
+    <!-- ══ HATUA 2 — PIN (au chaguo la chumba) ══ -->
+    <div id="loginStep2" style="display:none;">
+      <div id="loginStep2Header" style="display:flex;align-items:center;gap:10px;margin-bottom:20px;cursor:pointer;" onclick="loginGoBack()">
+        <div style="font-size:1.5rem;">👤</div>
+        <div style="flex:1;">
+          <div id="loginStep2Name" style="font-family:var(--font-main);font-size:1.1rem;color:var(--accent);font-weight:700;"></div>
+          <div id="loginStep2Room" style="font-size:.78rem;color:var(--muted);margin-top:2px;"></div>
+        </div>
+        <div style="font-size:.75rem;color:var(--muted);">✏ Badilisha</div>
+      </div>
+      <!-- Selector — inaonekana kama majina yanafanana -->
+      <div id="loginRoomSelect" style="display:none;margin-bottom:16px;">
+        <div style="font-size:.8rem;color:var(--accent2);margin-bottom:8px;font-weight:600;">⚠ Majina yanafanana — chagua chumba lako:</div>
+        <div id="loginRoomBtns" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      </div>
+      <!-- PIN -->
+      <div class="fg" id="pinWrap">
+        <label data-i18n="login_pin_label">PIN ya Siri (nambari 4)</label>
+        <input type="password" id="loginPin" placeholder="●●●●" maxlength="4"
+          inputmode="numeric" pattern="[0-9]*"
+          style="letter-spacing:8px;font-size:1.6rem;text-align:center;"
+          onkeydown="if(event.key==='Enter')login()" />
+      </div>
+      <button class="btn-login" onclick="login()">INGIA ⚡</button>
+      <div style="text-align:center;margin-top:10px;">
+        <button onclick="openTenantForgotPinModal()" style="background:none;border:none;color:var(--muted);font-size:.78rem;cursor:pointer;text-decoration:underline;font-family:var(--font-main);">🔓 Nimesahau PIN?</button>
+      </div>
+    </div>
+
+    <!-- ══ ADMIN LOGIN ══ -->
+    <div id="loginStepAdmin" style="display:none;">
+      <div style="margin-bottom:14px;">
+        <button onclick="loginGoBack()" style="background:none;border:none;color:var(--muted);font-size:.83rem;cursor:pointer;font-family:var(--font-main);">← Rudi</button>
+      </div>
+      <div class="fg">
+        <label>Nenosiri la Admin</label>
+        <input type="password" id="loginAdminPass" placeholder="Weka nenosiri"
+          style="font-size:1.05rem;"
+          onkeydown="if(event.key==='Enter')loginAdmin()" />
+      </div>
+      <button class="btn-login" style="background:#f59e0b;" onclick="loginAdmin()">🔧 INGIA KAMA ADMIN</button>
+      <div style="text-align:center;margin-top:10px;">
+        <button onclick="openForgotModal()" style="background:none;border:none;color:var(--muted);font-size:.78rem;cursor:pointer;text-decoration:underline;font-family:var(--font-main);">🔑 Nimesahau nenosiri?</button>
+      </div>
+    </div>
+
+    <!-- Install App button -->
     <button id="installAppBtn" onclick="installApp()"
       style="display:none;margin-top:16px;width:100%;background:transparent;border:1px solid var(--accent3);
              color:var(--accent3);padding:11px;border-radius:8px;font-size:.88rem;cursor:pointer;
              font-family:var(--font-main);font-weight:600;letter-spacing:1px;">
       <span data-i18n="login_install_btn">📲 WEKA APP KWENYE SIMU</span>
     </button>
-
   </div>
 </div>
 
@@ -1790,10 +1867,10 @@ function toggleTheme(){
     <!-- MUHTASARI -->
     <div class="page active" id="page-muhtasari">
       <!-- Prediction Alert Banner -->
-      <!-- Taarifa ya LUKU inayoonekana kwa wapangaji wote -->
+      <!-- Tatarifa ya LUKU inayoonekana kwa wapangaji wote -->
       <div id="globalLukuCard" style="display:none;margin-bottom:16px;">
         <div style="background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:14px 18px;">
-          <div style="font-family:var(--font-main);color:var(--accent);font-size:.88rem;letter-spacing:1px;margin-bottom:10px;" data-i18n="luku_admin_header">⚡ TAARIFA YA LUKU — ILIYOWEKWA NA ADMIN</div>
+          <div style="font-family:var(--font-main);color:var(--accent);font-size:.88rem;letter-spacing:1px;margin-bottom:10px;" data-i18n="luku_admin_header">⚡ TATARIFA YA LUKU — ILIYOWEKWA NA ADMIN</div>
           <div id="globalLukuCardContent" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;"></div>
         </div>
       </div>
@@ -1801,7 +1878,7 @@ function toggleTheme(){
       <div class="stat-grid">
         <div class="stat-card blue"><div class="stat-label" data-i18n="stat_rooms_all">Vyumba Vyote</div><div class="stat-value" id="s-total">—</div><div class="stat-sub" id="s-total-sub" data-i18n="stat_rooms_sub">Idadi ya vyumba vyote</div></div>
         <div class="stat-card green"><div class="stat-label" data-i18n="stat_occupied">Vilivyokaliwa</div><div class="stat-value" id="s-occ">0</div><div class="stat-sub" data-i18n="stat_occupied_sub">Vyumba vilivyo na wapangaji</div></div>
-        <div class="stat-card yellow"><div class="stat-label" data-i18n="stat_units_today">Units Zilizotumika Leo</div><div class="stat-value" id="s-kwh">0</div><div class="stat-sub" data-i18n="stat_units_today_sub">Units za siku ya leo</div></div>
+        <div class="stat-card yellow"><div class="stat-label" data-i18n="stat_units_today">LUKU Zilizotumika Leo</div><div class="stat-value" id="s-kwh">0</div><div class="stat-sub" data-i18n="stat_units_today_sub">LUKU za siku ya leo</div></div>
         <div class="stat-card yellow"><div class="stat-label" data-i18n="stat_units_month">Units Zilizotumika Mwezi</div><div class="stat-value" id="s-month-kwh">0</div><div class="stat-sub" data-i18n="stat_units_month_sub">Units za mwezi huu</div></div>
         <div class="stat-card red"><div class="stat-label" data-i18n="stat_bill_est">Makadirio Bili</div><div class="stat-value" id="s-month-bill">0</div><div class="stat-sub">Tsh mwezi huu</div></div>
       </div>
@@ -1810,13 +1887,13 @@ function toggleTheme(){
       <!-- ── GRAFU ZA DASHBOARD ── -->
       <div class="charts-dashboard-row" id="dashChartsRow" style="margin-top:22px;">
         <div class="chart-panel">
-          <div class="chart-panel-title"><span class="dot dot-blue"></span>MATUMIZI KWA WAKATI (kWh)</div>
+          <div class="chart-panel-title"><span class="dot dot-blue"></span>MATUMIZI YA LUKU (kWh) KWA WAKATI HUU</div>
           <div class="chartjs-wrap" style="height:200px;">
             <canvas id="chartLineMatumizi"></canvas>
           </div>
         </div>
         <div class="chart-panel">
-          <div class="chart-panel-title"><span class="dot dot-green"></span>MGAWANYO WA VYUMBA</div>
+          <div class="chart-panel-title"><span class="dot dot-green"></span>MGAWANYO WA MATUMIZI YA LUKU (kWh) KWA KILA CHUMBA</div>
           <div class="chartjs-wrap" style="height:200px;">
             <canvas id="chartPieVyumba"></canvas>
           </div>
@@ -1826,7 +1903,7 @@ function toggleTheme(){
 
     <!-- LUKU -->
     <div class="page" id="page-luku">
-      <div class="section-title" data-i18n="luku_page_title">⚡ INGIZA TAARIFA YA LUKU</div>
+      <div class="section-title" data-i18n="luku_page_title">⚡ INGIZA TATARIFA YA LUKU</div>
       <div id="lukuAlert"></div>
 
       <!-- MODE TABS -->
@@ -1844,17 +1921,17 @@ function toggleTheme(){
       </div>
 
 <div id="lukuModeAdmin">
-      <!-- Taarifa ya LUKU iliyohifadhiwa ya mwisho -->
+      <!-- Tatarifa ya LUKU iliyohifadhiwa ya mwisho -->
       <div id="lukuLastInfo" style="margin-bottom:18px;display:none;">
         <div style="background:rgba(0,212,255,.07);border:1px solid var(--accent);border-radius:12px;padding:14px 18px;">
-          <div style="font-family:var(--font-main);color:var(--accent);font-size:.85rem;letter-spacing:1px;margin-bottom:10px;" data-i18n="luku_saved_header">📋 TAARIFA YA LUKU ILIYOHIFADHIWA</div>
+          <div style="font-family:var(--font-main);color:var(--accent);font-size:.85rem;letter-spacing:1px;margin-bottom:10px;" data-i18n="luku_saved_header">📋 TATARIFA YA LUKU ILIYOHIFADHIWA</div>
           <div id="lukuLastContent" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;"></div>
         </div>
       </div>
 
       <div class="form-card">
         <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:11px 15px;margin-bottom:18px;font-size:.84rem;color:#6ee7b7;">
-          ℹ️ Taarifa hii itaonekana kwa <b>wapangaji wote</b> — bei ya unit, salio la LUKU, tarehe na muda wa kununua.
+          ℹ️ Tatarifa hii itaonekana kwa <b>wapangaji wote</b> — bei ya unit, salio la LUKU, tarehe na muda wa kununua.
         </div>
         <div class="form-row">
           <div class="ff">
@@ -1937,7 +2014,7 @@ function toggleTheme(){
           <label data-i18n="luku_notes_label">Maelezo (Hiari)</label>
           <input type="text" id="lNote" data-i18n-ph="luku_notes_ph" placeholder="Mfano: LUKU ya Juni, benki ya CRDB..." />
         </div>
-        <button class="btn btn-success" data-i18n="luku_save_btn" onclick="saveLuku()">💾 HIFADHI TAARIFA YA LUKU</button>
+        <button class="btn btn-success" data-i18n="luku_save_btn" onclick="saveLuku()">💾 HIFADHI TATARIFA YA LUKU</button>
       </div>
 </div>
 
@@ -2039,14 +2116,15 @@ function toggleTheme(){
       <div class="section-title" data-i18n="comp_title">ULINGANISHO WA MATUMIZI — MWEZI HUU</div>
       <!-- Grafu ya bar — Chart.js -->
       <div class="chart-panel" style="margin-bottom:20px;">
-        <div class="chart-panel-title"><span class="dot dot-blue"></span><span data-i18n="comp_chart_sub">kWh kwa kila chumba</span></div>
+        <div class="chart-panel-title"><span class="dot dot-blue"></span><span data-i18n="comp_chart_sub">MATUMIZI YA LUKU (kWh) KWA KILA CHUMBA</span></div>
         <div class="chartjs-wrap" style="height:260px;">
           <canvas id="compChartBar"></canvas>
         </div>
+        <div id="compBarLegend" style="display:flex;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);"></div>
       </div>
       <!-- Grafu ya trend — matumizi kwa miezi -->
       <div class="chart-panel" style="margin-bottom:20px;">
-        <div class="chart-panel-title"><span class="dot dot-yellow"></span>TREND — MATUMIZI KWA MIEZI (kWh)</div>
+        <div class="chart-panel-title"><span class="dot dot-yellow"></span>TREND — MATUMIZI YA LUKU (kWh) KWA MWEZI</div>
         <div class="chartjs-wrap" style="height:200px;">
           <canvas id="chartTrendMonths"></canvas>
         </div>
@@ -2355,7 +2433,7 @@ function toggleTheme(){
           </div>
           <div class="ff" id="newChumbaWrap" style="display:none;">
             <label data-i18n="admin_new_room_label">Andika Namba ya Chumba Kipya</label>
-            <input type="text" id="aNewChumba" placeholder="Mfano: C17, C20, A1, B02..." style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()" />
+            <input type="text" id="aNewChumba" placeholder="Mfano: 1, 2, 17, 25..." />
             <div style="font-size:.75rem;color:var(--muted);margin-top:5px;">💡 Unaweza kuandika namba yoyote — hakuna kikomo!</div>
           </div>
           <div class="ff">
@@ -2367,10 +2445,10 @@ function toggleTheme(){
             <input type="text" id="aVifaa" placeholder="Friji, TV, Fan..." />
           </div>
           <div class="ff">
-            <label>Nambari ya WhatsApp/Simu <span style="color:var(--accent3);font-size:.75rem;">— muhimu kwa arifa!</span></label>
+            <label>Nambari ya WhatsApp/Simu <span style="color:var(--accent3);font-size:.75rem;">— muhimu kwa tarifa!</span></label>
             <input type="tel" id="aSimu" placeholder="255712345678" inputmode="numeric"
               style="letter-spacing:1px;" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
-            <div style="font-size:.73rem;color:var(--muted);margin-top:4px;">📱 Itatumika kutuma arifa za WhatsApp kama LUKU inaisha</div>
+            <div style="font-size:.73rem;color:var(--muted);margin-top:4px;">📱 Itatumika kutuma tarifa za WhatsApp kama LUKU inaisha</div>
           </div>
           <div class="ff">
             <label>PIN ya Mpangaji (nambari 4) <span style="color:var(--muted);font-size:.75rem;">— hiari, mpangaji ataweka mwenyewe</span></label>
@@ -2422,7 +2500,7 @@ function toggleTheme(){
 
       <!-- PUSH NOTIFICATIONS -->
       <div style="margin-top:22px;margin-bottom:4px;">
-        <div class="section-title">🔔 PUSH NOTIFICATIONS — ARIFA ZA LUKU</div>
+        <div class="section-title">🔔 PUSH NOTIFICATIONS — TARIFA ZA LUKU</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="admin-grid">
 
           <!-- Setup & Status -->
@@ -2442,10 +2520,10 @@ function toggleTheme(){
 
           <!-- Send Notification -->
           <div class="admin-panel" style="border-color:rgba(245,158,11,.3);">
-            <div class="admin-sub" style="color:var(--accent2);">📤 TUMA ARIFA</div>
+            <div class="admin-sub" style="color:var(--accent2);">📤 TUMA TARIFA</div>
             <div class="ff" style="margin-bottom:10px;">
               <label>Chumba (au ALL kwa wote)</label>
-              <input type="text" id="push-target-room" placeholder="Mfano: C01 au ALL" style="width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:7px;font-size:.88rem;outline:none;">
+              <input type="text" id="push-target-room" placeholder="Mfano: 1 au ALL" style="width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:7px;font-size:.88rem;outline:none;">
             </div>
             <div class="ff" style="margin-bottom:10px;">
               <label>Kichwa (Title)</label>
@@ -2680,7 +2758,7 @@ function toggleTheme(){
   <div style="background:var(--card);border-radius:16px;width:100%;max-width:600px;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.5);">
 
     <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px 12px;border-bottom:1px solid var(--border);">
-      <div style="font-size:1rem;font-weight:800;color:#25D366;">📲 Tuma WhatsApp — Arifa za LUKU</div>
+      <div style="font-size:1rem;font-weight:800;color:#25D366;">📲 Tuma WhatsApp — Tarifa za LUKU</div>
       <button class="btn btn-outline btn-sm" onclick="closeWaNotifModal()">✕ Funga</button>
     </div>
 
@@ -2735,7 +2813,7 @@ function toggleTheme(){
           ⚡ Angalia hali ya LUKU yako wakati wowote<br>
           📊 Angalia historia ya matumizi ya umeme<br>
           💰 Angalia malipo yako ya kila mwezi<br>
-          🔔 Pokea arifa ukaribia kwisha LUKU
+          🔔 Pokea tarifa ukaribia kwisha LUKU
         </div>
       </div>
       <button class="btn btn-success" style="width:100%;padding:13px;font-size:.95rem;" onclick="karibuNext(2)">
@@ -2775,7 +2853,7 @@ function toggleTheme(){
         <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;" id="karibuContactBtns"></div>
       </div>
       <div style="font-size:.78rem;color:var(--muted);margin-bottom:16px;">
-        Nambari hii itaonekana pia kwenye arifa za LUKU — utapigiwa simu au kutumia WhatsApp wakati LUKU inaisha.
+        Nambari hii itaonekana pia kwenye tarifa za LUKU — utapigiwa simu au kutumia WhatsApp wakati LUKU inaisha.
       </div>
       <button class="btn btn-success" style="width:100%;padding:13px;font-size:.95rem;" onclick="closeKaribu()">
         ✅ Niko Tayari — Ingia Dashboard
@@ -2843,7 +2921,7 @@ function toggleTheme(){
 <div id="lukuNotifOverlay">
   <div class="notif-box" id="lukuNotifBox">
     <div class="notif-icon-ring" id="lukuNotifIcon">⚡</div>
-    <div class="notif-badge-top" id="lukuNotifBadge">ARIFA</div>
+    <div class="notif-badge-top" id="lukuNotifBadge">TARIFA</div>
     <div class="notif-headline" id="lukuNotifHeadline">LUKU Inakwisha</div>
     <div class="notif-sub" id="lukuNotifSub">Tafadhali nunua LUKU mapema ili kuepuka kukaa gizani.</div>
 
@@ -2924,9 +3002,28 @@ function toggleTheme(){
       </div>
       <div class="ff" style="margin-bottom:12px;">
         <label>Piga Picha ya Mita (Hiari lakini inasaidia)</label>
-        <input type="file" id="mitaPhoto" accept="image/*" capture="environment"
-          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px;width:100%;color:var(--text);"
-          onchange="previewMitaPhoto(this)" />
+        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+          <button type="button" onclick="document.getElementById('mitaPhotoCam').click()"
+            style="flex:1;min-width:100px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:.85rem;">
+            📷 Piga Picha
+          </button>
+          <button type="button" onclick="document.getElementById('mitaPhotoGal').click()"
+            style="flex:1;min-width:100px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:.85rem;">
+            🖼️ Gallery
+          </button>
+          <button type="button" onclick="document.getElementById('mitaPhotoDoc').click()"
+            style="flex:1;min-width:100px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:.85rem;">
+            📄 Chagua Faili
+          </button>
+        </div>
+        <input type="file" id="mitaPhotoCam" accept="image/*" capture="environment"
+          style="display:none;" onchange="previewMitaPhoto(this);" />
+        <input type="file" id="mitaPhotoGal" accept="image/*"
+          style="display:none;" onchange="previewMitaPhoto(this);" />
+        <input type="file" id="mitaPhotoDoc" accept="image/*,application/pdf,.pdf,.jpg,.jpeg,.png"
+          style="display:none;" onchange="previewMitaPhoto(this);" />
+        <input type="file" id="mitaPhoto" accept="image/*" style="display:none;" />
+        <div id="mitaPhotoName" style="font-size:.75rem;color:var(--muted);margin-bottom:4px;"></div>
         <img id="mitaPhotoPreview" style="display:none;" class="mita-photo-preview" alt="Picha ya mita" />
       </div>
       <div class="ff" style="margin-bottom:16px;">
@@ -2989,6 +3086,38 @@ function toggleTheme(){
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ================================================================
+     TENANT PIN RESET MODAL
+     ================================================================ -->
+<div class="setup-modal" id="tenantForgotPinModal" style="z-index:610;">
+  <div class="setup-box" style="max-width:360px;text-align:center;">
+    <div style="font-size:2.4rem;margin-bottom:8px;">🔓</div>
+    <div class="setup-title" style="margin-bottom:6px;">Reset PIN ya Mpangaji</div>
+    <div id="tenantForgotPinInfo" style="font-size:.82rem;color:var(--muted);margin-bottom:16px;line-height:1.6;"></div>
+    <div id="tenantForgotPinAlert"></div>
+    <div class="ff" style="margin-bottom:10px;text-align:left;">
+      <label style="font-size:.78rem;">Namba ya Simu Iliyosajiliwa</label>
+      <input type="tel" id="tenantForgotPhone" placeholder="255712345678" inputmode="numeric"
+        style="width:100%;padding:11px;border-radius:9px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-size:1rem;letter-spacing:2px;"
+        oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+    </div>
+    <div class="ff" style="margin-bottom:10px;text-align:left;">
+      <label style="font-size:.78rem;">PIN Mpya (nambari 4)</label>
+      <input type="password" id="tenantForgotPin1" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]*"
+        style="width:100%;padding:11px;border-radius:9px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-size:1.4rem;letter-spacing:8px;text-align:center;"
+        oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+    </div>
+    <div class="ff" style="margin-bottom:16px;text-align:left;">
+      <label style="font-size:.78rem;">Rudia PIN Mpya</label>
+      <input type="password" id="tenantForgotPin2" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]*"
+        style="width:100%;padding:11px;border-radius:9px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-size:1.4rem;letter-spacing:8px;text-align:center;"
+        oninput="this.value=this.value.replace(/[^0-9]/g,'')" onkeydown="if(event.key==='Enter')saveTenantForgotPin()" />
+    </div>
+    <button class="btn btn-success" style="width:100%;padding:13px;" onclick="saveTenantForgotPin()">✅ Hifadhi PIN Mpya</button>
+    <button onclick="closeTenantForgotPinModal()" style="background:none;border:none;color:var(--muted);cursor:pointer;margin-top:10px;font-size:.82rem;">Rudi</button>
   </div>
 </div>
 
@@ -3277,15 +3406,10 @@ function getDynamicRooms(){
   Object.keys(tenants).forEach(function(c){ if(c) set[c]=true; });
   // Vyumba vilivyoingia rekodi za LUKU (hata bila mpangaji)
   var recs = getRecs();
-  recs.forEach(function(r){ if(r.chumba) set[r.chumba]=true; });
+  recs.forEach(function(r){ var rc = normalizeRoom(r.chumba) || r.chumba; if(rc) set[rc]=true; });
   var arr = Object.keys(set);
-  // Panga: nambari kwanza (C01,C02...) kisha alfabeti
-  arr.sort(function(a,b){
-    var na = parseInt(a.replace(/[^0-9]/g,"")) || 0;
-    var nb = parseInt(b.replace(/[^0-9]/g,"")) || 0;
-    if(na !== nb) return na - nb;
-    return a.localeCompare(b);
-  });
+    // Panga: nambari kwanza (1,2...) kisha alfabeti
+  arr.sort(compareRooms);
   return arr;
 }
 
@@ -3334,9 +3458,9 @@ async function savePinSetup(){
   var key = pendingUser.matchKey || pendingUser.chumba;
   if(t[key]){
     t[key].pin = pinHash;
-    // Hifadhi localStorage kwanza (haraka)
-    localStorage.setItem("tenants", JSON.stringify(t));
-    // *** Tuma PIN Sheets mara moja — isiende kupotea ***
+    // *** Tumia saveTenants (inasasisha cache + encrypted + autoBackup) ***
+    saveTenants(t);
+    // Tuma PIN Sheets mara moja pia (haraka — backup_full itaifuata)
     savePinToSheets(key, pinHash);
   }
 
@@ -3349,12 +3473,16 @@ async function savePinSetup(){
 
 function getUrl(){ return localStorage.getItem("sheetsUrl")||DEFAULT_URL; }
 function setUrl(u){ localStorage.setItem("sheetsUrl",u); updateUrlBadge(); }
+function isAppsScriptUrl(u){
+  u = String(u || "").trim();
+  return /^https?:\/\//i.test(u);
+}
 
 // *** MPYA — Hifadhi PIN hash ya mpangaji Sheets mara moja ***
 // PIN (hash) ni salama kupeleka Sheets — si nenosiri wazi
 function savePinToSheets(chumba, pinHash) {
   var url = getUrl();
-  if(!url || !url.includes("script.google.com")) return;
+  if(!isAppsScriptUrl(url)) return;
   var payload = { action: "SAVE_TENANT_PIN", chumba: chumba, pinHash: pinHash };
   // Fire-and-forget — usisubiri jibu, backup_full itaifuata
   fetch(url, {
@@ -3369,7 +3497,7 @@ function savePinToSheets(chumba, pinHash) {
 // Onyesha banner ya onyo ukiwa offline au Sheets haifanyi kazi
 function showOfflineBanner(){
   var url = getUrl();
-  if(!url || !url.includes("script.google.com")){
+  if(!isAppsScriptUrl(url)){
     var b = document.getElementById("offlineBanner");
     if(b){
       b.querySelector("span").textContent = "URL ya Sheets haijawekwa. Data inabaki kwenye browser tu — hatari ya kupotea!";
@@ -3394,7 +3522,31 @@ async function syncSheets(){
   hideOfflineBanner();
 }
 
+function normalizeTenantsMap(src){
+  var out = {};
+  Object.keys(src || {}).forEach(function(k){
+    var key = normalizeRoom(k) || normalizeRoom(src[k] && src[k].chumba) || k;
+    var prev = out[key] || {};
+    var next = Object.assign({}, prev, src[k], { chumba: key });
+    if(!next.pin && prev.pin) next.pin = prev.pin;
+    out[key] = next;
+  });
+  return out;
+}
 function getTenants(){
+  var plain = {};
+  try{ plain = JSON.parse(localStorage.getItem("tenants")||"{}"); }catch(e){ plain = {}; }
+  var merged = normalizeTenantsMap(window._tenantsCache || {});
+  var plainNorm = normalizeTenantsMap(plain);
+  Object.keys(plainNorm).forEach(function(k){
+    var prev = merged[k] || {};
+    merged[k] = Object.assign({}, prev, plainNorm[k], { chumba: k });
+    if(!plainNorm[k].pin && prev.pin) merged[k].pin = prev.pin;
+  });
+  window._tenantsCache = merged;
+  return merged;
+}
+function getTenantsLegacy(){
   // Sync fallback — kwa sehemu zinazoita synchronously
   var enc = localStorage.getItem("tenants_enc");
   if(!enc){
@@ -3404,11 +3556,15 @@ function getTenants(){
   return window._tenantsCache || {};
 }
 function saveTenants(t){
+  t = normalizeTenantsMap(t);
   window._tenantsCache = t;
-  // Hifadhi encrypted kwa background
+  // *** DAIMA andika tenants plain kwanza — Sensa (tab nyingine) inasoma hii ***
+  try{ localStorage.setItem("tenants", JSON.stringify(t)); } catch(e){}
+  // Kisha encrypt kwa background (App itatumia tenants_enc)
   encryptData(t).then(function(enc){
     localStorage.setItem("tenants_enc", enc);
-    localStorage.removeItem("tenants");
+    // Hifadhi plain pia kwa Sensa — usiifute
+    try{ localStorage.setItem("tenants", JSON.stringify(t)); } catch(e){}
   }).catch(function(){
     localStorage.setItem("tenants", JSON.stringify(t));
   });
@@ -3438,7 +3594,15 @@ try{
     }
     // Mabadiliko ya wapangaji
     if(ev.data.type === "tenants_changed") {
-      syncFromSheets(false);
+      getTenants();
+      populateSelects();
+      refreshAll();
+      if(currentUser && currentUser.isAdmin){
+        renderAdminTenants();
+        updateAdminStats();
+        showToast("Tatarifa za Sensa zimeingia kwenye app.");
+      }
+      if(ev.data.source !== "sensa") syncFromSheets(false);
     }
   };
 } catch(e){ window._sensaChannel = null; }
@@ -3447,11 +3611,16 @@ function getRecs(){
   // Sync fallback — tumia cache
   return window._recsCache || [];
 }
+function getStoredRecs(){
+  return getRecs();
+}
 function saveRecs(r){
+  r = normalizeRoomArray(r);
   window._recsCache = r;
+  try{ localStorage.setItem("lukuRecs", JSON.stringify(r)); } catch(e){}
   encryptData(r).then(function(enc){
     localStorage.setItem("lukuRecs_enc", enc);
-    localStorage.removeItem("lukuRecs");
+    try{ localStorage.setItem("lukuRecs", JSON.stringify(r)); } catch(e){}
   }).catch(function(){
     localStorage.setItem("lukuRecs", JSON.stringify(r));
   });
@@ -3674,41 +3843,46 @@ document.addEventListener("visibilitychange", async function(){
 // ══════════════════════════════════════
 
 async function saveTenantsSecure(t){
+  t = normalizeTenantsMap(t);
   var enc = await encryptData(t);
   localStorage.setItem("tenants_enc", enc);
-  // Futa wazi ya zamani
-  localStorage.removeItem("tenants");
+  try{ localStorage.setItem("tenants", JSON.stringify(t)); } catch(e){}
 }
 
 async function getTenantsSecure(){
+  var merged = getTenants();
   // Jaribu encrypted kwanza
   var enc = localStorage.getItem("tenants_enc");
   if(enc){
     var d = await decryptData(enc);
-    if(d) return d;
+    if(d) {
+      window._tenantsCache = Object.assign({}, normalizeTenantsMap(d), merged);
+      return getTenants();
+    }
     // Decryption imeshindwa (key mpya baada ya tab mpya) —
     // futa encrypted na tumia plain JSON kama fallback
     localStorage.removeItem("tenants_enc");
   }
   // Fallback — data ya zamani isiyofichwa au data iliyotoka Sheets
-  try { return JSON.parse(localStorage.getItem("tenants")||"{}"); } catch(e){ return {}; }
+  return getTenants();
 }
 
 async function saveRecsSecure(r){
+  r = normalizeRoomArray(r);
   var enc = await encryptData(r);
   localStorage.setItem("lukuRecs_enc", enc);
-  localStorage.removeItem("lukuRecs");
+  try{ localStorage.setItem("lukuRecs", JSON.stringify(r)); } catch(e){}
 }
 
 async function getRecsSecure(){
   var enc = localStorage.getItem("lukuRecs_enc");
   if(enc){
     var d = await decryptData(enc);
-    if(d) return d;
+    if(d) return normalizeRoomArray(d);
     // Decryption imeshindwa — futa na tumia fallback
     localStorage.removeItem("lukuRecs_enc");
   }
-  try { return JSON.parse(localStorage.getItem("lukuRecs")||"[]"); } catch(e){ return []; }
+  try { return normalizeRoomArray(JSON.parse(localStorage.getItem("lukuRecs")||"[]")); } catch(e){ return []; }
 }
 
 
@@ -3741,7 +3915,7 @@ function scheduleAutoBackup(){
 async function runAutoBackup(reason){
   if(_backupBusy) return;
   var url = getUrl();
-  if(!url || !url.includes("script.google.com")){
+  if(!isAppsScriptUrl(url)){
     setLastBackupStatus("no-url");
     updateBackupBadge();
     return;
@@ -3753,14 +3927,14 @@ async function runAutoBackup(reason){
 
   // *** SAHIHI: Tuma data ZOTE — tenants, luku, globalLuku, michango, mchangoHist ***
   var mchangoRaw = {};
-  try { mchangoRaw = JSON.parse(localStorage.getItem("mchangoData")||"{}"); } catch(e){}
+  try { mchangoRaw = getMchangoData(); } catch(e){}
   var mchangoArr = Object.keys(mchangoRaw).map(function(k){
     var parts = k.split(":");
     var rec = mchangoRaw[k];
     return {
       id: k.replace(":","_"),
       mwezi: parts[0] || "",
-      chumba: parts[1] || "",
+      chumba: normalizeRoom(parts[1] || "") || parts[1] || "",
       kiasi: rec.kiasi || 0,
       tarehe: rec.tarehe || "",
       note: rec.note || "",
@@ -3770,14 +3944,14 @@ async function runAutoBackup(reason){
 
   // *** MPYA — mchangoHist ***
   var mchangoHist = [];
-  try { mchangoHist = JSON.parse(localStorage.getItem("mchangoHist")||"[]"); } catch(e){}
+  try { mchangoHist = JSON.parse(localStorage.getItem("mchangoHist")||"[]").map(normalizeRoomFields); } catch(e){}
 
   var mitaMaombiArr = [];
-  try { mitaMaombiArr = JSON.parse(localStorage.getItem("mitaMaombi")||"[]"); } catch(e){}
+  try { mitaMaombiArr = getMaombi(); } catch(e){}
 
   // *** MPYA — tenantUjumbe: ujumbe kati ya wapangaji na Admin ***
   var tenantUjumbeArr = [];
-  try { tenantUjumbeArr = JSON.parse(localStorage.getItem("tenantUjumbe")||"[]"); } catch(e){}
+  try { tenantUjumbeArr = getUjumbe(); } catch(e){}
 
   var payload = {
     action: "BACKUP_FULL",
@@ -3841,7 +4015,7 @@ async function runAutoBackup(reason){
 // Rejesha data kutoka Sheets (restore)
 async function restoreFromSheets(){
   var url = getUrl();
-  if(!url || !url.includes("script.google.com")){
+  if(!isAppsScriptUrl(url)){
     alert("Weka URL ya Google Sheets kwanza.");
     return;
   }
@@ -3871,22 +4045,22 @@ async function restoreFromSheets(){
         Object.keys(localT).forEach(function(c){
           if(localT[c] && localT[c].pin && res.tenants[c]) res.tenants[c].pin = localT[c].pin;
         });
-        localStorage.setItem("tenants", JSON.stringify(res.tenants));
+        saveTenants(res.tenants);
       }
-      if(res.lukuRecs && rCount > 0) localStorage.setItem("lukuRecs", JSON.stringify(res.lukuRecs));
-      if(res.globalLuku && gCount > 0) localStorage.setItem("globalLukuRecs", JSON.stringify(res.globalLuku));
+      if(res.lukuRecs && rCount > 0) saveRecs(res.lukuRecs);
+      if(res.globalLuku && gCount > 0) saveGlobalLukuRecs(res.globalLuku);
       if(res.michango && mCount > 0){
         var md = {};
         res.michango.forEach(function(m){
           if(m.chumba && m.mwezi){
-            md[m.mwezi+":"+m.chumba] = {kiasi:Number(m.kiasi)||0, tarehe:m.tarehe||"", note:m.note||""};
+            md[m.mwezi+":"+(normalizeRoom(m.chumba)||m.chumba)] = {kiasi:Number(m.kiasi)||0, tarehe:m.tarehe||"", note:m.note||""};
           }
         });
-        localStorage.setItem("mchangoData", JSON.stringify(md));
+        saveMchangoData(md);
       }
       // *** MPYA — mchangoHist ***
       if(res.mchangoHist && res.mchangoHist.length > 0){
-        localStorage.setItem("mchangoHist", JSON.stringify(res.mchangoHist));
+        localStorage.setItem("mchangoHist", JSON.stringify(res.mchangoHist.map(normalizeRoomFields)));
       }
       populateSelects(); refreshAll();
       try{ renderLukuHist(); renderLukuLastInfo(); renderMchango(); renderMchangoHist(); }catch(e){}
@@ -3952,13 +4126,13 @@ function importBackupJSON(){
         saveTenants(data.tenants);
         saveRecs(data.lukuRecs);
         if(data.globalLukuRecs && data.globalLukuRecs.length > 0){
-          localStorage.setItem("globalLukuRecs", JSON.stringify(data.globalLukuRecs));
+          saveGlobalLukuRecs(data.globalLukuRecs);
         }
         if(data.mchangoData && Object.keys(data.mchangoData).length > 0){
-          localStorage.setItem("mchangoData", JSON.stringify(data.mchangoData));
+          saveMchangoData(data.mchangoData);
         }
         if(data.mchangoHist && data.mchangoHist.length > 0){
-          localStorage.setItem("mchangoHist", JSON.stringify(data.mchangoHist));  // *** MPYA ***
+          localStorage.setItem("mchangoHist", JSON.stringify(data.mchangoHist.map(normalizeRoomFields)));  // *** MPYA ***
         }
         populateSelects(); refreshAll();
         try{ renderLukuHist(); renderLukuLastInfo(); renderMchango(); renderMchangoHist(); }catch(e){}
@@ -4056,13 +4230,114 @@ function visibleRecs(){ var recs=getRecs(); return currentUser&&currentUser.isAd
 function monthBill(recs){ return recs.reduce(function(sum,r){ return sum+(Number(r.gharama)||((Number(r.kwh)||0)*(Number(r.rate)||getUnitRate()))); },0); }
 
 function normalizeRoom(v){
-  v=String(v||"").trim().replace(/[^0-9]/g,"");
-  if(!v)return null;
-  return v.length===1?"0"+v:v;
+  var s=String(v||"").trim().toUpperCase().replace(/\s+/g,"");
+  var m=s.match(/^C?0*([0-9]+)$/);
+  if(m){
+    var n=parseInt(m[1],10);
+    if(isNaN(n)||n<=0)return null;
+    return String(n).padStart(2,"0");
+  }
+  return s || null;
+}
+function normalizeRoomFields(obj){
+  if(!obj || typeof obj !== "object") return obj;
+  var out = Object.assign({}, obj);
+  if(out.chumba && out.chumba !== "JUMLA") out.chumba = normalizeRoom(out.chumba) || out.chumba;
+  if(out.room && out.room !== "ALL") out.room = normalizeRoom(out.room) || out.room;
+  return out;
+}
+function normalizeRoomArray(arr){
+  return (arr || []).map(normalizeRoomFields);
+}
+function normalizeRoomKeyMap(src){
+  var out = {};
+  Object.keys(src || {}).forEach(function(k){
+    var nk = normalizeRoom(k) || k;
+    out[nk] = src[k];
+  });
+  return out;
+}
+function normalizeMchangoMap(src){
+  var out = {};
+  Object.keys(src || {}).forEach(function(k){
+    var parts = String(k).split(":");
+    if(parts.length >= 2){
+      var mwezi = parts.shift();
+      var chumba = normalizeRoom(parts.join(":")) || parts.join(":");
+      out[mwezi + ":" + chumba] = src[k];
+    } else {
+      out[k] = src[k];
+    }
+  });
+  return out;
+}
+function normalizeRoomStorage(){
+  try{ saveTenants(getTenants()); }catch(e){}
+  try{ saveRecs(getRecs()); }catch(e){}
+  try{ saveGlobalLukuRecs(getGlobalLukuRecs()); }catch(e){}
+  try{ saveMchangoData(getMchangoData()); }catch(e){}
+  try{ saveRoomFees(getRoomFees()); }catch(e){}
+  try{
+    var hist = JSON.parse(localStorage.getItem("mchangoHist") || "[]").map(normalizeRoomFields);
+    localStorage.setItem("mchangoHist", JSON.stringify(hist));
+  }catch(e){}
+  try{ saveMaombi(getMaombi()); }catch(e){}
+  try{ saveUjumbe(getUjumbe()); }catch(e){}
+  if(currentUser && currentUser.chumba) currentUser.chumba = normalizeRoom(currentUser.chumba) || currentUser.chumba;
+  if(pendingUser && pendingUser.chumba) pendingUser.chumba = normalizeRoom(pendingUser.chumba) || pendingUser.chumba;
+}
+function compareRooms(a,b){
+  var na = parseInt(String(a).replace(/[^0-9]/g,""),10);
+  var nb = parseInt(String(b).replace(/[^0-9]/g,""),10);
+  if(!isNaN(na) && !isNaN(nb) && na !== nb) return na - nb;
+  if(!isNaN(na) && isNaN(nb)) return -1;
+  if(isNaN(na) && !isNaN(nb)) return 1;
+  return String(a).localeCompare(String(b));
 }
 function today(){
   var d=new Date();
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function normalizeDateKey(v){
+  if(!v) return "";
+  if(v instanceof Date && !isNaN(v.getTime())){
+    return v.getFullYear()+"-"+String(v.getMonth()+1).padStart(2,"0")+"-"+String(v.getDate()).padStart(2,"0");
+  }
+  var s = String(v).trim();
+  var iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(iso) return iso[1]+"-"+iso[2].padStart(2,"0")+"-"+iso[3].padStart(2,"0");
+  var dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if(dmy) return dmy[3]+"-"+dmy[2].padStart(2,"0")+"-"+dmy[1].padStart(2,"0");
+  var mdy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(mdy) return mdy[3]+"-"+mdy[1].padStart(2,"0")+"-"+mdy[2].padStart(2,"0");
+  var d = new Date(s);
+  if(!isNaN(d.getTime())){
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  return s;
+}
+function dateKeyVariants(v){
+  var base = normalizeDateKey(v);
+  var out = {};
+  if(base) out[base] = true;
+  var s = String(v || "").trim();
+  var slash = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(slash){
+    out[slash[3]+"-"+slash[2].padStart(2,"0")+"-"+slash[1].padStart(2,"0")] = true;
+    out[slash[3]+"-"+slash[1].padStart(2,"0")+"-"+slash[2].padStart(2,"0")] = true;
+  }
+  return Object.keys(out);
+}
+function isSameDateKey(v, key){ return dateKeyVariants(v).indexOf(key) >= 0; }
+function isSameMonthKey(v, month){
+  return dateKeyVariants(v).some(function(k){ return k.substring(0,7) === month; });
+}
+function getLukuUnits(r){
+  if(!r) return 0;
+  var v = r.lukuMpya;
+  if(v === undefined || v === null || v === "") v = r.kwh;
+  if(v === undefined || v === null || v === "") v = r.units;
+  return Number(v) || 0;
 }
 
 // ══════════════════════════════════════
@@ -4071,7 +4346,7 @@ function today(){
 function updateUrlBadge(){
   var u=getUrl();
   var b=document.getElementById("urlStatusBadge");
-  if(u && u.includes("script.google.com")){
+  if(isAppsScriptUrl(u)){
     b.className="url-badge url-ok";
     b.textContent="✓ Sheets Imeunganishwa";
   } else {
@@ -4092,7 +4367,7 @@ function closeSetup(){ document.getElementById("setupModal").classList.remove("o
 
 function saveUrl(){
   var u=document.getElementById("setupUrl").value.trim();
-  if(!u||!u.includes("script.google.com")){ alert("URL si sahihi. Lazima iwe ya Google Apps Script."); return; }
+  if(!isAppsScriptUrl(u)){ alert("URL si sahihi. Weka Web App URL ya Google Apps Script, mfano https://script.google.com/macros/s/.../exec"); return; }
   setUrl(u);
   closeSetup();
   showMsg("✓ URL imehifadhiwa! Sasa mfumo unamaanisha Google Sheets yako.","success");
@@ -4101,7 +4376,7 @@ function saveUrl(){
 function saveUrlInline(){
   var u=document.getElementById("inlineUrl").value.trim();
   if(!u){ alert("Weka URL kwanza."); return; }
-  if(!u.includes("script.google.com")){ alert("URL si sahihi. Lazima iwe ya Google Apps Script."); return; }
+  if(!isAppsScriptUrl(u)){ alert("URL si sahihi. Weka Web App URL ya Google Apps Script, mfano https://script.google.com/macros/s/.../exec"); return; }
   setUrl(u);
   var r=document.getElementById("urlTestResult");
   r.style.color="var(--accent3)";
@@ -4165,6 +4440,7 @@ function showLoginErr(msg){
 // START APP
 // ══════════════════════════════════════
 function startApp(){
+  normalizeRoomStorage();
   document.getElementById("loginPage").style.display="none";
   document.getElementById("appPage").style.display="flex";
   $set("userBadgeName", currentUser.isAdmin?"⚙ Admin":"🏠 "+currentUser.jina+" ("+currentUser.chumba+")");
@@ -4249,6 +4525,20 @@ async function syncFromSheets(isFullSync){
       new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("timeout")); }, 15000); })
     ]);
     if(!res || res.status !== "ok") {
+      var msg = res ? (res.message || res.error || "") : "";
+      if(/Action haijulikani|unknown action/i.test(msg)){
+        normalizeRoomStorage();
+        if(syncEl && isFullSync){
+          syncEl.textContent = "Script ya Sheets haina RESTORE_FULL. Inafanya refresh/backup kwenda Sheets...";
+          syncEl.style.color="var(--accent2)";
+        }
+        await runAutoBackup("refresh-room-numbers");
+        if(syncEl && isFullSync){
+          syncEl.textContent = "Refresh imetumwa kwenda Sheets. Kama bado haibadiliki, Apps Script yako inahitaji kusasishwa.";
+          syncEl.style.color="var(--accent3)";
+        }
+        return;
+      }
       if(syncEl && isFullSync){ syncEl.textContent = "Sheets ilijibu lakini haikufanikiwa: "+(res?res.message:"?"); syncEl.style.color="var(--accent2)"; }
       return;
     }
@@ -4264,17 +4554,20 @@ async function syncFromSheets(isFullSync){
         // Sheets ina PIN → itumie. Sheets haina → tumia localStorage
         if(!sheetPin && localPin) res.tenants[c].pin = localPin;
       });
-      localStorage.setItem("tenants", JSON.stringify(res.tenants));
+      // *** Sasisha _tenantsCache na encrypted storage — sio localStorage plain tu ***
+      saveTenants(res.tenants);
+      // Pia taarifu Sensa
+      try{ var _bcSync=new BroadcastChannel("smart_energy_sync"); _bcSync.postMessage({type:"tenants_changed",source:"app",action:"sync"}); _bcSync.close(); }catch(e){}
     }
 
     if(isFullSync){
       // LUKU YA VYUMBA
       if(res.lukuRecs && res.lukuRecs.length > 0){
-        localStorage.setItem("lukuRecs", JSON.stringify(res.lukuRecs));
+        saveRecs(res.lukuRecs);
       }
       // GLOBAL LUKU
       if(res.globalLuku && res.globalLuku.length > 0){
-        localStorage.setItem("globalLukuRecs", JSON.stringify(res.globalLuku));
+        saveGlobalLukuRecs(res.globalLuku);
       }
       // MICHANGO — badilisha array ya Sheets kuwa map inayotumika
       if(res.michango && res.michango.length > 0){
@@ -4290,12 +4583,12 @@ async function syncFromSheets(isFullSync){
             };
           }
         });
-        localStorage.setItem("mchangoData", JSON.stringify(md));
+        saveMchangoData(md);
       }
 
       // *** MPYA — mchangoHist: historia kamili ya malipo ***
       if(res.mchangoHist && res.mchangoHist.length > 0){
-        localStorage.setItem("mchangoHist", JSON.stringify(res.mchangoHist));
+        localStorage.setItem("mchangoHist", JSON.stringify(res.mchangoHist.map(normalizeRoomFields)));
       }
 
       // *** MAOMBI YA MITA — merge Sheets na local ***
@@ -4349,10 +4642,11 @@ function logout(){
   document.getElementById("loginPage").style.display="flex";
   document.getElementById("appPage").style.display="none";
   document.getElementById("loginError").style.display="none";
-  document.getElementById("loginChumba").value="";
+  // Rudisha login step 1
   document.getElementById("loginJina").value="";
   var pinEl=document.getElementById("loginPin"); if(pinEl) pinEl.value="";
-  var pinWrap=document.getElementById("pinWrap"); if(pinWrap) pinWrap.style.display="";
+  var adm=document.getElementById("loginAdminPass"); if(adm) adm.value="";
+  loginGoBack();
 }
 
 // ══════════════════════════════════════
@@ -4504,11 +4798,26 @@ function renderMuhtasari(){
   updateTotalRoomsCard();
   var t=getTenants(),recs=visibleRecs();
   var rooms=visibleRooms();
-  var month=today().substring(0,7);
+  var todayKey=today();
+  var month=todayKey.substring(0,7);
   var occ=currentUser&&currentUser.isAdmin?Object.keys(t).length:(t[currentUser.chumba]?1:0);
   var kwh=0, monthKwh=0;
-  recs.filter(function(r){return r.tarehe===today();}).forEach(function(r){kwh+=Number(r.kwh)||0;});
-  recs.filter(function(r){return r.tarehe&&r.tarehe.startsWith(month);}).forEach(function(r){monthKwh+=Number(r.kwh)||0;});
+  // Units za leo: tumia globalLukuRecs (inashika KILA rekodi ya LUKU, chumba au jumla)
+  var allGlobal = getGlobalLukuRecs();
+  allGlobal.filter(function(r){return isSameDateKey(r.tarehe, todayKey);})
+    .forEach(function(r){ kwh += getLukuUnits(r); });
+  // Kama bado zero, angalia lukuRecs (roomRecs) pia
+  if(kwh===0){
+    recs.filter(function(r){return isSameDateKey(r.tarehe, todayKey);})
+      .forEach(function(r){ kwh += getLukuUnits(r); });
+  }
+  // Units za mwezi: globalLukuRecs + lukuRecs (epuka kurudia)
+  allGlobal.filter(function(r){return isSameMonthKey(r.tarehe, month);})
+    .forEach(function(r){ monthKwh += getLukuUnits(r); });
+  if(monthKwh===0){
+    recs.filter(function(r){return isSameMonthKey(r.tarehe, month);})
+      .forEach(function(r){ monthKwh += getLukuUnits(r); });
+  }
   $set("s-occ", occ);
   // LUKU iliyokuwepo kutoka rekodi ya mwisho
   var _latestG=getLatestGlobalLuku();
@@ -4516,10 +4825,12 @@ function renderMuhtasari(){
   var lukuSub=document.getElementById("s-luku-sub");
   var lukuAwaliEl=document.getElementById("s-luku-awali");
   var lukuAwaliSub=document.getElementById("s-luku-awali-sub");
+  if(!lukuEl) lukuEl = { textContent: "" };
+  if(!lukuSub) lukuSub = { textContent: "" };
   if(_latestG){
     if(lukuAwaliEl) { lukuAwaliEl.textContent=Number(_latestG.lukuAwali||0).toLocaleString()+" u"; }
     if(lukuAwaliSub) { lukuAwaliSub.textContent="Mpya: +"+Number(_latestG.lukuMpya||0).toLocaleString()+" u"; }
-    lukuEl.textContent=Number(_latestG.lukuSasa).toLocaleString()+" u";
+    if(lukuEl) lukuEl.textContent=Number(_latestG.lukuSasa).toLocaleString()+" u";
     lukuSub.textContent="Tarehe: "+(_latestG.tarehe||"—");
   } else {
     if(lukuAwaliEl) lukuAwaliEl.textContent="—";
@@ -4529,14 +4840,14 @@ function renderMuhtasari(){
   }
   $set("s-kwh", kwh.toFixed(1));
   $set("s-month-kwh", monthKwh.toFixed(1));
-  $set("s-month-bill", monthBill(recs.filter(function(r){return r.tarehe&&r.tarehe.startsWith(month);})).toLocaleString());
+  $set("s-month-bill", monthBill(recs.filter(function(r){return isSameMonthKey(r.tarehe, month);})).toLocaleString());
   var g=document.getElementById("muhtasariGrid"); g.innerHTML="";
   rooms.forEach(function(c){
     var tn=t[c];
     var roomRecs=recs.filter(function(r){return r.chumba===c;});
-    var daily=roomRecs.filter(function(r){return r.tarehe===today();}).reduce(function(s,r){return s+(Number(r.kwh)||0);},0);
-    var monthlyRecs=roomRecs.filter(function(r){return r.tarehe&&r.tarehe.startsWith(month);});
-    var monthly=monthlyRecs.reduce(function(s,r){return s+(Number(r.kwh)||0);},0);
+    var daily=roomRecs.filter(function(r){return isSameDateKey(r.tarehe, todayKey);}).reduce(function(s,r){return s+getLukuUnits(r);},0);
+    var monthlyRecs=roomRecs.filter(function(r){return isSameMonthKey(r.tarehe, month);});
+    var monthly=monthlyRecs.reduce(function(s,r){return s+getLukuUnits(r);},0);
     var bill=monthBill(monthlyRecs);
     var d=document.createElement("div");
     d.className="room-card "+(tn?"occupied":"");
@@ -4609,16 +4920,17 @@ function closeModal(){document.getElementById("roomModal").classList.remove("ope
 // ══════════════════════════════════════
 // LUKU
 // ══════════════════════════════════════
-// Taarifa ya LUKU ya jumla (global) — kuhifadhiwa kwa localStorage
+// Tatarifa ya LUKU ya jumla (global) — kuhifadhiwa kwa localStorage
 function getGlobalLukuRecs(){
-  try{return JSON.parse(localStorage.getItem("globalLukuRecs")||"[]");}catch(e){return[];}
+  try{return normalizeRoomArray(JSON.parse(localStorage.getItem("globalLukuRecs")||"[]"));}catch(e){return[];}
 }
 function saveGlobalLukuRecs(r){
+  r = normalizeRoomArray(r);
   localStorage.setItem("globalLukuRecs", JSON.stringify(r));
   scheduleAutoBackup(); // *** Kila save ya LUKU → backup otomatiki ***
 }
 
-// Pata taarifa ya LUKU ya mwisho (inayoonyeshwa kwa wapangaji)
+// Pata tatarifa ya LUKU ya mwisho (inayoonyeshwa kwa wapangaji)
 function getLatestGlobalLuku(){
   var recs=getGlobalLukuRecs();
   return recs.length?recs[recs.length-1]:null;
@@ -4645,12 +4957,41 @@ function calcKwh(){
 // ================================================================
 
 // ── Storage helpers ──
-function getMaombi(){ try{ return JSON.parse(localStorage.getItem("mitaMaombi")||"[]"); }catch(e){ return []; } }
-function saveMaombi(a){ localStorage.setItem("mitaMaombi", JSON.stringify(a)); }
+function cleanMaybeString(v){
+  if(v === undefined || v === null) return "";
+  v = String(v).trim();
+  return /^(undefined|null)$/i.test(v) ? "" : v;
+}
+function normalizeMitaOmbi(m){
+  m = m || {};
+  var photo = cleanMaybeString(m.photo || m.picha || m.image || m.file || m.photoUrl || m.pichaUrl || m.attachment);
+  return Object.assign({}, m, {
+    id: m.id || Date.now(),
+    chumba: normalizeRoom(cleanMaybeString(m.chumba || m.room)) || cleanMaybeString(m.chumba || m.room),
+    jina: cleanMaybeString(m.jina || m.mpangaji || m.tenant || m.name),
+    units: m.units !== undefined && m.units !== null && m.units !== "" ? m.units : (m.kwh || m.mita || m.reading || ""),
+    note: cleanMaybeString(m.note || m.maelezo),
+    photo: photo || null,
+    photoName: cleanMaybeString(m.photoName || m.fileName || m.jinaPicha),
+    tarehe: cleanMaybeString(m.tarehe || m.date),
+    muda: cleanMaybeString(m.muda || m.time),
+    status: cleanMaybeString(m.status) || "pending",
+    adminNote: cleanMaybeString(m.adminNote || m.admin_note)
+  });
+}
+function getMaombi(){
+  try{ return JSON.parse(localStorage.getItem("mitaMaombi")||"[]").map(normalizeMitaOmbi); }catch(e){ return []; }
+}
+function saveMaombi(a){ localStorage.setItem("mitaMaombi", JSON.stringify((a || []).map(normalizeMitaOmbi))); }
 
 // ── Ujumbe localStorage ──
-function getUjumbe(){ try{ return JSON.parse(localStorage.getItem("tenantUjumbe")||"[]"); }catch(e){ return []; } }
-function saveUjumbe(a){ localStorage.setItem("tenantUjumbe", JSON.stringify(a)); }
+function normalizeUjumbe(u){
+  u = u || {};
+  var chumba = cleanMaybeString(u.chumba || u.room);
+  return Object.assign({}, u, { chumba: normalizeRoom(chumba) || chumba });
+}
+function getUjumbe(){ try{ return JSON.parse(localStorage.getItem("tenantUjumbe")||"[]").map(normalizeUjumbe); }catch(e){ return []; } }
+function saveUjumbe(a){ localStorage.setItem("tenantUjumbe", JSON.stringify((a || []).map(normalizeUjumbe))); }
 
 // ── Tab switching — modal ya mpangaji ──
 function switchMsgTab(tab) {
@@ -4951,15 +5292,27 @@ function closeMitaSubmit(){
 }
 
 // ── Preview picha ──
+var _mitaPhotoBase64 = null; // Hifadhi picha hapa moja kwa moja
+
 function previewMitaPhoto(input){
   var preview = document.getElementById("mitaPhotoPreview");
-  if(!input.files || !input.files[0]){ preview.style.display="none"; return; }
+  var nameEl  = document.getElementById("mitaPhotoName");
+  _mitaPhotoBase64 = null;
+  if(!input.files || !input.files[0]){ preview.style.display="none"; if(nameEl) nameEl.textContent=""; return; }
+  var file = input.files[0];
+  if(nameEl) nameEl.textContent = (file.type === "application/pdf" ? "✅ Faili: " : "✅ Picha: ") + file.name;
   var reader = new FileReader();
   reader.onload = function(e){
-    preview.src = e.target.result;
-    preview.style.display = "";
+    _mitaPhotoBase64 = e.target.result; // Hifadhi base64 moja kwa moja
+    if(file.type && file.type.indexOf("image/") === 0){
+      preview.src = e.target.result;
+      preview.style.display = "";
+    } else {
+      preview.removeAttribute("src");
+      preview.style.display = "none";
+    }
   };
-  reader.readAsDataURL(input.files[0]);
+  reader.readAsDataURL(file);
 }
 
 // ── Mpangaji atume maombi ──
@@ -4997,6 +5350,7 @@ function submitMitaReading(){
       units: units,
       note: note,
       photo: photoData || null,
+      photoName: document.getElementById("mitaPhotoName").textContent.replace(/^✅\s*(Picha|Faili):\s*/, ""),
       tarehe: leo,
       muda: nowTime(),
       status: "pending", // pending | approved | rejected
@@ -5013,6 +5367,7 @@ function submitMitaReading(){
       units: entry.units,
       note: entry.note,
       photo: entry.photo || "",
+      photoName: entry.photoName || "",
       tarehe: entry.tarehe,
       muda: entry.muda,
       status: entry.status,
@@ -5022,13 +5377,9 @@ function submitMitaReading(){
     setTimeout(closeMitaSubmit, 2000);
   }
 
-  if(photoInput.files && photoInput.files[0]){
-    var reader = new FileReader();
-    reader.onload = function(e){ saveEntry(e.target.result); };
-    reader.readAsDataURL(photoInput.files[0]);
-  } else {
-    saveEntry(null);
-  }
+  // Tumia base64 iliyohifadhiwa moja kwa moja — inafanya kazi kwenye simu zote
+  saveEntry(_mitaPhotoBase64 || null);
+  _mitaPhotoBase64 = null;
 }
 
 // ── Onyesha badge ya maombi yanayosubiri ──
@@ -5062,10 +5413,17 @@ function renderMaombi(){
   var sorted   = pending.concat(others);
 
   el.innerHTML = sorted.map(function(m){
+    m = normalizeMitaOmbi(m);
     var badgeCls = m.status === "approved" ? "approved" : m.status === "rejected" ? "rejected" : "pending";
     var badgeTxt = m.status === "approved" ? "✅ Imethibitishwa" : m.status === "rejected" ? "❌ Imekataliwa" : "⏳ Inasubiri";
-    var photoHtml = m.photo
-      ? "<img src='" + m.photo + "' class='mita-photo-preview' onclick='openPhoto(this.src)' />"
+    var photo = cleanMaybeString(m.photo);
+    var photoName = escHtml(m.photoName || "Fungua faili");
+    var isPdf = /^data:application\/pdf/i.test(photo) || /\.pdf(\?|#|$)/i.test(photo);
+    var isImage = /^data:image\//i.test(photo) || /\.(png|jpe?g|webp|gif)(\?|#|$)/i.test(photo);
+    var photoHtml = photo
+      ? (isPdf
+          ? "<button class='btn btn-outline btn-sm' onclick='openPhoto(\"" + encodeURIComponent(photo) + "\",true)'>📄 " + photoName + "</button>"
+          : "<img src='" + photo + "' class='mita-photo-preview' alt='Picha ya mita' onclick='openPhoto(this.src)' />")
       : "<div style='font-size:.75rem;color:var(--muted);font-style:italic;'>Hakuna picha</div>";
 
     var actionBtns = m.status === "pending" ? (
@@ -5081,15 +5439,15 @@ function renderMaombi(){
     return "<div class='maombi-card " + badgeCls + "'>" +
       "<div style='display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;'>" +
       "<div>" +
-      "<div style='font-weight:700;color:var(--text);font-size:.92rem;'>" + m.chumba + " — " + m.jina + "</div>" +
+      "<div style='font-weight:700;color:var(--text);font-size:.92rem;'>" + escHtml(m.chumba || "—") + " — " + escHtml(m.jina || "—") + "</div>" +
       "<div style='font-size:.78rem;color:var(--muted);'>" + m.tarehe + " | " + m.muda + "</div>" +
       "</div>" +
       "<span class='maombi-badge " + badgeCls + "'>" + badgeTxt + "</span>" +
       "</div>" +
       "<div style='margin-top:10px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;'>" +
       "<div>" +
-      "<div style='font-size:2rem;font-weight:900;color:var(--accent);font-family:var(--font-main);'>" + m.units + " <span style='font-size:1rem;color:var(--muted);'>units</span></div>" +
-      (m.note ? "<div style='font-size:.78rem;color:var(--muted);margin-top:4px;'>📝 " + m.note + "</div>" : "") +
+      "<div style='font-size:2rem;font-weight:900;color:var(--accent);font-family:var(--font-main);'>" + escHtml(m.units || "—") + " <span style='font-size:1rem;color:var(--muted);'>units</span></div>" +
+      (m.note ? "<div style='font-size:.78rem;color:var(--muted);margin-top:4px;'>📝 " + escHtml(m.note) + "</div>" : "") +
       actionBtns +
       "</div>" +
       "<div>" + photoHtml + "</div>" +
@@ -5195,7 +5553,7 @@ function buildBulkRows(){
   var el = document.getElementById("bulkRows");
   if(!el) return;
   var tenants = getTenants();
-  var rooms   = Object.keys(tenants).sort();
+  var rooms   = Object.keys(tenants).sort(compareRooms);
   if(!rooms.length){ el.innerHTML = "<div style='color:var(--muted);padding:16px;text-align:center;'>Hakuna wapangaji waliowekwa.</div>"; return; }
   var recs = getRecs();
 
@@ -5243,7 +5601,7 @@ function saveBulkLuku(){
   var kiasi  = Number(document.getElementById("bulkKiasi").value)||0;
   var el     = document.getElementById("bulkAlert");
   var tenants= getTenants();
-  var rooms  = Object.keys(tenants).sort();
+  var rooms  = Object.keys(tenants).sort(compareRooms);
   var saved  = 0;
 
   rooms.forEach(function(c){
@@ -5291,7 +5649,25 @@ function saveBulkLuku(){
 }
 
 // ── Init ──
-function openPhoto(src){ window.open(src,"_blank"); }
+function openPhoto(src, encoded){
+  src = encoded ? decodeURIComponent(src || "") : (src || "");
+  if(!src || /^(undefined|null)$/i.test(src)) {
+    alert("Picha/faili haijapatikana kwenye ombi hili.");
+    return;
+  }
+  var win = window.open("", "_blank");
+  if(!win) {
+    window.open(src, "_blank");
+    return;
+  }
+  if(/^data:image\//i.test(src)){
+    win.document.write("<!DOCTYPE html><html><head><title>Picha ya Mita</title><meta name='viewport' content='width=device-width,initial-scale=1'></head><body style='margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh;'><img src='"+src+"' style='max-width:100%;max-height:100vh;object-fit:contain;'></body></html>");
+  } else if(/^data:application\/pdf/i.test(src)){
+    win.location.href = src;
+  } else {
+    win.location.href = src;
+  }
+}
 function initMitaSystem(){
   // Onyesha kitufe cha kutuma mita kwa mpangaji
   if(currentUser && !currentUser.isAdmin){
@@ -5439,7 +5815,7 @@ function deleteGlobalLuku(idx){
   refreshAll();
 }
 
-// Onyesha taarifa ya LUKU ya mwisho juu ya fomu
+// Onyesha tatarifa ya LUKU ya mwisho juu ya fomu
 function renderLukuLastInfo(){
   var box=document.getElementById("lukuLastInfo");
   var cont=document.getElementById("lukuLastContent");
@@ -5627,19 +6003,25 @@ function renderComparison(){
   var month=today().substring(0,7);
   var byRoom={};
   rooms.forEach(function(c){byRoom[c]=0;});
-  recs.filter(function(r){return r.tarehe&&r.tarehe.startsWith(month);})
-      .forEach(function(r){byRoom[r.chumba]=(byRoom[r.chumba]||0)+Number(r.kwh);});
+  recs.filter(function(r){return isSameMonthKey(r.tarehe, month);})
+      .forEach(function(r){
+        var roomKey = normalizeRoom(r.chumba) || r.chumba;
+        byRoom[roomKey]=(byRoom[roomKey]||0)+getLukuUnits(r);
+      });
   var maxV=Math.max.apply(null,Object.values(byRoom))||1;
-  var chart=document.getElementById("compChart"); chart.innerHTML="";
-  rooms.forEach(function(c){
-    var v=byRoom[c]||0;
-    var pct=(v/maxV)*100;
-    var col=document.createElement("div"); col.className="bar-col";
-    col.innerHTML='<div class="bar-val">'+(v>0?v.toFixed(0):"")+'</div>'
-      +'<div class="bar" style="height:'+pct+'%;background:'+(v>50?"var(--danger)":v>20?"var(--accent2)":"var(--accent3)")+'" title="'+c+': '+v.toFixed(1)+' kWh"></div>'
-      +'<div class="bar-label">'+c+'</div>';
-    chart.appendChild(col);
-  });
+  var chart=document.getElementById("compChart");
+  if(chart){
+    chart.innerHTML="";
+    rooms.forEach(function(c){
+      var v=byRoom[c]||0;
+      var pct=(v/maxV)*100;
+      var col=document.createElement("div"); col.className="bar-col";
+      col.innerHTML='<div class="bar-val">'+(v>0?v.toFixed(0):"")+'</div>'
+        +'<div class="bar" style="height:'+pct+'%;background:'+(v>50?"var(--danger)":v>20?"var(--accent2)":"var(--accent3)")+'" title="'+c+': '+v.toFixed(1)+' kWh"></div>'
+        +'<div class="bar-label">'+c+'</div>';
+      chart.appendChild(col);
+    });
+  }
   var tb=document.getElementById("compTbody"); tb.innerHTML="";
   rooms.forEach(function(c){
     var tn=t[c]; var kwh=byRoom[c]||0; var gh=kwh*getUnitRate();
@@ -6143,7 +6525,7 @@ function renderAnomalyDetection(el) {
 async function saveTenant(){
   var cSelect=document.getElementById("aChumba").value;
   var cNew=document.getElementById("aNewChumba");
-  var c = cSelect==="__new__" ? (cNew?cNew.value.trim().toUpperCase():"") : cSelect;
+  var c = cSelect==="__new__" ? (cNew?cNew.value.trim():"") : cSelect;
   var j=document.getElementById("aJina").value.trim();
   var v=document.getElementById("aVifaa").value.trim();
   var k=Number(document.getElementById("aKwh").value)||0;
@@ -6151,9 +6533,8 @@ async function saveTenant(){
   var pinRaw=document.getElementById("aPin").value.trim();
   var el=document.getElementById("adminAlert");
   if(!c){showAlert(el,"Chagua chumba au andika chumba kipya.","danger");return;}
-  // Safisha namba: "5" → "C05", "C5" → "C05"
-  if(/^[0-9]+$/.test(c)){var n=c; if(n.length===1)n="0"+n; c="C"+n;}
-  else if(/^C[0-9]$/.test(c)){c="C0"+c[1];}
+  // Safisha namba: "5", "05", au "C05" zote zihifadhiwe kama "5".
+  c = normalizeRoom(c) || c;
   if(!j){showAlert(el,"Weka jina la mpangaji.","danger");return;}
   // PIN — si lazima admin aweke; mpangaji ataweka mwenyewe mara ya kwanza
   var existingPin = (getTenants()[c]||{}).pin || "";
@@ -6165,6 +6546,8 @@ async function saveTenant(){
   var t=getTenants();
   t[c]={jina:j,chumba:c,vifaa:v,kwh:k,pin:pinHash,simu:simu};
   saveTenants(t);
+  // *** Taarifu Sensa — mpangaji ameongezwa/kubadilishwa ***
+  try{ var _bcSave=new BroadcastChannel("smart_energy_sync"); _bcSave.postMessage({type:"tenants_changed",source:"app",action:"save",chumba:c}); _bcSave.close(); }catch(e){}
   showAlert(el,"✓ "+j+" ("+c+") amehifadhiwa. Mfumo umesasishwa kiotomatiki.","success");
   clearAdminForm(); populateSelects(); renderAdminTenants(); updateAdminStats();
   refreshAll(); // Refresh dashibodi yote
@@ -6222,7 +6605,7 @@ function deleteTenant(c){
   try{
     var sensa = JSON.parse(localStorage.getItem("sensaEntries") || "[]");
     sensa = sensa.filter(function(e){
-      return String(e.chumba || "").toUpperCase() !== String(c).toUpperCase();
+      return (normalizeRoom(e.chumba) || String(e.chumba || "").toUpperCase()) !== (normalizeRoom(c) || String(c).toUpperCase());
     });
     localStorage.setItem("sensaEntries", JSON.stringify(sensa));
   } catch(e2){}
@@ -6244,12 +6627,14 @@ function deleteTenant(c){
     if(navigator.onLine) setTimeout(function(){ flushSyncQueue(); }, 500);
   }
 }
-function renderAdminTenants(){
-  var t = getTenants();
+async function renderAdminTenants(){
+  // Tumia getTenantsSecure ili kupata data kamili kila wakati
+  var t = await getTenantsSecure();
+  window._tenantsCache = t;
   var tb = document.getElementById("tenantTbody");
   var em = document.getElementById("tenantEmpty");
   tb.innerHTML = "";
-  var keys = Object.keys(t).sort();
+  var keys = Object.keys(t).sort(compareRooms);
   if(!keys.length){ em.style.display = ""; return; }
   em.style.display = "none";
 
@@ -6257,7 +6642,10 @@ function renderAdminTenants(){
   var sensaMap = {};
   try{
     var sensaArr = JSON.parse(localStorage.getItem("sensaEntries") || "[]");
-    sensaArr.forEach(function(e){ if(e.chumba) sensaMap[e.chumba] = e; });
+    sensaArr.forEach(function(e){
+      var sc = normalizeRoom(e.chumba) || e.chumba;
+      if(sc) sensaMap[sc] = e;
+    });
   } catch(ex){}
 
   keys.forEach(function(c){
@@ -6292,15 +6680,98 @@ function renderAdminTenants(){
     tb.appendChild(tr);
   });
 }
-function resetTenantPin(c){
-  var t = getTenants();
-  if(!t[c]) return;
-  if(!confirm("Reset PIN ya "+t[c].jina+" ("+c+")? Ataweka PIN mpya mwenyewe akiingia tena.")) return;
-  delete t[c].pin;
+async function resetTenantPin(c){
+  // Tumia getTenantsSecure (async) ili kupata data kamili hata kama cache ni tupu
+  var t = await getTenantsSecure();
+  window._tenantsCache = t; // sasisha cache
+
+  // Tafuta key — hata kama format tofauti (C01 vs 01 vs 1)
+  var realKey = t[c] ? c : null;
+  if(!realKey){
+    var keys = Object.keys(t);
+    for(var i=0;i<keys.length;i++){
+      if(normalizeRoom(keys[i]) === normalizeRoom(c)){
+        realKey = keys[i]; break;
+      }
+    }
+  }
+  if(!realKey || !t[realKey]){
+    showMsg("⚠ Chumba '"+c+"' hakipatikani kwenye mfumo.", "danger");
+    return;
+  }
+  var jina  = t[realKey].jina  || "";
+  var vifaa = t[realKey].vifaa || "";
+  var kwh   = t[realKey].kwh   || 0;
+  var ok = await showConfirm(
+    "Reset PIN — " + realKey,
+    "Mpangaji " + jina + " ataweza kuweka PIN mpya mwenyewe akiingia tena.",
+    "🔓", "Ndio, Futa PIN"
+  );
+  if(!ok) return;
+  delete t[realKey].pin;
   saveTenants(t);
+  savePinToSheets(realKey, "");
+  try{ var _bcPin=new BroadcastChannel("smart_energy_sync"); _bcPin.postMessage({type:"tenants_changed",source:"app",action:"pin_reset",chumba:realKey}); _bcPin.close(); }catch(e){}
+  queueSync("SAVE_TENANT", { chumba:realKey, jina:jina, vifaa:vifaa, kwh:kwh, pin:"" });
   renderAdminTenants();
-  showMsg("✅ PIN ya "+t[c].jina+" imefutwa. Ataweka mpya akiingia tena.", "success");
+  showMsg("✅ PIN ya "+jina+" ("+realKey+") imefutwa. Ataweka mpya akiingia tena.", "success");
 }
+
+resetTenantPin = async function(c){
+  var t = getTenants();
+  var realKey = t[c] ? c : (normalizeRoom(c) || c);
+  if(!t[realKey]){
+    var keys = Object.keys(t);
+    for(var i=0;i<keys.length;i++){
+      if(normalizeRoom(keys[i]) === normalizeRoom(c)){ realKey = keys[i]; break; }
+    }
+  }
+  if(!realKey || !t[realKey]){
+    showMsg("Chumba '"+c+"' hakipatikani kwenye mfumo.", "danger");
+    return;
+  }
+
+  var tenant = t[realKey];
+  var jina  = tenant.jina  || "";
+  var vifaa = tenant.vifaa || "";
+  var kwh   = tenant.kwh   || 0;
+  var ok = await showConfirm(
+    "Reset PIN - " + realKey,
+    "Mpangaji " + jina + " ataweza kuweka PIN mpya mwenyewe akiingia tena.",
+    "🔓", "Ndio, Futa PIN"
+  );
+  if(!ok) return;
+
+  var oldPin = tenant.pin || "";
+  delete t[realKey].pin;
+  saveTenants(t);
+  try{
+    localStorage.setItem("tenants", JSON.stringify(t));
+    window._tenantsCache = t;
+  }catch(e0){}
+  try{
+    var enc = await encryptData(t);
+    localStorage.setItem("tenants_enc", enc);
+  }catch(e1){}
+
+  savePinToSheets(realKey, "");
+  try{
+    var _bcPin=new BroadcastChannel("smart_energy_sync");
+    _bcPin.postMessage({type:"tenants_changed",source:"app",action:"pin_reset",chumba:realKey});
+    _bcPin.close();
+  }catch(e2){}
+  try{ queueSync("SAVE_TENANT", { chumba:realKey, jina:jina, vifaa:vifaa, kwh:kwh, pin:"" }); }catch(e3){}
+
+  await renderAdminTenants();
+  updateAdminStats();
+  populateSelects();
+  refreshAll();
+  showMsg(oldPin
+    ? "✅ PIN ya "+jina+" ("+realKey+") imefutwa. Ataweka mpya akiingia tena."
+    : "ℹ️ "+jina+" ("+realKey+") tayari hana PIN. Ataweka mpya akiingia.",
+    "success"
+  );
+};
 
 function updateAdminStats(){
   $set("a-occ", Object.keys(getTenants()).length);
@@ -6357,6 +6828,47 @@ function clearAllData(){
   localStorage.removeItem("tenants"); localStorage.removeItem("lukuRecs");
   refreshAll(); alert("Data yote imefutwa.");
 }
+
+// ── Modal ya kuthibitisha (badala ya confirm()) ──────────────────
+var _confirmResolve = null;
+function showConfirm(title, msg, icon, okLabel){
+  document.getElementById("confirmTitle").textContent = title || "";
+  document.getElementById("confirmMsg").textContent   = msg   || "";
+  document.getElementById("confirmIcon").textContent  = icon  || "⚠";
+  document.getElementById("confirmOkBtn").textContent = okLabel || "Ndio, Endelea";
+  document.getElementById("confirmModal").classList.add("open");
+  return new Promise(function(resolve){
+    _confirmResolve = function(result){
+      document.getElementById("confirmModal").classList.remove("open");
+      _confirmResolve = null;
+      resolve(result);
+    };
+  });
+}
+
+showConfirm = function(title, msg, icon, okLabel){
+  var modal = document.getElementById("confirmModal");
+  if(!modal){
+    return Promise.resolve(confirm((title || "Thibitisha") + "\n\n" + (msg || "")));
+  }
+  document.getElementById("confirmTitle").textContent = title || "";
+  document.getElementById("confirmMsg").textContent   = msg   || "";
+  document.getElementById("confirmIcon").textContent  = icon  || "⚠";
+  document.getElementById("confirmOkBtn").textContent = okLabel || "Ndio, Endelea";
+  modal.classList.add("open");
+  return new Promise(function(resolve){
+    _confirmResolve = function(result){
+      modal.classList.remove("open");
+      _confirmResolve = null;
+      resolve(result);
+    };
+  });
+};
+
+function confirmResolve(result){
+  if(typeof _confirmResolve === "function") _confirmResolve(result);
+}
+
 function showMsg(msg,type){
   var d=document.createElement("div");
   d.className="alert alert-"+type;
@@ -6372,6 +6884,107 @@ function showAlert(el,msg,type){
 // ══════════════════════════════════════
 // LUKU NOTIFICATION SYSTEM
 // ══════════════════════════════════════
+
+function normalizePhoneForCompare(p){
+  return String(p || "").replace(/[^0-9]/g,"").replace(/^(255|0)/,"");
+}
+
+function openTenantForgotPinModal(){
+  var alertEl = document.getElementById("tenantForgotPinAlert");
+  if(alertEl) alertEl.innerHTML = "";
+  if(!_loginSelectedMatch){
+    showLoginErr("Kwanza andika jina lako na uchague chumba, kisha bonyeza Nimesahau PIN.");
+    return;
+  }
+
+  var matchKey = _loginSelectedMatch.matchKey || _loginSelectedMatch.chumba;
+  var tenants = getTenants();
+  var tenant = tenants[matchKey] || _loginSelectedMatch;
+  var phone = (tenant && tenant.simu) ? String(tenant.simu).replace(/[^0-9]/g,"") : "";
+
+  document.getElementById("tenantForgotPhone").value = "";
+  document.getElementById("tenantForgotPin1").value = "";
+  document.getElementById("tenantForgotPin2").value = "";
+  document.getElementById("tenantForgotPinInfo").innerHTML =
+    "Chumba <strong style='color:var(--accent);'>" + escHtml(matchKey) + "</strong> - " +
+    escHtml(tenant.jina || _loginSelectedMatch.jina || "Mpangaji") + "<br>" +
+    (phone
+      ? "Weka namba ya simu iliyosajiliwa ili kuweka PIN mpya."
+      : "<span style='color:var(--accent2);'>Chumba hiki hakina namba ya simu iliyohifadhiwa. Muone admin akureset PIN.</span>");
+
+  document.getElementById("tenantForgotPinModal").classList.add("open");
+  setTimeout(function(){ var el=document.getElementById("tenantForgotPhone"); if(el) el.focus(); }, 80);
+}
+
+function closeTenantForgotPinModal(){
+  document.getElementById("tenantForgotPinModal").classList.remove("open");
+}
+
+async function saveTenantForgotPin(){
+  var alertEl = document.getElementById("tenantForgotPinAlert");
+  function msg(text, type){
+    if(alertEl) alertEl.innerHTML = "<div class='alert alert-" + (type || "danger") + "'>" + text + "</div>";
+  }
+  if(!_loginSelectedMatch){
+    msg("Rudi hatua ya kwanza uchague jina/chumba chako.");
+    return;
+  }
+
+  var matchKey = _loginSelectedMatch.matchKey || _loginSelectedMatch.chumba;
+  var tenants = getTenants();
+  var tenant = tenants[matchKey] || _loginSelectedMatch;
+  var savedPhone = (tenant && tenant.simu) ? String(tenant.simu) : "";
+  var inputPhone = document.getElementById("tenantForgotPhone").value.trim();
+  var p1 = document.getElementById("tenantForgotPin1").value.trim();
+  var p2 = document.getElementById("tenantForgotPin2").value.trim();
+
+  if(!savedPhone){
+    msg("Chumba hiki hakina namba ya simu iliyohifadhiwa. Muone admin akureset PIN.");
+    return;
+  }
+  if(normalizePhoneForCompare(savedPhone) !== normalizePhoneForCompare(inputPhone)){
+    msg("Namba ya simu haifanani na iliyosajiliwa kwenye chumba hiki.");
+    return;
+  }
+  if(!/^[0-9]{4}$/.test(p1)){
+    msg("PIN mpya lazima iwe nambari 4 pekee.");
+    return;
+  }
+  if(p1 !== p2){
+    msg("PIN mbili hazifanani. Jaribu tena.");
+    document.getElementById("tenantForgotPin2").value = "";
+    document.getElementById("tenantForgotPin2").focus();
+    return;
+  }
+
+  var pinHash = await sha256(p1);
+  tenants[matchKey] = Object.assign({}, tenant, { chumba: matchKey, pin: pinHash });
+  saveTenants(tenants);
+  savePinToSheets(matchKey, pinHash);
+  try{
+    queueSync("SAVE_TENANT", {
+      chumba: matchKey,
+      jina: tenants[matchKey].jina || "",
+      vifaa: tenants[matchKey].vifaa || "",
+      kwh: tenants[matchKey].kwh || 0,
+      pin: pinHash
+    });
+  }catch(e){}
+  try{
+    var bc = new BroadcastChannel("smart_energy_sync");
+    bc.postMessage({type:"tenants_changed", source:"app", action:"tenant_pin_reset", chumba:matchKey});
+    bc.close();
+  }catch(e2){}
+
+  resetAttempts();
+  document.getElementById("loginPin").value = "";
+  msg("✅ PIN mpya imehifadhiwa. Sasa ingia kwa PIN mpya.", "success");
+  setTimeout(function(){
+    closeTenantForgotPinModal();
+    var pinEl = document.getElementById("loginPin");
+    if(pinEl) pinEl.focus();
+  }, 1200);
+}
 
 function getNotifSnoozeKey(chumba) {
   return "lukuNotifSnooze_" + chumba + "_" + today();
@@ -6813,12 +7426,12 @@ function generateRipoti() {
 
   // ── Hesabu kwa kila chumba ──
   var roomsData = [];
-  var rooms = Object.keys(tenants).sort();
+  var rooms = Object.keys(tenants).sort(compareRooms);
   if (!rooms.length) {
     // Tumia vyumba kutoka rekodi
     var seenRooms = {};
     allRecs.forEach(function(r){ if(r.chumba) seenRooms[r.chumba]=1; });
-    rooms = Object.keys(seenRooms).sort();
+    rooms = Object.keys(seenRooms).sort(compareRooms);
   }
 
   var totalMchangoAda = 0, totalMchangoLipwa = 0, totalMchangoBaki = 0;
@@ -7115,6 +7728,20 @@ ${src.innerHTML}
     }, 400);
   };
 <\/script>
+
+<!-- ═══ CONFIRM MODAL (badala ya confirm()) ═══ -->
+<div class="modal-bg" id="confirmModal" style="z-index:9999;">
+  <div class="modal" style="max-width:380px;text-align:center;padding:32px 28px;">
+    <div style="font-size:2rem;margin-bottom:12px;" id="confirmIcon">⚠</div>
+    <div style="font-family:var(--font-main);font-size:1.1rem;color:var(--text);margin-bottom:8px;" id="confirmTitle"></div>
+    <div style="color:var(--muted);font-size:.88rem;margin-bottom:24px;" id="confirmMsg"></div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button class="btn btn-outline" onclick="confirmResolve(false)">Hapana</button>
+      <button class="btn btn-warn" id="confirmOkBtn" onclick="confirmResolve(true)">Ndio, Endelea</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>`;
 
@@ -7149,7 +7776,7 @@ function openWaNotifModal(){
   // Default message
   var adminC = getAdminContact();
   var adminName = adminC.name || "Msimamizi";
-  var defMsg = "Habari {jina}! 👋\n\nArifa kutoka " + adminName + ":\n⚡ LUKU ya Chumba {chumba} inakwisha — siku {siku} zimebaki.\n\nTafadhali nunua LUKU haraka ili kuepuka kukaa gizani. Asante! 🙏";
+  var defMsg = "Habari {jina}! 👋\n\nTarifa kutoka " + adminName + ":\n⚡ LUKU ya Chumba {chumba} inakwisha — siku {siku} zimebaki.\n\nTafadhali nunua LUKU haraka ili kuepuka kukaa gizani. Asante! 🙏";
   document.getElementById("waDefaultMsg").value = defMsg;
   document.getElementById("waNotifModal").classList.add("open");
   renderWaList();
@@ -7185,7 +7812,7 @@ function renderWaList(){
   var template = document.getElementById("waDefaultMsg").value;
   _waLinks = [];
 
-  var rooms = Object.keys(tenants).sort();
+  var rooms = Object.keys(tenants).sort(compareRooms);
   var items = rooms.map(function(c){
     var tn   = tenants[c];
     var pred = calcPrediction(c);
@@ -7959,96 +8586,24 @@ async function login(){
     return;
   }
 
-  var jinaRaw   = document.getElementById("loginJina").value.trim();
-  var chumbaRaw = document.getElementById("loginChumba").value.trim();
-
-  // Kama ni admin — mwelekeze kwa loginAdmin
-  if(chumbaRaw.toUpperCase() === "ADMIN"){
-    await loginAdmin();
+  // Lazima kuwe na match iliyochaguliwa kutoka hatua 1
+  if(!_loginSelectedMatch){
+    // Kama majina mawili bado hayajachagua chumba
+    if(_loginPendingMatches.length > 1){
+      showLoginErr("⚠ Chagua chumba lako kwanza.");
+    } else {
+      showLoginErr("⚠ Rudi hatua ya 1 na weka jina lako.");
+      loginGoBack();
+    }
     return;
   }
 
-  if(!chumbaRaw){
-    showLoginErr("❌ Weka namba ya chumba lako.");
-    document.getElementById("loginChumba").focus();
-    return;
-  }
-  if(!jinaRaw){
-    showLoginErr("❌ Weka jina lako.");
-    document.getElementById("loginJina").focus();
-    return;
-  }
+  var matchKey = _loginSelectedMatch.matchKey || _loginSelectedMatch.chumba;
+  var jina     = _loginSelectedMatch.jina;
 
-  var chumba = normalizeRoom(chumbaRaw) || chumbaRaw.trim().toUpperCase();
-  var jina   = jinaRaw;
-
-  showLoginErr("⏳ Inakagua...");
-
-  // ── SYNC KUTOKA SHEETS KWANZA ──
-  // Hii inahakikisha data mpya inafika kwenye simu
-  if(getUrl()){
-    try{
-      var d = await Promise.race([
-        fetchSheets("?action=list"),
-        new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("timeout")); }, 8000); })
-      ]);
-      if(d && d.data && d.data.length > 0){
-        var all = getTenants();
-        d.data.forEach(function(r){
-          if(r.chumba){
-            var nc = normalizeRoom(r.chumba) || r.chumba;
-            var existingPin = (all[nc] && all[nc].pin) ? all[nc].pin : (r.pin || "");
-            all[nc] = { jina: r.jina||"", chumba: nc, vifaa: r.vifaa||"", simu: r.simu||"", pin: existingPin };
-          }
-        });
-        saveTenants(all);
-      }
-    } catch(e){ /* Sheets haipatikani — endelea na localStorage */ }
-  }
-
-  // ── ANGALIA TENANTS ──
+  // Pata data mpya ya tenant kutoka cache (ilikwisha sync kwenye hatua 1)
   var tenants = getTenants();
-  var matchKey = null;
-  var allKeys  = Object.keys(tenants);
-  for(var i=0; i<allKeys.length; i++){
-    var normKey = normalizeRoom(allKeys[i]) || allKeys[i].toUpperCase();
-    if(normKey === chumba || allKeys[i].toUpperCase() === chumba){
-      matchKey = allKeys[i];
-      break;
-    }
-  }
-
-  // Chumba hakipatikani
-  if(!matchKey){
-    var s = recordFailedAttempt();
-    if(isLockedOut()){
-      showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
-      startLockoutCountdown();
-    } else {
-      showLoginErr("❌ Chumba '"+chumba+"' halijaandikishwa. Majaribio "+attemptsLeft()+" yaliyobaki.");
-    }
-    document.getElementById("loginChumba").value="";
-    document.getElementById("loginChumba").focus();
-    return;
-  }
-
-  // Chumba lipo — angalia jina
-  var tenant    = tenants[matchKey];
-  var jinaSaved = (tenant && tenant.jina) ? tenant.jina.trim().toLowerCase() : "";
-  var jinaInput = jina.toLowerCase();
-
-  if(jinaSaved && jinaInput !== jinaSaved){
-    var s2 = recordFailedAttempt();
-    if(isLockedOut()){
-      showLoginErr("🔒 Majaribio "+MAX_ATTEMPTS+" mabaya! Akaunti imefungwa kwa sekunde "+lockoutTimeLeft()+".");
-      startLockoutCountdown();
-    } else {
-      showLoginErr("❌ Jina si sahihi. Majaribio "+attemptsLeft()+" yaliyobaki.");
-    }
-    document.getElementById("loginJina").value="";
-    document.getElementById("loginJina").focus();
-    return;
-  }
+  var tenant  = tenants[matchKey] || _loginSelectedMatch;
 
   // ── ANGALIA PIN ──
   var pinSaved = (tenant && tenant.pin) ? tenant.pin : "";
@@ -8078,8 +8633,7 @@ async function login(){
       return;
     }
   } else {
-    // PIN haipo locally — labda action=list ilifuta, au localStorage ilifutwa.
-    // Jaribu kupata PIN kutoka Sheets (RESTORE_FULL) kabla ya kuonyesha setup.
+    // PIN haipo — jaribu kupata kutoka Sheets kwanza
     if(getUrl()){
       showLoginErr("⏳ Inaangalia PIN kutoka Sheets...");
       try{
@@ -8088,15 +8642,14 @@ async function login(){
           new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("timeout")); }, 8000); })
         ]);
         if(resPin && resPin.status === "ok" && resPin.tenants){
-          var sheetTenant = resPin.tenants[matchKey] || resPin.tenants[chumba] || null;
+          var sheetTenant = resPin.tenants[matchKey] || null;
           var sheetPin = sheetTenant ? (sheetTenant.pin || "") : "";
-          if(sheetPin){
-            // PIN ipo Sheets — hifadhi locally na endelea na uthibitisho wa kawaida
+          var pinIsValid = sheetPin && sheetPin.length >= 10;
+          if(pinIsValid){
             var allT = getTenants();
             if(!allT[matchKey]) allT[matchKey] = {};
             allT[matchKey].pin = sheetPin;
             saveTenants(allT);
-            // Sasa angalia PIN ambayo mtumiaji aliingiza
             var pinInput2 = (document.getElementById("loginPin")||{value:""}).value.trim();
             if(!pinInput2){
               showLoginErr("🔐 PIN yako imepatikana. Weka PIN yako ya nambari 4.");
@@ -8121,30 +8674,161 @@ async function login(){
               document.getElementById("loginPin").focus();
               return;
             }
-            // PIN sahihi — endelea
             resetAttempts();
-            var user2 = { jina: tenant.jina||jina, chumba: matchKey, isAdmin: false };
+            var user2 = { jina: jina, chumba: matchKey, isAdmin: false };
             await createSession(user2);
             currentUser = user2;
             startApp();
             return;
           }
         }
-      } catch(ePinFetch){ /* Sheets haipatikani — endelea na PIN setup */ }
+      } catch(ePinFetch){}
     }
-    // Sheets haina PIN au haipatikani — PIN ya kweli haijawekwa
+    // Sheets haina PIN — PIN ya kweli haijawekwa, fungua setup
     resetAttempts();
-    pendingUser = { jina: tenant.jina||jina, chumba: matchKey, isAdmin: false, matchKey: matchKey };
+    pendingUser = { jina: jina, chumba: matchKey, isAdmin: false, matchKey: matchKey };
     openPinSetup();
     return;
   }
 
-  // ✅ Imefanikiwa — Unda session token
+  // ✅ Imefanikiwa
   resetAttempts();
-  var user = { jina: tenant.jina||jina, chumba: matchKey, isAdmin: false };
+  var user = { jina: jina, chumba: matchKey, isAdmin: false };
   await createSession(user);
   currentUser = user;
   startApp();
+}
+
+
+// ── Hatua za login ─────────────────────────────────────────────────────────
+
+// Kumbuka mpangaji aliyepatikana kwenye hatua 1
+var _loginPendingMatches = []; // array ya {jina, chumba, matchKey} kama wawili wanafanana
+var _loginSelectedMatch  = null; // match iliyochaguliwa
+
+function loginGoBack(){
+  _loginPendingMatches = [];
+  _loginSelectedMatch  = null;
+  document.getElementById("loginStep1").style.display     = "";
+  document.getElementById("loginStep2").style.display     = "none";
+  document.getElementById("loginStepAdmin").style.display = "none";
+  document.getElementById("loginError").style.display     = "none";
+  document.getElementById("loginError").textContent       = "";
+  // Futa PIN
+  var pinEl = document.getElementById("loginPin");
+  if(pinEl) pinEl.value = "";
+  // Focus jina
+  setTimeout(function(){ var el=document.getElementById("loginJina"); if(el) el.focus(); }, 80);
+}
+
+function loginShowAdmin(){
+  document.getElementById("loginStep1").style.display     = "none";
+  document.getElementById("loginStep2").style.display     = "none";
+  document.getElementById("loginStepAdmin").style.display = "";
+  document.getElementById("loginError").style.display     = "none";
+  setTimeout(function(){ var el=document.getElementById("loginAdminPass"); if(el) el.focus(); }, 80);
+}
+
+async function loginStepOne(){
+  var jinaRaw = document.getElementById("loginJina").value.trim();
+  if(!jinaRaw){
+    showLoginErr("❌ Weka jina lako kwanza.");
+    document.getElementById("loginJina").focus();
+    return;
+  }
+
+  showLoginErr("⏳ Inaangalia...");
+
+  // Sync kutoka Sheets kama URL ipo
+  if(getUrl()){
+    try{
+      var d = await Promise.race([
+        fetchSheets("?action=list"),
+        new Promise(function(_,rej){ setTimeout(function(){ rej(new Error("timeout")); }, 6000); })
+      ]);
+      if(d && d.data && d.data.length > 0){
+        var all = getTenants();
+        d.data.forEach(function(r){
+          if(r.chumba){
+            var nc = normalizeRoom(r.chumba) || r.chumba;
+            var sheetsPinRaw = r.pin || "";
+            var localPin     = (all[nc] && all[nc].pin) ? all[nc].pin : "";
+            var mergedPin;
+            if(r.hasOwnProperty("pin")){
+              mergedPin = (sheetsPinRaw && sheetsPinRaw.length >= 10) ? sheetsPinRaw : "";
+            } else {
+              mergedPin = localPin;
+            }
+            all[nc] = { jina: r.jina||"", chumba: nc, vifaa: r.vifaa||"", simu: r.simu||"", pin: mergedPin };
+          }
+        });
+        saveTenants(all);
+      }
+    } catch(e){}
+  }
+
+  // Tafuta wapangaji wanaofanana na jina lililowekwa
+  var tenants  = getTenants();
+  var jinaLow  = jinaRaw.toLowerCase();
+  var matches  = [];
+  Object.keys(tenants).forEach(function(key){
+    var t = tenants[key];
+    var jinaSaved = (t && t.jina) ? t.jina.trim().toLowerCase() : "";
+    if(jinaSaved === jinaLow){
+      matches.push({ jina: t.jina||jinaRaw, chumba: key, matchKey: key, pin: t.pin||"" });
+    }
+  });
+
+  showLoginErr("");
+
+  if(!matches.length){
+    showLoginErr("❌ Jina '"+jinaRaw+"' halijaandikishwa. Angalia tahajia au wasiliana na Admin.");
+    document.getElementById("loginJina").focus();
+    return;
+  }
+
+  _loginPendingMatches = matches;
+
+  // Onyesha hatua 2
+  document.getElementById("loginStep1").style.display = "none";
+  document.getElementById("loginStep2").style.display = "";
+
+  if(matches.length === 1){
+    // Moja tu — chagua moja kwa moja
+    _loginSelectedMatch = matches[0];
+    document.getElementById("loginStep2Name").textContent = matches[0].jina;
+    document.getElementById("loginStep2Room").textContent = "Chumba " + matches[0].chumba;
+    document.getElementById("loginRoomSelect").style.display = "none";
+  } else {
+    // Zaidi ya moja — mwambie achague chumba
+    _loginSelectedMatch = null;
+    document.getElementById("loginStep2Name").textContent = jinaRaw;
+    document.getElementById("loginStep2Room").textContent = "Vyumba " + matches.length + " vimepatikana";
+    // Jenga buttons za kuchagua chumba
+    var btnsWrap = document.getElementById("loginRoomBtns");
+    btnsWrap.innerHTML = "";
+    matches.forEach(function(m){
+      var btn = document.createElement("button");
+      btn.textContent = "Chumba " + m.chumba;
+      btn.style.cssText = "padding:10px 18px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-family:var(--font-main);font-size:.9rem;cursor:pointer;transition:all .2s;";
+      btn.onclick = function(){
+        _loginSelectedMatch = m;
+        document.getElementById("loginStep2Room").textContent = "Chumba " + m.chumba;
+        document.getElementById("loginRoomSelect").style.display = "none";
+        btnsWrap.querySelectorAll("button").forEach(function(b){ b.style.background="var(--card)"; b.style.borderColor="var(--border)"; b.style.color="var(--text)"; });
+        btn.style.background = "rgba(0,212,255,.12)";
+        btn.style.borderColor = "var(--accent)";
+        btn.style.color = "var(--accent)";
+        setTimeout(function(){ var p=document.getElementById("loginPin"); if(p) p.focus(); }, 80);
+      };
+      btnsWrap.appendChild(btn);
+    });
+    document.getElementById("loginRoomSelect").style.display = "";
+    return; // Subiri wachague chumba kabla ya kuonyesha PIN
+  }
+
+  // Focus PIN
+  setTimeout(function(){ var p=document.getElementById("loginPin"); if(p) p.focus(); }, 80);
 }
 
 async function loginAdmin(){
@@ -8154,10 +8838,10 @@ async function loginAdmin(){
     startLockoutCountdown();
     return;
   }
-  var pass = document.getElementById("loginJina").value.trim();
+  var pass = (document.getElementById("loginAdminPass")||{value:""}).value.trim();
   if(!pass){
-    showLoginErr("Weka nenosiri la admin kwenye kisanduku cha Jina.");
-    document.getElementById("loginJina").focus();
+    showLoginErr("Weka nenosiri la admin.");
+    var el=document.getElementById("loginAdminPass"); if(el) el.focus();
     return;
   }
   var h = await sha256(pass);
@@ -8169,8 +8853,7 @@ async function loginAdmin(){
     } else {
       showLoginErr("❌ Nenosiri si sahihi. Majaribio "+attemptsLeft()+" yaliyobaki.");
     }
-    document.getElementById("loginJina").value="";
-    document.getElementById("loginJina").focus();
+    var el2=document.getElementById("loginAdminPass"); if(el2){ el2.value=""; el2.focus(); }
     return;
   }
   resetAttempts();
@@ -8187,7 +8870,7 @@ async function loginAdmin(){
 // *** MPYA — Tuma rekodi moja ya historia ya mchango Sheets mara moja ***
 function sendMchangoHistToSheets(entry) {
   var url = getUrl();
-  if(!url || !url.includes("script.google.com")) return;
+  if(!isAppsScriptUrl(url)) return;
   var payload = Object.assign({ action: "SAVE_MCHANGO_HIST" }, entry);
   fetch(url, {
     method: "POST",
@@ -8199,25 +8882,27 @@ function sendMchangoHistToSheets(entry) {
 }
 
 function getMchangoData() {
-  try { return JSON.parse(localStorage.getItem("mchangoData") || "{}"); } catch(e) { return {}; }
+  try { return normalizeMchangoMap(JSON.parse(localStorage.getItem("mchangoData") || "{}")); } catch(e) { return {}; }
 }
 function saveMchangoData(d) {
+  d = normalizeMchangoMap(d);
   localStorage.setItem("mchangoData", JSON.stringify(d));
   scheduleAutoBackup(); // *** Hakikisha michango inahifadhiwa Sheets ***
 }
 
 // Key format: "YYYY-MM:CHUMBA"
-function getMchangoKey(mwezi, chumba) { return mwezi + ":" + chumba; }
+function getMchangoKey(mwezi, chumba) { return mwezi + ":" + (normalizeRoom(chumba) || chumba); }
 
 // Ada za vyumba — zimehifadhiwa kwa kila chumba
 function getRoomFees() {
-  try { return JSON.parse(localStorage.getItem("roomFees") || "{}"); } catch(e) { return {}; }
+  try { return normalizeRoomKeyMap(JSON.parse(localStorage.getItem("roomFees") || "{}")); } catch(e) { return {}; }
 }
-function saveRoomFees(f) { localStorage.setItem("roomFees", JSON.stringify(f)); }
+function saveRoomFees(f) { localStorage.setItem("roomFees", JSON.stringify(normalizeRoomKeyMap(f))); }
 
 function getRoomFee(chumba) {
   var fees = getRoomFees();
-  return fees[chumba] || 0;
+  var key = normalizeRoom(chumba) || chumba;
+  return fees[key] || fees[chumba] || 0;
 }
 
 // Pata michango yote ya mwezi fulani
@@ -8287,7 +8972,7 @@ function onMchangoChumbaChange() {
       // Onyesha baki iliyobaki, si kilicholipwa tayari — mtumiaji anaandika malipo MAPYA tu
       document.getElementById("mcKiasi").value = "";
       document.getElementById("mcNote").value = data[key].note || "";
-      // Onyesha taarifa ya malipo yaliyofanywa tayari
+      // Onyesha tatarifa ya malipo yaliyofanywa tayari
       var kipandEl = document.getElementById("mchangoResultBox");
       if (kipandEl && data[key].kilicholipwa > 0) {
         kipandEl.style.display = "block";
@@ -8559,10 +9244,47 @@ function printReceiptModal() {
       '<div style="text-align:center;margin-top:14px;font-size:.7rem;color:#aaa;">Chapishwa: ' + new Date().toLocaleString("sw-TZ") + '</div>' +
     '</div></div>';
 
-  document.getElementById("receiptPrintArea").innerHTML = html;
-  window.print();
-  // Reset after print
-  setTimeout(function(){ document.getElementById("receiptPrintArea").innerHTML = ""; }, 1000);
+  // Fungua popup window yenye stakabadhi — inafanya kazi vizuri kwenye simu na PC
+  var popup = window.open("", "_blank", "width=420,height=650");
+  if(popup){
+    popup.document.write(
+      "<!DOCTYPE html><html><head><meta charset='utf-8'>" +
+      "<title>Stakabadhi ya Malipo</title>" +
+      "<style>" +
+      "body{margin:0;padding:0;background:#fff;font-family:Arial,sans-serif;}" +
+      "@media print{body{margin:0;} .no-print{display:none;}}" +
+      "</style></head><body>" +
+      html +
+      "<div class='no-print' style='text-align:center;margin:16px;'>" +
+      "<button onclick='window.print()' style='padding:10px 28px;background:#00d4ff;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;'>🖨 Chapisha</button>" +
+      "</div></body></html>"
+    );
+    popup.document.close();
+    setTimeout(function(){
+      try {
+        popup.focus();
+        popup.print();
+      } catch(e) {}
+    }, 250);
+  } else {
+    // Fallback kama popup imezuiwa na browser
+    document.getElementById("receiptPrintArea").innerHTML = html;
+    document.body.classList.add("receipt-printing");
+
+    var cleanupReceiptPrint = function(){
+      document.body.classList.remove("receipt-printing");
+      document.getElementById("receiptPrintArea").innerHTML = "";
+      window.removeEventListener("afterprint", cleanupReceiptPrint);
+    };
+    window.addEventListener("afterprint", cleanupReceiptPrint);
+
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        window.print();
+        setTimeout(cleanupReceiptPrint, 2500);
+      });
+    });
+  }
 }
 
 function _receiptRow(label, val) {
@@ -8815,7 +9537,7 @@ function renderMchangoHist() {
     var prevVal = filterEl.value;
     var allRooms = [];
     hist.forEach(function(e){ if(e.chumba && allRooms.indexOf(e.chumba) < 0) allRooms.push(e.chumba); });
-    allRooms.sort();
+    allRooms.sort(compareRooms);
     filterEl.innerHTML = '<option value="">Vyumba Vyote</option>' +
       allRooms.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join("");
     if(prevVal) filterEl.value = prevVal;
@@ -8873,7 +9595,7 @@ function renderMchangoHist() {
   });
 
   // Sort groups by room name
-  var sortedRooms = Object.keys(groups).sort();
+  var sortedRooms = Object.keys(groups).sort(compareRooms);
 
   var html = "";
   sortedRooms.forEach(function(chumba){
@@ -9097,8 +9819,7 @@ window.onload = async function(){
   applyLang();
   applyTheme();
 
-  document.getElementById("loginChumba").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("loginJina").focus();});
-  document.getElementById("loginJina").addEventListener("keydown",function(e){if(e.key==="Enter")login();});
+  // loginJina → Enter → loginStepOne (hatua 1 inaendelea yenyewe kwa onkeydown)
 
   // Pakia data iliyofichwa kwenye cache
   await loadTenantsCache();
@@ -9405,19 +10126,44 @@ function renderChartPieVyumba() {
 // ── 3. BAR CHART — Ulinganisho wa Vyumba (page-ulinganisho) ──
 function renderChartCompBar(byRoom, rooms) {
   var canvas = document.getElementById("compChartBar");
-  if (!canvas || !window.Chart) return;
+  if (!canvas || !window.Chart) {
+    renderCompBarFallback(byRoom, rooms);
+    return;
+  }
   destroyChart("compBar");
 
   var c = getChartDefaults();
   var labels = rooms;
   var data = rooms.map(function(r){ return parseFloat((byRoom[r]||0).toFixed(1)); });
-  var maxV = Math.max.apply(null, data) || 1;
 
-  var colors = data.map(function(v){
-    if (v > maxV * 0.66) return c.danger;
-    if (v > maxV * 0.33) return c.accent2;
-    return c.accent3;
+  // Rangi tofauti tofauti kwa kila chumba — palette nzuri na inayoonekana vizuri
+  var ROOM_PALETTE = [
+    "#00d4ff", // cyan/bluu - accent ya app
+    "#22c55e", // kijani
+    "#f59e0b", // njano/machungwa
+    "#a855f7", // zambarau
+    "#ef4444", // nyekundu
+    "#06b6d4", // cyan ya pili
+    "#84cc16", // kijani kibichi
+    "#f97316", // machungwa
+    "#8b5cf6", // violet
+    "#ec4899", // pink
+    "#14b8a6", // teal
+    "#eab308", // dhahabu
+    "#3b82f6", // bluu ya kawaida
+    "#10b981", // emerald
+    "#f43f5e", // rose
+    "#6366f1", // indigo
+    "#0ea5e9", // sky
+    "#d946ef", // fuchsia
+    "#fb923c", // orange ya pili
+    "#4ade80"  // kijani kibichi zaidi
+  ];
+
+  var colors = rooms.map(function(r, i){
+    return ROOM_PALETTE[i % ROOM_PALETTE.length];
   });
+  var borderColors = colors.map(function(col){ return col; });
 
   _chartInstances["compBar"] = new Chart(canvas, {
     type: "bar",
@@ -9426,10 +10172,10 @@ function renderChartCompBar(byRoom, rooms) {
       datasets: [{
         label: "kWh",
         data: data,
-        backgroundColor: colors,
+        backgroundColor: colors.map(function(col){ return col + "cc"; }),
         borderColor: colors,
-        borderWidth: 0,
-        borderRadius: 5,
+        borderWidth: 2,
+        borderRadius: 7,
         borderSkipped: false
       }]
     },
@@ -9445,23 +10191,64 @@ function renderChartCompBar(byRoom, rooms) {
           titleColor: c.accent,
           bodyColor: c.text,
           callbacks: {
-            label: function(ctx){ return " " + ctx.parsed.y.toFixed(1) + " kWh"; }
+            title: function(ctx){ return "Chumba " + ctx[0].label; },
+            label: function(ctx){
+              return " " + ctx.parsed.y.toFixed(1) + " kWh — Tsh " + Math.round(ctx.parsed.y * (window.getUnitRate ? getUnitRate() : 100)).toLocaleString();
+            }
           }
         }
       },
       scales: {
         x: {
-          ticks: { color: c.muted, font:{size:11} },
+          ticks: { color: c.muted, font:{size:12, weight:"bold"} },
           grid: { display: false }
         },
         y: {
-          ticks: { color: c.muted, font:{size:11} },
+          ticks: { color: c.muted, font:{size:11}, callback: function(v){ return v + " kWh"; } },
           grid: { color: c.border + "55" },
-          beginAtZero: true
+          beginAtZero: true,
+          title: { display: true, text: "Matumizi (kWh)", color: c.muted, font:{size:11} }
         }
       }
     }
   });
+
+  // Ongeza kidokezo cha rangi chini ya grafu
+  var legendEl = document.getElementById("compBarLegend");
+  if (legendEl) {
+    legendEl.innerHTML = rooms.map(function(r, i){
+      var v = data[i];
+      return '<span style="display:inline-flex;align-items:center;gap:5px;margin:3px 8px 3px 0;font-size:.75rem;color:var(--text);">'
+        + '<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:' + colors[i] + ';"></span>'
+        + '<b style="color:' + colors[i] + ';">' + r + '</b>'
+        + (v > 0 ? ' <span style="color:var(--muted);">(' + v.toFixed(1) + ' kWh)</span>' : '')
+        + '</span>';
+    }).join("");
+  }
+}
+
+function renderCompBarFallback(byRoom, rooms){
+  var legendEl = document.getElementById("compBarLegend");
+  if(!legendEl) return;
+  var values = rooms.map(function(r){ return Number(byRoom[r] || 0); });
+  var maxV = Math.max.apply(null, values.concat([1]));
+  var colors = ["#00d4ff","#22c55e","#f59e0b","#a855f7","#ef4444","#06b6d4","#84cc16","#f97316","#8b5cf6","#ec4899"];
+  legendEl.innerHTML =
+    '<div style="width:100%;display:flex;flex-direction:column;gap:9px;">' +
+    rooms.map(function(r,i){
+      var v = values[i] || 0;
+      var pct = Math.max(v > 0 ? 4 : 0, Math.min(100, (v / maxV) * 100));
+      var col = colors[i % colors.length];
+      return '<div style="display:grid;grid-template-columns:minmax(44px,70px) 1fr minmax(70px,90px);gap:8px;align-items:center;font-size:.78rem;">'
+        + '<div style="font-weight:800;color:' + col + ';">' + r + '</div>'
+        + '<div style="height:18px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:6px;overflow:hidden;">'
+        + '<div style="height:100%;width:' + pct + '%;background:' + col + ';border-radius:5px;"></div>'
+        + '</div>'
+        + '<div style="text-align:right;color:var(--text);font-family:var(--font-main);">' + v.toFixed(1) + ' kWh</div>'
+        + '</div>';
+    }).join("") +
+    (rooms.length ? '' : '<div style="color:var(--muted);font-size:.85rem;">Hakuna vyumba au rekodi za mwezi huu.</div>') +
+    '</div>';
 }
 
 // ── 4. LINE CHART — Trend ya Miezi (page-ulinganisho) ────────
@@ -9770,6 +10557,39 @@ function togglePushNotifications() {
 }
 
 // ── Sasisha icon ya bell kulingana na hali ───────────────────────
+togglePushNotifications = function() {
+  var perm = getNotifPermissionStatus();
+  if (perm === "granted" && getSavedFcmToken()) {
+    showToast("Notifications tayari zimewashwa. Ukihitaji kuzima, tumia mipangilio ya browser.");
+    return;
+  }
+  if (!isPushSupportedContext()) {
+    showToast("Fungua app kwa http://127.0.0.1 au https ili kengele ya push ifanye kazi.");
+    return;
+  }
+  if (!isFcmConfigured()) {
+    showToast("Firebase haijasanidiwa. Admin aweke config kwenye Push Notifications.");
+    if (currentUser && currentUser.isAdmin) {
+      showPage("admin", document.getElementById("adminTab"));
+      setTimeout(function(){
+        var cfg = document.getElementById("fcm-config-status");
+        if(cfg) cfg.scrollIntoView({behavior:"smooth", block:"center"});
+      }, 120);
+    }
+    return;
+  }
+  requestPushPermission(
+    function(token) {
+      showToast("Notifications zimewashwa!");
+      _updateNotifBellUI(true);
+      updateFcmConfigStatus();
+    },
+    function(err) {
+      showToast(err);
+    }
+  );
+};
+
 function _updateNotifBellUI(active) {
   var btn = document.getElementById("notifToggleBtn");
   if (!btn) return;
@@ -9810,7 +10630,9 @@ async function adminSendManualPush() {
   var st    = document.getElementById("push-send-status");
   if (!title.trim()) { if(st) { st.style.color="var(--danger)"; st.textContent="⚠ Andika kichwa (title)."; } return; }
   if (st) { st.style.color="var(--muted)"; st.textContent="⏳ Inatuma..."; }
-  var ok = await adminSendPushNotification(room.trim() || "ALL", title, body, { source: "manual" });
+  room = room.trim();
+  if(room.toUpperCase() !== "ALL") room = normalizeRoom(room) || room;
+  var ok = await adminSendPushNotification(room || "ALL", title, body, { source: "manual" });
   if (ok) {
     if (st) { st.style.color="var(--accent3)"; st.textContent="✅ Notification imetumwa!"; }
     showToast("📤 Notification imetumwa kwa " + (room || "ALL"));
