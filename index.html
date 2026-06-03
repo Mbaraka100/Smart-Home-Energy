@@ -551,6 +551,13 @@ async function checkAdminPin(){
     if(saved > 0){
       document.getElementById("roomCountInput").value = saved;
       showCurrentRoomInfo(saved);
+    } else {
+      // Angalia URL params
+      var fromUrl = getRoomCountFromUrl();
+      if(fromUrl > 0){
+        document.getElementById("roomCountInput").value = fromUrl;
+        showCurrentRoomInfo(fromUrl);
+      }
     }
   } else {
     err.style.display = "block";
@@ -571,8 +578,38 @@ function showCurrentRoomInfo(count){
   if(!el) return;
   var first = "01";
   var last  = count < 10 ? "0"+count : String(count);
+
+  // Jenga link yenye ?rooms=count
+  var baseUrl = window.location.href.split("?")[0].split("#")[0];
+  var shareUrl = baseUrl + "?rooms=" + count;
+
   el.style.display = "block";
-  el.innerHTML = "✅ Vyumba vilivyowekwa: <strong>"+count+"</strong> &nbsp;·&nbsp; "+first+" hadi "+last;
+  el.innerHTML =
+    "✅ Vyumba vilivyowekwa: <strong>"+count+"</strong> &nbsp;·&nbsp; "+first+" hadi "+last+
+    "<br><br>"+
+    "<div style='margin-top:6px;padding:10px 12px;background:#e6f9ee;border-radius:8px;border:1px solid #86efac;'>"+
+    "<div style='font-size:11px;font-weight:700;color:#166534;margin-bottom:6px;'>🔗 Tuma link hii kwa wapangaji — ina vyumba "+count+" ndani yake:</div>"+
+    "<div style='display:flex;gap:6px;align-items:center;'>"+
+    "<input id='shareLinkInput' type='text' value='"+shareUrl+"' readonly "+
+    "style='flex:1;font-size:11px;padding:7px 10px;border:1px solid #86efac;border-radius:6px;background:#fff;color:#166534;font-family:monospace;'>"+
+    "<button onclick='copyShareLink()' "+
+    "style='padding:7px 12px;background:#00b84c;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;'>"+
+    "📋 Nakili"+
+    "</button>"+
+    "</div>"+
+    "</div>";
+}
+
+function copyShareLink(){
+  var inp = document.getElementById("shareLinkInput");
+  if(!inp) return;
+  try{
+    inp.select(); inp.setSelectionRange(0,9999);
+    document.execCommand("copy");
+  } catch(e){
+    try{ navigator.clipboard.writeText(inp.value); } catch(e2){}
+  }
+  showToast("✅ Link imenakiliwa! Tuma kwa wapangaji.", true);
 }
 
 function applySimpleRoomCount(){
@@ -600,9 +637,28 @@ function applySimpleRoomCount(){
   showToast("✅ Vyumba "+count+" vimewekwa! (01 – "+(count<10?"0"+count:count)+")", true);
 }
 
-// Rejesha idadi iliyohifadhiwa ukifungua upya
+// ── Soma idadi ya vyumba kutoka URL params (?rooms=16) ──────────────────────
+function getRoomCountFromUrl(){
+  try{
+    var params = new URLSearchParams(window.location.search);
+    var n = parseInt(params.get("rooms")||"0");
+    if(n > 0 && n <= 200) return n;
+    // Pia angalia hash: #rooms=16
+    var hash = window.location.hash.replace("#","");
+    var hm = hash.match(/rooms=(\d+)/);
+    if(hm){ var hn = parseInt(hm[1]); if(hn>0 && hn<=200) return hn; }
+  } catch(e){}
+  return 0;
+}
+
+// Rejesha idadi iliyohifadhiwa ukifungua upya (URL params INASHINDA localStorage)
 (function restoreRoomCount(){
-  var saved = parseInt(localStorage.getItem(ROOM_COUNT_KEY)||"0");
+  var fromUrl = getRoomCountFromUrl();
+  var saved   = fromUrl || parseInt(localStorage.getItem(ROOM_COUNT_KEY)||"0");
+  if(fromUrl > 0){
+    // Hifadhi kwenye localStorage pia ili wafanyakazi wengine wanufaike
+    localStorage.setItem(ROOM_COUNT_KEY, String(fromUrl));
+  }
   if(saved > 0){
     manualRooms = [];
     for(var i = 1; i <= saved; i++){
