@@ -506,11 +506,66 @@ function normalizeRooms(arr){
 }
 var totalRooms = 0;
 
+var DELETED_TENANTS_KEY = "deletedTenantsPending";
+var DELETE_GUARD_MS = 3 * 24 * 60 * 60 * 1000;
+
+function getDeletedTenantsPending(){
+  try { return JSON.parse(localStorage.getItem(DELETED_TENANTS_KEY) || "{}"); } catch(e) { return {}; }
+}
+
+function saveDeletedTenantsPending(map){
+  try { localStorage.setItem(DELETED_TENANTS_KEY, JSON.stringify(map || {})); } catch(e) {}
+}
+
+function markTenantDeletedPending(chumba){
+  var key = normalizeRoom(chumba) || String(chumba || "").trim();
+  if(!key) return;
+  var map = getDeletedTenantsPending();
+  map[key] = Date.now();
+  saveDeletedTenantsPending(map);
+}
+
+function isTenantDeletedPending(chumba){
+  var key = normalizeRoom(chumba) || String(chumba || "").trim();
+  if(!key) return false;
+  var map = getDeletedTenantsPending();
+  var ts = Number(map[key] || 0);
+  if(!ts) return false;
+  if(Date.now() - ts > DELETE_GUARD_MS){
+    delete map[key];
+    saveDeletedTenantsPending(map);
+    return false;
+  }
+  return true;
+}
+
+function purgeDeletedSensaEntries(){
+  var changed = false;
+  entries = entries.filter(function(e){
+    if(isTenantDeletedPending(e.chumba)){ changed = true; return false; }
+    return true;
+  });
+  try{
+    var saved = JSON.parse(localStorage.getItem("sensaEntries") || "[]");
+    if(Array.isArray(saved)){
+      var filtered = saved.filter(function(e){ return !isTenantDeletedPending(e.chumba); });
+      if(filtered.length !== saved.length){
+        changed = true;
+        localStorage.setItem("sensaEntries", JSON.stringify(filtered));
+      }
+    }
+  } catch(e){}
+  return changed;
+}
+
 // Rejesha sensa zilizohifadhiwa ndani ya browser
 (function restoreLocalSensa(){
   try{
     var saved = JSON.parse(localStorage.getItem("sensaEntries") || "[]");
-    if(Array.isArray(saved)) entries = saved;
+    if(Array.isArray(saved)){
+      entries = saved.filter(function(e){ return !isTenantDeletedPending(e.chumba); });
+      purgeDeletedSensaEntries();
+    }
   } catch(e){}
 })();
 
@@ -581,7 +636,7 @@ function showCurrentRoomInfo(count){
 
   // Jenga link yenye ?rooms=count
   var baseUrl = window.location.href.split("?")[0].split("#")[0];
-  var shareUrl = baseUrl + "?rooms=" + count;
+  var shareUrl = baseUrl + "?rooms=" + count + "#rooms=" + count;
 
   el.style.display = "block";
   el.innerHTML =
@@ -1107,6 +1162,9 @@ function _cleanLegacyCPrefixFromStorage(){
     var _bc = new BroadcastChannel("smart_energy_sync");
     _bc.onmessage = function(ev){
       if(ev.data && ev.data.type === "tenants_changed"){
+        if(ev.data.action === "delete" && ev.data.chumba){
+          markTenantDeletedPending(ev.data.chumba);
+        }
         syncFromStorage();
       }
     };
@@ -1118,6 +1176,7 @@ function _cleanLegacyCPrefixFromStorage(){
 // ══════════════════════════════════════
 function syncFromStorage(){
   try{
+    purgeDeletedSensaEntries();
     // Pata tenants za sasa kutoka App kuu
     var tenants = JSON.parse(localStorage.getItem("tenants") || "{}");
     var activeChumba = new Set(Object.keys(tenants).map(function(k){ return normalizeRoom(k); }).filter(Boolean));
@@ -1125,13 +1184,15 @@ function syncFromStorage(){
     // FUTA kutoka entries za Sensa wapangaji ambao wamefutwa kwenye App
     var before = entries.length;
     entries = entries.filter(function(e){
-      return activeChumba.has(normalizeRoom(e.chumba));
+      var room = normalizeRoom(e.chumba);
+      return !isTenantDeletedPending(room) && activeChumba.has(room);
     });
 
     // Pia sasisha sensaEntries kwenye localStorage
     var sensaArr = JSON.parse(localStorage.getItem("sensaEntries") || "[]");
     sensaArr = sensaArr.filter(function(e){
-      return activeChumba.has(normalizeRoom(e.chumba));
+      var room = normalizeRoom(e.chumba);
+      return !isTenantDeletedPending(room) && activeChumba.has(room);
     });
     localStorage.setItem("sensaEntries", JSON.stringify(sensaArr));
 
@@ -1139,6 +1200,7 @@ function syncFromStorage(){
     Object.keys(tenants).forEach(function(room){
       var code = normalizeRoom(room);
       if(!code) return;
+      if(isTenantDeletedPending(code)) return;
       var t = tenants[room];
       var exists = entries.findIndex(function(e){ return e.chumba === code; });
       if(exists < 0){
@@ -1171,12 +1233,14 @@ function syncFromStorage(){
 // ── Chanzo 1: localStorage (haraka, daima inafanya kazi) ──────────────────────
 function loadRoomsFromLocalStorage(){
   try{
+    purgeDeletedSensaEntries();
     // Soma "tenants" iliyohifadhiwa na App kuu
     var tenants = JSON.parse(localStorage.getItem("tenants") || "{}");
     Object.keys(tenants).forEach(function(room){
       var t = tenants[room];
       var code = normalizeRoom(room);
       if(!code) return;
+      if(isTenantDeletedPending(code)) return;
       // Tumia rekodi hii kama entry ya sensa (ona iwa vifaa hayapo, tutaweka []
       var localIdx = entries.findIndex(function(e){ return e.chumba === code; });
       var se = {
@@ -1202,6 +1266,7 @@ function loadRoomsFromLocalStorage(){
       saved.forEach(function(se){
         var code = normalizeRoom(se.chumba);
         if(!code) return;
+        if(isTenantDeletedPending(code)) return;
         var localIdx = entries.findIndex(function(e){ return e.chumba === code; });
         if(localIdx >= 0){
           // Sensa kamili inashinda rekodi ya tenants
@@ -1267,9 +1332,12 @@ function loadRoomsFromSheets(){
           vifaa: Array.isArray(r.vifaa) ? r.vifaa : [],
           hali: r.hali || ""
         };
+      }).filter(function(r){
+        return r.chumba && !isTenantDeletedPending(r.chumba);
       });
 
       sheetsEntries.forEach(function(se){
+        if(isTenantDeletedPending(se.chumba)) return;
         var localIdx = entries.findIndex(function(e){ return e.chumba === se.chumba; });
         if(localIdx >= 0){
           if(!entries[localIdx].vifaa || entries[localIdx].vifaa.length === 0){
