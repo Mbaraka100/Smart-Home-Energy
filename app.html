@@ -3478,8 +3478,123 @@ function isAppsScriptUrl(u){
   return /^https?:\/\//i.test(u);
 }
 
+var DELETED_TENANTS_KEY = "deletedTenantsPending";
+var DELETE_GUARD_MS = 3 * 24 * 60 * 60 * 1000;
+
+function getDeletedTenantsPending(){
+  try { return JSON.parse(localStorage.getItem(DELETED_TENANTS_KEY) || "{}"); } catch(e) { return {}; }
+}
+
+function saveDeletedTenantsPending(map){
+  try { localStorage.setItem(DELETED_TENANTS_KEY, JSON.stringify(map || {})); } catch(e) {}
+}
+
+function markTenantDeletedPending(chumba){
+  var key = normalizeRoom(chumba) || String(chumba || "").trim();
+  if(!key) return;
+  var map = getDeletedTenantsPending();
+  map[key] = Date.now();
+  saveDeletedTenantsPending(map);
+}
+
+function isTenantDeletedPending(chumba){
+  var key = normalizeRoom(chumba) || String(chumba || "").trim();
+  if(!key) return false;
+  var map = getDeletedTenantsPending();
+  var ts = Number(map[key] || 0);
+  if(!ts) return false;
+  if(Date.now() - ts > DELETE_GUARD_MS){
+    delete map[key];
+    saveDeletedTenantsPending(map);
+    return false;
+  }
+  return true;
+}
+
+function clearTenantDeletedPending(chumba){
+  var key = normalizeRoom(chumba) || String(chumba || "").trim();
+  if(!key) return;
+  var map = getDeletedTenantsPending();
+  if(map[key]){
+    delete map[key];
+    saveDeletedTenantsPending(map);
+  }
+}
+
+async function deleteTenantFromSheetsNow(chumba){
+  var url = getUrl();
+  if(!isAppsScriptUrl(url)) return false;
+  var payload = { action: "DELETE_TENANT", chumba: normalizeRoom(chumba) || chumba };
+  try{
+    var res = await fetch(url, {
+      method: "POST",
+      headers: {"Content-Type":"text/plain"},
+      body: JSON.stringify(payload)
+    });
+    if(res.ok || res.status === 302 || res.status === 0) return true;
+  } catch(e){
+    try{
+      await fetch(url, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {"Content-Type":"text/plain"},
+        body: JSON.stringify(payload)
+      });
+      return true;
+    } catch(e2){}
+  }
+  return false;
+}
+
 // *** MPYA — Hifadhi PIN hash ya mpangaji Sheets mara moja ***
 // PIN (hash) ni salama kupeleka Sheets — si nenosiri wazi
+function sendBackupFullToSheetsUrl(url, reason){
+  if(!isAppsScriptUrl(url)) return;
+  var mchangoRaw = {};
+  try { mchangoRaw = getMchangoData(); } catch(e){}
+  var mchangoArr = Object.keys(mchangoRaw).map(function(k){
+    var parts = k.split(":");
+    var rec = mchangoRaw[k] || {};
+    return {
+      id: k.replace(":","_"),
+      mwezi: parts[0] || "",
+      chumba: normalizeRoom(parts[1] || "") || parts[1] || "",
+      kiasi: rec.kiasi || rec.kilicholipwa || 0,
+      tarehe: rec.tarehe || "",
+      note: rec.note || "",
+      timestamp: rec.timestamp || ""
+    };
+  });
+  var mchangoHist = [];
+  try { mchangoHist = JSON.parse(localStorage.getItem("mchangoHist")||"[]").map(normalizeRoomFields); } catch(e){}
+
+  var payload = {
+    action: "BACKUP_FULL",
+    reason: reason || "manual-clear",
+    timestamp: new Date().toISOString(),
+    tenants: getTenants(),
+    lukuRecs: getRecs(),
+    globalLuku: getGlobalLukuRecs(),
+    michango: mchangoArr,
+    mchangoHist: mchangoHist,
+    mitaMaombi: getMaombi(),
+    tenantUjumbe: getUjumbe()
+  };
+
+  fetch(url, {
+    method: "POST",
+    headers: {"Content-Type":"text/plain"},
+    body: JSON.stringify(payload)
+  }).catch(function(){
+    fetch(url, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {"Content-Type":"text/plain"},
+      body: JSON.stringify(payload)
+    }).catch(function(){});
+  });
+}
+
 function savePinToSheets(chumba, pinHash) {
   var url = getUrl();
   if(!isAppsScriptUrl(url)) return;
@@ -4042,6 +4157,9 @@ async function restoreFromSheets(){
       // Rejesha data yote 4
       if(res.tenants && tCount > 0){
         var localT = getTenants();
+        Object.keys(res.tenants).forEach(function(c){
+          if(isTenantDeletedPending(c)) delete res.tenants[c];
+        });
         Object.keys(localT).forEach(function(c){
           if(localT[c] && localT[c].pin && res.tenants[c]) res.tenants[c].pin = localT[c].pin;
         });
@@ -4548,6 +4666,9 @@ async function syncFromSheets(isFullSync){
       // PIN: Sheets ina PIN zilizohifadhiwa. Tumia Sheets.
       // Kama Sheets haina PIN kwa chumba fulani, tumia ya localStorage kama fallback.
       var localT = getTenants();
+      Object.keys(res.tenants).forEach(function(c){
+        if(isTenantDeletedPending(c)) delete res.tenants[c];
+      });
       Object.keys(res.tenants).forEach(function(c){
         var sheetPin = res.tenants[c] ? res.tenants[c].pin : "";
         var localPin = localT[c] ? localT[c].pin : "";
@@ -6535,6 +6656,7 @@ async function saveTenant(){
   if(!c){showAlert(el,"Chagua chumba au andika chumba kipya.","danger");return;}
   // Safisha namba: "5", "05", au "C05" zote zihifadhiwe kama "5".
   c = normalizeRoom(c) || c;
+  clearTenantDeletedPending(c);
   if(!j){showAlert(el,"Weka jina la mpangaji.","danger");return;}
   // PIN — si lazima admin aweke; mpangaji ataweka mwenyewe mara ya kwanza
   var existingPin = (getTenants()[c]||{}).pin || "";
@@ -6598,6 +6720,7 @@ function deleteTenant(c){
   var jina = (t[c] && t[c].jina) ? t[c].jina : c;
   if(!confirm("Futa mpangaji " + jina + " (" + c + ")?\nData yake (LUKU, michango, sensa) itafutwa.")) return;
 
+  markTenantDeletedPending(c);
   delete t[c];
   saveTenants(t);
 
@@ -6609,6 +6732,40 @@ function deleteTenant(c){
     });
     localStorage.setItem("sensaEntries", JSON.stringify(sensa));
   } catch(e2){}
+
+  // Futa rekodi nyingine za chumba hiki ili backup iandike hali safi kwenye Sheets.
+  try{
+    var delRoom = normalizeRoom(c) || String(c).toUpperCase();
+    var recs = getRecs().filter(function(r){
+      return (normalizeRoom(r.chumba) || String(r.chumba || "").toUpperCase()) !== delRoom;
+    });
+    saveRecs(recs);
+
+    var globalRecs = getGlobalLukuRecs().filter(function(r){
+      return (normalizeRoom(r.chumba) || String(r.chumba || "").toUpperCase()) !== delRoom;
+    });
+    saveGlobalLukuRecs(globalRecs);
+
+    var mchangoData = getMchangoData();
+    Object.keys(mchangoData).forEach(function(k){
+      var parts = k.split(":");
+      var roomPart = parts.length > 1 ? parts.slice(1).join(":") : "";
+      if((normalizeRoom(roomPart) || String(roomPart).toUpperCase()) === delRoom) delete mchangoData[k];
+    });
+    saveMchangoData(mchangoData);
+
+    var mchangoHist = getMchangoHist().filter(function(r){
+      return (normalizeRoom(r.chumba) || String(r.chumba || "").toUpperCase()) !== delRoom;
+    });
+    saveMchangoHist(mchangoHist);
+
+    saveMaombi(getMaombi().filter(function(r){
+      return (normalizeRoom(r.chumba) || String(r.chumba || "").toUpperCase()) !== delRoom;
+    }));
+    saveUjumbe(getUjumbe().filter(function(r){
+      return (normalizeRoom(r.chumba) || String(r.chumba || "").toUpperCase()) !== delRoom;
+    }));
+  } catch(cleanErr){}
 
   // Arifu Sensa app kupitia BroadcastChannel
   try{
@@ -6625,6 +6782,11 @@ function deleteTenant(c){
   if(getUrl()){
     queueSync("DELETE_TENANT", { chumba: c });
     if(navigator.onLine) setTimeout(function(){ flushSyncQueue(); }, 500);
+    deleteTenantFromSheetsNow(c).then(function(ok){
+      if(ok){
+        setTimeout(function(){ runAutoBackup("delete-tenant"); }, 800);
+      }
+    });
   }
 }
 async function renderAdminTenants(){
@@ -6921,6 +7083,8 @@ function executeClearData(){
   var delSensa    = document.getElementById("del_sensa")?.checked;
   var delSettings = document.getElementById("del_settings")?.checked;
   var delAll      = document.getElementById("del_all_local")?.checked;
+  var urlBeforeClear = getUrl();
+  var roomsBeforeClear = Object.keys(getTenants()).map(function(c){ return normalizeRoom(c) || c; }).filter(Boolean);
 
   if(!delTenants && !delLuku && !delMchango && !delSensa && !delSettings && !delAll){
     alert("⚠ Chagua angalau chaguo moja la kufuta.");
@@ -6947,6 +7111,15 @@ function executeClearData(){
     }
   }
 
+  if(delAll || delTenants || delSensa){
+    roomsBeforeClear.forEach(function(c){ markTenantDeletedPending(c); });
+  }
+  window._tenantsCache = {};
+  window._recsCache = [];
+  if(delAll || delTenants || delLuku || delMchango || delSensa){
+    sendBackupFullToSheetsUrl(urlBeforeClear, "clear-data");
+  }
+
   document.getElementById("clearDataModal").remove();
 
   var msgs = [];
@@ -6960,7 +7133,7 @@ function executeClearData(){
   }
 
   alert("✅ Imefutwa: " + msgs.join(", ") + ".\n\nApp itapakia upya sasa.");
-  setTimeout(function(){ location.reload(); }, 800);
+  setTimeout(function(){ location.reload(); }, 1500);
 }
 
 // ── Modal ya kuthibitisha (badala ya confirm()) ──────────────────
