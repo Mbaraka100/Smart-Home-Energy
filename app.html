@@ -6824,9 +6824,143 @@ function swClearCache(){
 }
 
 function clearAllData(){
-  if(!confirm("TAHADHARI: Data yote (wapangaji + LUKU) itafutwa. Endelea?"))return;
-  localStorage.removeItem("tenants"); localStorage.removeItem("lukuRecs");
-  refreshAll(); alert("Data yote imefutwa.");
+  // Onyesha modal ya kuchagua nini kifutwe
+  var existing = document.getElementById("clearDataModal");
+  if(existing) existing.remove();
+
+  var modal = document.createElement("div");
+  modal.id = "clearDataModal";
+  modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;";
+  modal.innerHTML = `
+    <div style="background:var(--panel);border:1px solid var(--danger);border-radius:16px;padding:24px 20px;width:100%;max-width:420px;box-shadow:0 0 40px rgba(239,68,68,0.25);">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:40px;margin-bottom:10px;">🗑️</div>
+        <h2 style="font-family:var(--font-main);color:var(--danger);font-size:1.2rem;letter-spacing:1px;">FUTA DATA</h2>
+        <p style="color:var(--muted);font-size:0.82rem;margin-top:6px;">Chagua nini kifutwe. Hatua hii haiwezi kutenduliwa.</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);cursor:pointer;">
+          <input type="checkbox" id="del_tenants" checked style="margin-top:2px;width:16px;height:16px;accent-color:var(--danger);flex-shrink:0;">
+          <div>
+            <div style="font-weight:700;font-size:.9rem;">👥 Wapangaji</div>
+            <div style="color:var(--muted);font-size:.78rem;">Orodha yote ya wapangaji, vyumba, PIN zao</div>
+          </div>
+        </label>
+
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);cursor:pointer;">
+          <input type="checkbox" id="del_luku" checked style="margin-top:2px;width:16px;height:16px;accent-color:var(--danger);flex-shrink:0;">
+          <div>
+            <div style="font-weight:700;font-size:.9rem;">⚡ Rekodi za LUKU / Bili</div>
+            <div style="color:var(--muted);font-size:.78rem;">Historia yote ya malipo ya umeme</div>
+          </div>
+        </label>
+
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);cursor:pointer;">
+          <input type="checkbox" id="del_mchango" style="margin-top:2px;width:16px;height:16px;accent-color:var(--danger);flex-shrink:0;">
+          <div>
+            <div style="font-weight:700;font-size:.9rem;">💰 Mchango & Maombi</div>
+            <div style="color:var(--muted);font-size:.78rem;">Data za mfuko wa pamoja na maombi ya fedha</div>
+          </div>
+        </label>
+
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);cursor:pointer;">
+          <input type="checkbox" id="del_sensa" style="margin-top:2px;width:16px;height:16px;accent-color:var(--danger);flex-shrink:0;">
+          <div>
+            <div style="font-weight:700;font-size:.9rem;">📋 Data za Sensa ya Vifaa</div>
+            <div style="color:var(--muted);font-size:.78rem;">Vifaa vya umeme vilivyoorodheshwa na wapangaji</div>
+          </div>
+        </label>
+
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);cursor:pointer;">
+          <input type="checkbox" id="del_settings" style="margin-top:2px;width:16px;height:16px;accent-color:var(--danger);flex-shrink:0;">
+          <div>
+            <div style="font-weight:700;font-size:.9rem;">⚙️ Mipangilio</div>
+            <div style="color:var(--muted);font-size:.78rem;">Kiwango cha umeme, URL ya Sheets, ujumbe, ripoti jengo</div>
+          </div>
+        </label>
+
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:rgba(239,68,68,.08);border-radius:10px;border:1px solid rgba(239,68,68,.3);cursor:pointer;">
+          <input type="checkbox" id="del_all_local" style="margin-top:2px;width:16px;height:16px;accent-color:var(--danger);flex-shrink:0;">
+          <div>
+            <div style="font-weight:700;font-size:.9rem;color:var(--danger);">💥 FUTA KILA KITU (Factory Reset)</div>
+            <div style="color:var(--muted);font-size:.78rem;">localStorage yote — kama App mpya kabisa</div>
+          </div>
+        </label>
+
+      </div>
+
+      <div style="display:flex;gap:10px;">
+        <button onclick="document.getElementById('clearDataModal').remove()"
+          style="flex:1;padding:13px;background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:var(--font-main);font-size:.95rem;cursor:pointer;">
+          Ghairi
+        </button>
+        <button onclick="executeClearData()"
+          style="flex:1;padding:13px;background:var(--danger);border:none;border-radius:8px;color:#fff;font-family:var(--font-main);font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:1px;">
+          🗑 FUTA SASA
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Factory Reset inachagua kila kitu
+  document.getElementById("del_all_local").onchange = function(){
+    var checked = this.checked;
+    ["del_tenants","del_luku","del_mchango","del_sensa","del_settings"].forEach(function(id){
+      document.getElementById(id).checked = checked;
+    });
+  };
+}
+
+function executeClearData(){
+  var delTenants  = document.getElementById("del_tenants")?.checked;
+  var delLuku     = document.getElementById("del_luku")?.checked;
+  var delMchango  = document.getElementById("del_mchango")?.checked;
+  var delSensa    = document.getElementById("del_sensa")?.checked;
+  var delSettings = document.getElementById("del_settings")?.checked;
+  var delAll      = document.getElementById("del_all_local")?.checked;
+
+  if(!delTenants && !delLuku && !delMchango && !delSensa && !delSettings && !delAll){
+    alert("⚠ Chagua angalau chaguo moja la kufuta.");
+    return;
+  }
+
+  if(delAll){
+    localStorage.clear();
+  } else {
+    if(delTenants){
+      ["tenants","tenants_enc","adminPassHash","adminHashChanged","adminContact","loginState","roomFees","se_fcm_tokens"].forEach(function(k){ localStorage.removeItem(k); });
+    }
+    if(delLuku){
+      ["lukuRecs","lukuRecs_enc","globalLukuRecs","lastSheetsSync","lastBackupTime","lastBackupStatus","syncQueue"].forEach(function(k){ localStorage.removeItem(k); });
+    }
+    if(delMchango){
+      ["mchangoData","mchangoHist","mitaMaombi","tenantUjumbe"].forEach(function(k){ localStorage.removeItem(k); });
+    }
+    if(delSensa){
+      ["sensaEntries","sensaRoomCount"].forEach(function(k){ localStorage.removeItem(k); });
+    }
+    if(delSettings){
+      ["sheetsUrl","smartEnergySheetUrl","se_unit_rate","se_unit_rate_date","ripotiJengo","se_firebase_config","se_fcm_vapid_key","se_sw_ready_shown"].forEach(function(k){ localStorage.removeItem(k); });
+    }
+  }
+
+  document.getElementById("clearDataModal").remove();
+
+  var msgs = [];
+  if(delAll)      msgs.push("Kila kitu");
+  else {
+    if(delTenants)  msgs.push("Wapangaji");
+    if(delLuku)     msgs.push("Rekodi za LUKU");
+    if(delMchango)  msgs.push("Mchango");
+    if(delSensa)    msgs.push("Sensa");
+    if(delSettings) msgs.push("Mipangilio");
+  }
+
+  alert("✅ Imefutwa: " + msgs.join(", ") + ".\n\nApp itapakia upya sasa.");
+  setTimeout(function(){ location.reload(); }, 800);
 }
 
 // ── Modal ya kuthibitisha (badala ya confirm()) ──────────────────
